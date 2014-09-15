@@ -573,8 +573,8 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         if ($searchMode == 'lazyWhiteSpace') {
             $RegEx_begin_backup = $RegEx_begin;
             $RegEx_end_backup = $RegEx_end;
-            $RegEx_begin = $this->preg_quote_by_SL5($RegEx_begin);
-            $RegEx_end = $this->preg_quote_by_SL5($RegEx_end);
+            $RegEx_begin = SL5_preg_contentFinder::preg_quote_by_SL5($RegEx_begin);
+            $RegEx_end = SL5_preg_contentFinder::preg_quote_by_SL5($RegEx_end);
         } elseif (strrpos($searchMode, 'use_BackReference') !== false || strrpos(
                 $searchMode,
                 'dontTouchThis'
@@ -1861,10 +1861,16 @@ ho  <!--{03}-->3<!--{/03}-->
         echo '' . $fromLine . ': ' . nl2br($s) . '<br>';
     }
 
-    private function preg_quote_by_SL5($string)
+    /**
+     * @param $string
+     * @return mixed|string
+     */
+    public static function preg_quote_by_SL5(&$string)
     {
         # btw must have lib: http://regexlib.com/Search.aspx?k=email
         $r = preg_quote($string);
+        # preg_quote Quote regular expression characters
+    # @link http://php.net/manual/en/function.preg-quote.php
         $r = str_replace('/', '\/', $r);
         $r = preg_replace('/\s+/sm', '\s+', $r);
 
