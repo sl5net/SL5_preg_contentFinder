@@ -1,5 +1,5 @@
 <?php
-/*
+/* test14-09-15_23-22
   This SL5_ContentFinder class is part of the doSqlWeb project,
   a PHP Template Engine.
   Copyright (C) 2013 Sebastian Lauffer, http://SL5.net
@@ -16,7 +16,7 @@
   For GNU General Public License see <http://www.gnu.org/licenses/>.
  */
 $bugIt = false;
-// Add appgati.
+// Add appgati. test
 if ($bugIt) {
     require_once 'appgati.class.php';
 // Initialize
