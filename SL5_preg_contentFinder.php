@@ -2032,9 +2032,10 @@ function info($message, $color = 'yellow', $htmlSpecialChars = true)
 
 function count_null($arr, $dieIfIsNull = true)
 {
+
     $countNull = 0;
-    if (!is_bool($dieIfIsNull)) {
-        die(__FUNCTION__ . __LINE__ . ': !is_bool($dieIfIsNull)');
+    if (is_bool($dieIfIsNull)) {
+        die(__FUNCTION__ . __LINE__ . ': is_bool($dieIfIsNull)');
     }
     if (!is_array($arr)) {
         return is_null($arr);
