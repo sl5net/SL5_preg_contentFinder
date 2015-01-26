@@ -1,6 +1,6 @@
 SL5_preg_contentFinder
 ======================
-
+test
 a PHP Template Engine class using Perl Compatible Regular Expressions (PCRE)
 
 You not know Regular Expressions to use this class. But i sugest learnig regEx.
