@@ -983,7 +983,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $content . (($nr == 1) ? '' : "\n" . $numbers);
     }
 
-    private static function recursion_example($content)
+    public static function recursion_example($content)
     {
 
         $silentMode = true;
@@ -1038,7 +1038,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return array(($cut) ? $cut : $content, $before, $behind);
     }
 
-    private static function recursionExample3_search_NOT_in_rest_of_the_string($content, $before = null, $behind = null)
+    public static function recursionExample3_search_NOT_in_rest_of_the_string($content, $before = null, $behind = null)
     {
         $silentMode = true;
         if (is_null($before)) {
@@ -1217,7 +1217,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     }
 
 
-    private static function recursionExample4_search_also_in_rest_of_the_string(
+    public static function recursionExample4_search_also_in_rest_of_the_string(
         $content,
         $before = null,
         $behind = null
@@ -1318,6 +1318,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             }
         }
 
+
         if (true) {
             $sourceCF = "(1((2)1)8)";
             $cf = new SL5_preg_contentFinder($sourceCF);
@@ -1374,18 +1375,21 @@ ho  <!--{03}-->3<!--{/03}-->
                 $pos_of_next_search = $findPos['end_end'];
             }
         }
+
         list($cf, $b, $e, $sourceCF) = self::simple123example($silentMode);
+
+       if (true)         list($cf, $b, $e, $sourceCF) = self::simple123example($silentMode);
         if (true) {
             # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
             # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
             $content1 = '<!--123_abc-->dings1<!--dings2<!--';
             $cf = new SL5_preg_contentFinder($content1);
             $sourceCF = @$cf->getContent(
-                $begin = '<!--[^>]*-->',
-                $end = '<!--',
-                $p = null,
-                $t = null,
-                $searchMode = 'dontTouchThis'
+              $begin = '<!--[^>]*-->',
+              $end = '<!--',
+              $p = null,
+              $t = null,
+              $searchMode = 'dontTouchThis'
             );
             if (!$silentMode) {
                 info(__LINE__ . ': ' . "$content1 => $sourceCF");
@@ -1460,7 +1464,7 @@ ho  <!--{03}-->3<!--{/03}-->
         $cf = new SL5_preg_contentFinder($sourceCF);
         if (!$silentMode) {
             info(__LINE__ . ': ' . $sourceCF);
-        }
+        } //
         $result = '(' . @$cf->getContent($b = '(', $e = ')') . ')';
         if (!$silentMode) {
             great($result);
@@ -2034,7 +2038,7 @@ function count_null($arr, $dieIfIsNull = true)
 {
 
     $countNull = 0;
-    if (is_bool($dieIfIsNull)) {
+    if (!is_bool($dieIfIsNull)) {
         die(__FUNCTION__ . __LINE__ . ': is_bool($dieIfIsNull)');
     }
     if (!is_array($arr)) {
