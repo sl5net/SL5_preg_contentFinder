@@ -80,12 +80,19 @@ class SL5_preg_contentFinder
 
     private $findPos_list;
 
+    /**
+     * @param $content string e.g. source of your file
+     */
     function __construct($content)
     {
         self::$lastObject = $this;
         $this->content = $content;
     }
 
+    /**
+     * @param $pos_of_next_search integer
+     * @return bool false if !is_numeric($pos_of_next_search)
+     */
     public function setPosOfNextSearch($pos_of_next_search)
     {
         if (!is_numeric($pos_of_next_search)) {
@@ -94,7 +101,6 @@ class SL5_preg_contentFinder
             return false;
         }
         $this->pos_of_next_search = $pos_of_next_search;
-
         return true;
     }
 
@@ -233,6 +239,11 @@ class SL5_preg_contentFinder
         return $pos_of_next_search;
     }
 
+    /**
+     * @param $RegEx_begin perl regular expression
+     * @param $RegEx_end perl regular expression
+     * @return bool always returns true - no meaning
+     */
     public function setBeginEnd_RegEx($RegEx_begin, $RegEx_end)
     {
         $this->setRegEx_begin($RegEx_begin);
@@ -241,6 +252,10 @@ class SL5_preg_contentFinder
         return true;
     }
 
+    /**
+     * @param $RegEx_begin perl regular expression
+     * @return bool always returns true - no meaning
+     */
     public function setRegEx_begin($RegEx_begin)
     {
         if (is_null($RegEx_begin)) {
@@ -285,6 +300,10 @@ class SL5_preg_contentFinder
         return $this->regEx_end;
     }
 
+    /**
+     * @param $RegEx_end perl regular expression
+     * @return bool always returns true - no meaning
+     */
     public function setRegEx_end($RegEx_end)
     {
         $this->setRegEx($this->regEx_end, $RegEx_end);
@@ -292,6 +311,10 @@ class SL5_preg_contentFinder
         return true;
     }
 
+    /**
+     * @param string $searchMode 'lazyWhiteSpace', 'dontTouchThis', 'use_BackReference_IfExists_()$1${1}'
+     * @return bool false if param not match
+     */
     public function setSearchMode($searchMode)
     {
         $searchModes = $this->searchModes;
@@ -306,10 +329,12 @@ class SL5_preg_contentFinder
             return false;
         }
         $this->searchMode = $searchMode;
-
         return true;
     }
 
+    /**
+     * @return string 'lazyWhiteSpace', 'dontTouchThis', 'use_BackReference_IfExists_()$1${1}'
+     */
     public function getSearchMode()
     {
         return $this->searchMode;
@@ -340,7 +365,8 @@ class SL5_preg_contentFinder
             for ($b_pos = 0; $b_pos < count($_sourceArray); $b_pos += 3) {
 
                 $p = $c->get_borders_left(__LINE__, $b1 = '(', $b2 = ')', $b_pos);
-                var_export($p);
+                echo "get_borders_left= " .var_export($p,true);
+
 
                 if (!$silentMode) {
                     great('$cf->prev()=' . $c->getContentPrev());
@@ -403,6 +429,10 @@ class SL5_preg_contentFinder
      */
     private static function selfTest_Tags_Parsing_Example($silentMode = false)
     {
+
+
+
+
         $content1 = $source = '<body>
 ha <!--[01.o0]-->1<!--[/01.o0]-->
 hi [02.o0]2<!--[/02.o0]-->
@@ -539,6 +569,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     }
 
 
+    /**
+     * @return self|SL5_preg_contentFinder
+     */
     public function getLastObject()
     {
         $l = self::$lastObject;
@@ -546,6 +579,16 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return self::$lastObject;
     }
 
+    /**
+     * @param $fromLine callers line number. may helps debuging
+     * @param null $RegEx_begin perl regular expression.
+     * @param null $RegEx_end perl regular expression.
+     * @param null $pos_of_next_search
+     * @param null $txt
+     * @param null $searchMode
+     * @param bool $bugIt
+     * @return mixed
+     */
     public
     function get_borders_left(
         $fromLine,
@@ -750,6 +793,10 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $return;
     }
 
+    /**
+     * @param string key pos_of_next_search, begin, end
+     * @return bool|null
+     */
     public function CACHE_current($key = null)
     {
         $t = & $this;
@@ -762,10 +809,13 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         if ($key == 'end') {
             return $t->regEx_end;
         }
-
         return false;
     }
 
+    /**
+     * @param integer $id
+     * @return string false if id not exist
+     */
     public function getContentByID($id)
     {
         $t = & $this;
@@ -791,6 +841,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $content;
     }
 
+    /**
+     * @return string string before current ID. false if id not exist
+     */
     public function getContentPrev()
     {
         $id = $this->findPos_list_current_ID;
@@ -804,6 +857,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $return;
     }
 
+    /**
+     * @return string string behind current ID. false if id not exist
+     */
     public function getContentNext()
     {
         $id = $this->findPos_list_current_ID;
@@ -817,6 +873,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $return;
     }
 
+    /**
+     * @return current ID . always exist.
+     */
     public function getID()
     {
         return $this->findPos_list_current_ID;
@@ -839,6 +898,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return true;
     }
 
+    /**
+     * @param $id
+     */
     public function setID($id)
     {
         if (!isset($this->findPos_list_current_ID)) {
@@ -846,6 +908,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         }
     }
 
+    /**
+     * @return string
+     */
     public function getContentBetweenNext2Current()
     {
         $current_ID = $this->findPos_list_current_ID;
@@ -854,6 +919,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $this->getContentBetweenIDs($current_ID, $next_ID);
     }
 
+    /**
+     * @return string or false if is is_nan
+     */
     public function getContentBetweenPrev2Current()
     {
         $current_ID = $this->findPos_list_current_ID;
@@ -890,6 +958,11 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $this->getContentBetweenIDs($prev_ID, $current_ID);
     }
 
+    /**
+     * @param integer $id1
+     * @param integer $id2
+     * @return string
+     */
     public function getContentBetweenIDs($id1, $id2)
     {
         if (is_nan($id1) || is_nan($id2)) {
@@ -951,6 +1024,10 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return true;
     }
 
+    /**
+     * @param integer $nr
+     * @return string
+     */
     public static function getExampleContent($nr = null)
     {
         $bugIt = false;
@@ -983,6 +1060,10 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $content . (($nr == 1) ? '' : "\n" . $numbers);
     }
 
+    /**
+     * @param $content
+     * @return bool|string
+     */
     public static function recursion_example($content)
     {
 
@@ -1004,6 +1085,12 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $cut;
     }
 
+    /**
+     * @param $content
+     * @param null $before
+     * @param null $behind
+     * @return array
+     */
     private static function recursion_example2($content, $before = null, $behind = null)
     {
         $silentMode = true;
@@ -1038,6 +1125,12 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return array(($cut) ? $cut : $content, $before, $behind);
     }
 
+    /**
+     * @param $content
+     * @param null $before
+     * @param null $behind
+     * @return array
+     */
     public static function recursionExample3_search_NOT_in_rest_of_the_string($content, $before = null, $behind = null)
     {
         $silentMode = true;
@@ -1288,6 +1381,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     }
 
 
+    /**
+     * @return bool no meaning
+     */
     public static function selfTest_collection()
     {
         if (self::$selfTest_collection_finished) {
@@ -1649,6 +1745,15 @@ ho  <!--{03}-->3<!--{/03}-->
         return true;
     }
 
+    /**
+     * @param null $RegEx_begin perl regular expression
+     * @param null $RegEx_end perl regular expression
+     * @param null $pos_of_next_search
+     * @param null $txt
+     * @param null $searchMode
+     * @param bool $bugIt
+     * @return bool|string
+     */
     public function getContent(
         &$RegEx_begin = null,
         &$RegEx_end = null,
@@ -1704,6 +1809,17 @@ ho  <!--{03}-->3<!--{/03}-->
         return $content;
     }
 
+    /**
+     * @param string $begin
+     * @param string $end
+     * @param int $pos_of_next_search
+     * @param string $txt
+     * @param null $expectedBehind
+     * @param string $expectedContent
+     * @param null $searchMode
+     * @param bool $bugIt
+     * @return bool
+     */
     public
     static function selfTest(
         $begin = '[',
@@ -1844,6 +1960,11 @@ ho  <!--{03}-->3<!--{/03}-->
         return $result;
     }
 
+    /**
+     * @param $Content
+     * @param int $size1
+     * @param int $size2
+     */
     public function echo_content_little_excerpt(
         $Content
         ,
@@ -1859,6 +1980,11 @@ ho  <!--{03}-->3<!--{/03}-->
         );
     }
 
+    /**
+     * @param integer $fromLine callers lineNumber. may help debuging
+     * @param string $file fileName . may help debuging
+     * @param string $s
+     */
     public function nl2br_Echo($fromLine, $file, $s)
     {
         # // TODO this function not really net to be a part of a this class, but this class use it.
@@ -1867,7 +1993,7 @@ ho  <!--{03}-->3<!--{/03}-->
 
     /**
      * @param $string
-     * @return mixed|string
+     * @return string Quoted regular expression
      */
     public static function preg_quote_by_SL5(&$string)
     {
