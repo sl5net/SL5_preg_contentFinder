@@ -46,10 +46,10 @@ if ($bugIt) {
 }
 
 if (basename($_SERVER["PHP_SELF"]) == basename(__FILE__)) {
+    include_once("test/SL5_preg_contentFinderTest1.php");
     SL5_preg_contentFinder::selfTest_collection();
 }
-class SL5_preg_contentFinder
-{
+class SL5_preg_contentFinder {
     private static $selfTest_defaults = array(); # please fill that first time
     private static $selfTest_called_from_init_defaults = false;
     private static $selfTest_collection_finished = false;
@@ -83,8 +83,7 @@ class SL5_preg_contentFinder
     /**
      * @param $content string e.g. source of your file
      */
-    function __construct($content)
-    {
+    function __construct($content) {
         self::$lastObject = $this;
         $this->content = $content;
     }
@@ -93,144 +92,18 @@ class SL5_preg_contentFinder
      * @param $pos_of_next_search integer
      * @return bool false if !is_numeric($pos_of_next_search)
      */
-    public function setPosOfNextSearch($pos_of_next_search)
-    {
+    public function setPosOfNextSearch($pos_of_next_search) {
         if (!is_numeric($pos_of_next_search)) {
             bad(__FUNCTION__ . __LINE__ . ' : !is_numeric($pos_of_next_search)' . $pos_of_next_search);
 
             return false;
         }
         $this->pos_of_next_search = $pos_of_next_search;
+
         return true;
     }
 
-    public static function recursion_example4($silentMode)
-    {
-        if (true) {
-            if (!$silentMode) {
-                echo '<font style="font-family: monospace">';
-            }
-
-            $source = str_repeat(implode('', range(0, 9)), 2) . '0';
-            $numbers = str_repeat(implode('', range(0, 9)), 2) . '0';
-            $sourceArray = str_split($source);
-            $source = '';
-            $delimiters = array('(', 'anywayNumber', ')');
-            foreach ($sourceArray as $pos => $v) {
-                $source .= (($pos + 1) % 3 == 2) ? $v : $delimiters[$pos % 3];
-            }
-            if (!$silentMode) {
-                echo __LINE__ . ':$content=<br>' . $source . '<br>';
-            }
-            if (!$silentMode) {
-                echo $numbers . '<br><br>';
-            }
-            $cf = new SL5_preg_contentFinder($source);
-
-            for ($i = 0; $i < 2; $i++) {
-                # rebuild with search tool. find every number
-                # do this many times should be no problem
-                $rebuild = '';
-                for ($pos = 0; $pos < count($sourceArray); $pos += 3) {
-                    $p = $cf->get_borders_left(__LINE__, $b = '(', $e = ')', $pos);
-                    if (is_null($p['begin_begin'])) {
-                        die(__FUNCTION__ . __LINE__);
-                    }
-
-                    $rebuild_1 = '(' . $cf->getContent($b, $e, $pos) . ')';
-                    $rebuild_2 = '(' . $cf->getContent() . ')';
-                    if ($rebuild_1 != $rebuild_2) {
-                        die(__FUNCTION__ . __LINE__ . ": '$rebuild_1' != '$rebuild_2' (rebuild_1 != rebuild_2");
-                    }
-                    $rebuild .= $rebuild_1;
-                }
-                if (!$silentMode) {
-                    echo __LINE__ . ':$rebuild= <br>' . $rebuild . '<br>';
-                }
-                if (!$silentMode) {
-                    echo $numbers . '<br>';
-                }
-                if ($source != $rebuild) {
-                    die(__LINE__ . ":ERROR <br>$source != <br>$rebuild");
-                }
-                if (!$silentMode) {
-                    echo '<hr>';
-                }
-                if (!$silentMode) {
-                    echo '--:' . $numbers . '<br>';
-                }
-                for ($pos = 0; $pos < count($sourceArray); $pos += 3) {
-                    if ($pos == 3) {
-                        132465789;
-                    }
-                    $p = $cf->get_borders_left(__LINE__, '(', ')', $pos);
-                    if (is_null($p['begin_begin'])) {
-                        die(__FUNCTION__ . __LINE__);
-                    }
-                    if (!$silentMode) {
-                        echo ($pos > 9) ? "$pos:" : "0$pos:";
-                    }
-                    if ($pos - 2 >= 0) {
-                        if (!$silentMode) {
-                            echo str_repeat('_', $pos - 2);
-                        }
-                    }
-                    if (!$silentMode) {
-                        echo $cf->getContentPrev();
-                    }
-                    if ($pos > 0) {
-                        if (!$silentMode) {
-                            echo ')';
-                        }
-                    }
-                    $cf->get_borders_left(__LINE__, '(', ')', $pos);
-                    if (!$silentMode) {
-                        echo '(' . @$cf->getContent();
-                    }
-                    if (!$silentMode) {
-                        echo ')(';
-                    }
-                    $cf->get_borders_left(__LINE__, '(', ')', $pos);
-                    if (!$silentMode) {
-                        echo '' . $cf->getContentNext();
-                    }
-
-                    if (!$silentMode) {
-                        echo '<br>';
-                    }
-                }
-            }
-
-
-        }
-
-        if (1) {
-            ######## borders beetween #########
-            $cf->get_borders_left(__LINE__, '(1)', '(7)', 0);
-            $c = @$cf->getContent();
-            if (!$silentMode) {
-                echo __LINE__ . ': ' . $c . '<br>';
-                echo __LINE__ . ':$rebuild= <br>' . $rebuild . '<br>';
-                echo __LINE__ . ': BetweenID 0,2<br>=' . $cf->getContentBetweenIDs(0, 2) . '<br>';
-                echo __LINE__ . ': BetweenID 1,3<br>=' . $cf->getContentBetweenIDs(1, 3) . '<br>';
-                echo __LINE__ . ': BetweenID 2,4<br>=' . $cf->getContentBetweenIDs(2, 4) . '<br>';
-                echo __LINE__ . ': BetweenID 0,4<br>=' . $cf->getContentBetweenIDs(0, 4) . '<br>';
-                echo __LINE__ . ': BetweenNext2Current<br>=' . $cf->getContentBetweenNext2Current() . '<br>';
-                echo __LINE__ . ': BetweenPrev2Current<br>=' . $cf->getContentBetweenPrev2Current() . '<br>';
-                echo '<br>';
-            }
-            if ($rebuild != $source) {
-                die(__FUNCTION__ . __LINE__ . ': $rebuild != $source');
-            }
-            ######## borders beetween #########
-        }
-
-
-        return $rebuild;
-    }
-
-    private function getPosOfNextSearch()
-    {
+    private function getPosOfNextSearch() {
         $pos_of_next_search = $this->pos_of_next_search;
         if (!is_numeric($pos_of_next_search)) {
             $pos_of_next_search = 0;
@@ -244,10 +117,13 @@ class SL5_preg_contentFinder
      * @param $RegEx_end perl regular expression
      * @return bool always returns true - no meaning
      */
-    public function setBeginEnd_RegEx($RegEx_begin, $RegEx_end)
-    {
-        $this->setRegEx_begin($RegEx_begin);
-        $this->setRegEx_end($RegEx_end);
+    public function setBeginEnd_RegEx($RegEx_begin = null, $RegEx_end = null) {
+        if (!is_null($RegEx_begin)) {
+            $this->setRegEx_begin($RegEx_begin);
+        }
+        if (!is_null($RegEx_end)) {
+            $this->setRegEx_end($RegEx_end);
+        }
 
         return true;
     }
@@ -256,8 +132,7 @@ class SL5_preg_contentFinder
      * @param $RegEx_begin perl regular expression
      * @return bool always returns true - no meaning
      */
-    public function setRegEx_begin($RegEx_begin)
-    {
+    private function setRegEx_begin($RegEx_begin) {
         if (is_null($RegEx_begin)) {
             die(__FUNCTION__ . __LINE__ . ": is_null($RegEx_begin)");
         }
@@ -266,22 +141,21 @@ class SL5_preg_contentFinder
         return true;
     }
 
-    private static function implement_BackReference_IfExists(&$matchesReturn, &$RegEx_begin, &$RegEx_end)
-    {
+    private static function implement_BackReference_IfExists(&$matchesReturn, &$RegEx_begin, &$RegEx_end) {
         foreach ($matchesReturn['begin_begin'] as $nr => $valuePos) {
             $vQuote = preg_quote($valuePos[0], '/');
             $RegEx_end_new = str_replace(
-                array('$' . ($nr + 1), '${' . ($nr + 1) . '}'),
-                $vQuote,
-                $RegEx_end
+              array('$' . ($nr + 1), '${' . ($nr + 1) . '}'),
+              $vQuote,
+              $RegEx_end
             );
             if ($RegEx_end_new != $RegEx_end) {
                 preg_match_all("/\([^)]*\)/", $RegEx_begin, $bb, PREG_OFFSET_CAPTURE);
                 list($bb['found'], $bb['pos']) = $bb[0][$nr];
                 $bb['len'] = strlen($bb['found']);
                 $RegEx_begin =
-                    substr($RegEx_begin, 0, $bb['pos'])
-                    . '(' . $vQuote . ')' . substr($RegEx_begin, $bb['pos'] + $bb['len']);
+                  substr($RegEx_begin, 0, $bb['pos'])
+                  . '(' . $vQuote . ')' . substr($RegEx_begin, $bb['pos'] + $bb['len']);
                 $RegEx_end = $RegEx_end_new;
             }
         }
@@ -290,13 +164,11 @@ class SL5_preg_contentFinder
         return true;
     }
 
-    private function getRegEx_begin()
-    {
+    private function getRegEx_begin() {
         return $this->regEx_begin;
     }
 
-    private function getRegEx_end()
-    {
+    private function getRegEx_end() {
         return $this->regEx_end;
     }
 
@@ -304,8 +176,7 @@ class SL5_preg_contentFinder
      * @param $RegEx_end perl regular expression
      * @return bool always returns true - no meaning
      */
-    public function setRegEx_end($RegEx_end)
-    {
+    private function setRegEx_end($RegEx_end) {
         $this->setRegEx($this->regEx_end, $RegEx_end);
 
         return true;
@@ -315,37 +186,31 @@ class SL5_preg_contentFinder
      * @param string $searchMode 'lazyWhiteSpace', 'dontTouchThis', 'use_BackReference_IfExists_()$1${1}'
      * @return bool false if param not match
      */
-    public function setSearchMode($searchMode)
-    {
+    public function setSearchMode($searchMode) {
         $searchModes = $this->searchModes;
         if (!in_array($searchMode, $searchModes)) {
             bad(
-                __FUNCTION__ . __LINE__ . ' this $searchMode is not possible. pleas use on of them: ' . implode(
-                    ', ',
-                    $searchModes
-                )
+              __FUNCTION__ . __LINE__ . ' this $searchMode is not possible. pleas use on of them: ' . implode(
+                ', ',
+                $searchModes
+              )
             );
 
             return false;
         }
         $this->searchMode = $searchMode;
+
         return true;
     }
 
     /**
      * @return string 'lazyWhiteSpace', 'dontTouchThis', 'use_BackReference_IfExists_()$1${1}'
      */
-    public function getSearchMode()
-    {
+    public function getSearchMode() {
         return $this->searchMode;
     }
 
-    private static function bordersBeetweenExample($cf, $silentMode, $rebuild, $source)
-    {
-    }
-
-    private static function content_before_behind_example($silentMode)
-    {
+    private static function content_before_behind_example($silentMode) {
         if (1) {
             $_source = str_repeat(implode('', range(0, 3)), 2) . '0';
             $numbers = str_repeat(implode('', range(0, 3)), 2) . '0';
@@ -364,15 +229,15 @@ class SL5_preg_contentFinder
 
             for ($b_pos = 0; $b_pos < count($_sourceArray); $b_pos += 3) {
 
-                $p = $c->get_borders_left(__LINE__, $b1 = '(', $b2 = ')', $b_pos);
-                echo "get_borders_left= " .var_export($p,true);
+                $p = $c->getBorders($b1 = '(', $b2 = ')', $b_pos);
+                echo "getBorders= " . var_export($p, true);
 
 
                 if (!$silentMode) {
-                    great('$cf->prev()=' . $c->getContentPrev());
+                    great('$cf->prev()=' . $c->getContent_Prev());
                 }
                 if (!$silentMode) {
-                    info('$cf->next()=' . $c->getContentNext());
+                    info('$cf->next()=' . $c->getContent_Next());
                 }
                 info('pos_of_next_search=' . $c->pos_of_next_search);
                 $rebuild .= '(' . $c->getContent() . ')';
@@ -385,186 +250,7 @@ class SL5_preg_contentFinder
             }
             echo '<br>';
 
-            self::before_behind_example($silentMode);
-        }
-    }
-
-    private static function simple123example($silentMode = false)
-    {
-        if (true) {
-            $content = '123';
-            $cf = new SL5_preg_contentFinder($content);
-
-            $c = @$cf->getContent($b1 = 'q', $b2 = 'x');
-            if (!$silentMode) {
-                info(__LINE__ . ': $c="' . $c . '"');
-            }
-            if ($c != '') {
-                die("$c!=''");
-            }
-
-            $c = @$cf->getContent($b1 = '1', $b2 = 'x');
-            if (!$silentMode) {
-                info(__LINE__ . ': $c="' . $c . '"');
-            }
-            if ($c != '23') {
-                die(" '$c' != '23'");
-            }
-
-            $c = @$cf->getContent($b1 = 'q', $b2 = '3');
-            if (!$silentMode) {
-                info(__LINE__ . ': $c="' . $c . '"');
-            }
-            if ($c != '12') {
-                die("'$c' != '12' ");
-            }
-
-            return array($cf, $b1, $b2, $c);
-        }
-    }
-
-    /**
-     * @param $silentMode
-     * @return array
-     */
-    private static function selfTest_Tags_Parsing_Example($silentMode = false)
-    {
-
-
-
-
-        $content1 = $source = '<body>
-ha <!--[01.o0]-->1<!--[/01.o0]-->
-hi [02.o0]2<!--[/02.o0]-->
-ho  <!--[03.o0]-->3<!--[/03.o0]-->
-</body>';
-        if (!$silentMode) {
-            info(__LINE__ . ': ' . $source);
-        }
-        $pos_of_next_search = 0;
-        $begin = '(<!--)?\[([^\]>]*\.o0)\](-->)?';
-        $end = '<!--\[\/($2)\]-->';
-        $cf = new SL5_preg_contentFinder($source);
-        $cf->setBeginEnd_RegEx($begin, $end);
-        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
-        $loopCount = 0;
-        while ($loopCount++ < 5) {
-            $cf->setPosOfNextSearch($pos_of_next_search);
-            $findPos = $cf->get_borders_left(__LINE__);
-            $sourceCF = @$cf->getContent();
-            $expectedContent = $loopCount;
-            if ($loopCount > 3) {
-                $expectedContent = '';
-            }
-            if ($sourceCF != $expectedContent) {
-                info('$sourceCF=' . $sourceCF);
-                $str = __LINE__ . ': ' . "loop=$loopCount: '$sourceCF' != '$expectedContent' <br>(source != expected) ";
-                bad($str);
-                die(__LINE__ . $str);
-            }
-            if (is_null($findPos['begin_begin'])) {
-                break;
-            }
-            if (!$silentMode) {
-                great(__LINE__ . ': ' . $content1 . ' ==> "' . $sourceCF . '"');
-            }
-            $pos_of_next_search = $findPos['end_end'];
-        }
-
-        return array(
-            $source,
-            $content1,
-            $loopCount,
-            $pos_of_next_search,
-            $begin,
-            $end,
-            $cf,
-            $findPos,
-            $sourceCF,
-            $expectedContent
-        );
-    }
-
-    private static function before_behind_example($silentMode)
-    {
-        if (true) {
-            switch (3) {
-                case 1:
-                    $b1 = 'b';
-                    $E = ')';
-                    $e = '}';
-                    break;
-                case 2:
-                    $b1 = 'b';
-                    $E = '>';
-                    $e = 'e';
-                    break;
-                case 3:
-                    $b1 = '[';
-                    $E = '>';
-                    $e = ']';
-                    break;
-            }
-            $b2 = "$E$e";
-
-            $source_before = '1';
-            $content = "2$b1$e" . '2';
-            $behind_source = '3';
-            $_source = $source_before . "$b1" . $content . "$E$e" . $behind_source;
-            if (!$silentMode) {
-                great(__LINE__ . ': $source = ' . str_replace($b1, "<i>$b1</i>", $_source), false);
-            }
-            if (!$silentMode) {
-                great(__LINE__ . ': $b1 = ' . $b1 . ' $end = ' . $b2);
-            }
-
-            $cf = new SL5_preg_contentFinder($_source);
-//            $cf->setBeginEnd_RegEx($begin, $end);
-            $content1 = @$cf->getContent($b1, $b2);
-            if ($content != $content1) {
-                die("$content!=$content1");
-            }
-            $findPos = $cf->get_borders_left(__LINE__);
-            if ($findPos['end_begin'] == $findPos['end_end']) {
-                die('<br>die in line: ' . __LINE__ . ': ' . var_export(
-                        $findPos,
-                        true
-                    ));
-            }
-
-
-            $before_content = substr($_source, 0, $findPos['begin_begin']);
-            $behind_content = substr($_source, $findPos['end_end']);
-            if ($source_before != $before_content) {
-
-                die("before: $source_before != $before_content");
-                if (!$silentMode) {
-                    info(__LINE__ . ': $content_before = "' . $before_content . '"');
-                }
-                if (!$silentMode) {
-                    info(__LINE__ . ': content _ _ _ _ = "' . $content1 . '"');
-                }
-                bad_little(__LINE__ . ': was muss content sein???? inklusive rest??? ');
-            }
-            if (!$silentMode) {
-                info(__LINE__ . ': $content_behind = "' . $behind_content . '"');
-            }
-            if ($findPos['end_begin'] >= $findPos['end_end']
-            ) {
-                bad_little("<br>end_begin >= end_end<br> {$findPos['end_begin']} >= {$findPos['end_end']}");
-                info(__LINE__ . ': ' . $_source . ' ==> ' . $content1);
-                if ($behind_source != $behind_content) {
-                    bad_little(
-                        __LINE__ . ':behind: <br>' . $behind_source . ' ==> ' . $behind_content . '   $source_behind != $content_behind '
-                    );
-                    die('<br>die in line: ' . __LINE__);
-                } else {
-                    info(__LINE__ . ':behind: <br>' . $behind_source . ' ==> ' . $behind_content);
-                }
-                info(__LINE__ . ':before: <br>' . $source_before . ' ==> ' . $before_content, 'yellow', false);
-                die('<br>die in line: ' . __LINE__);
-            }
-
+            SL5_preg_contentFinderTest1::before_behind_example($silentMode);
         }
     }
 
@@ -572,15 +258,30 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     /**
      * @return self|SL5_preg_contentFinder
      */
-    public function getLastObject()
-    {
+    public function getLastObject() {
         $l = self::$lastObject;
 
         return self::$lastObject;
     }
 
     /**
-     * @param $fromLine callers line number. may helps debuging
+     * @return string Content
+     * todo: discuss implementation performance. relevant?
+     */
+    public function getContent_Before() {
+        return substr($this->content, 0, $this->getBorders()['begin_begin']);
+//        return substr($this->getContent(), 0, $this->getBorders()['begin_begin']);
+    }
+    /**
+     * @return string Content
+     * todo: discuss implementation performance. relevant?
+     */
+    public function getContent_Behind() {
+        return substr($this->content, $this->getBorders()['end_end']);
+//        return substr($this->getContent(), $this->getBorders()['end_end']);
+    }
+
+    /**
      * @param null $RegEx_begin perl regular expression.
      * @param null $RegEx_end perl regular expression.
      * @param null $pos_of_next_search
@@ -590,14 +291,13 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
      * @return mixed
      */
     public
-    function get_borders_left(
-        $fromLine,
-        $RegEx_begin = null,
-        $RegEx_end = null,
-        $pos_of_next_search = null,
-        &$txt = null,
-        $searchMode = null,
-        $bugIt = false
+    function getBorders(
+      $RegEx_begin = null,
+      $RegEx_end = null,
+      $pos_of_next_search = null,
+      &$txt = null,
+      $searchMode = null,
+      $bugIt = false
     ) {
         if (is_null($txt)) {
             $txt = $this->content;
@@ -618,23 +318,26 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             $RegEx_end_backup = $RegEx_end;
             $RegEx_begin = SL5_preg_contentFinder::preg_quote_by_SL5($RegEx_begin);
             $RegEx_end = SL5_preg_contentFinder::preg_quote_by_SL5($RegEx_end);
-        } elseif (strrpos($searchMode, 'use_BackReference') !== false || strrpos(
-                $searchMode,
-                'dontTouchThis'
-            ) !== false
+        }
+        elseif (strrpos($searchMode, 'use_BackReference') !== false || strrpos(
+            $searchMode,
+            'dontTouchThis'
+          ) !== false
         ) {
             # begin and end should are regular expressions! i could not proof this ... hmm
             $RegEx_begin_backup = $RegEx_begin;
             $RegEx_end_backup = $RegEx_end;
-        } else {
-            die(__LINE__ . ': actually ... are the only implemented search modes. not "' . $searchMode . '" ' . "\$begin=$RegEx_begin, \$end=$RegEx_end");
+        }
+        else {
+            die(__LINE__ . ': actually "' . implode(', ',
+                $this->searchModes) . '" are the only implemented search modes. not "' . $searchMode . '" ' . "\$begin=$RegEx_begin, \$end=$RegEx_end");
         }
 
         $RegEx_begin_CACHE = $RegEx_begin;
         $RegEx_end_CACHE = $RegEx_end;
-        $findPosID = & $this->CACHE_beginEndPos_2_findPosKey[$RegEx_begin_CACHE][$RegEx_end_CACHE][$pos_of_next_search];
+        $findPosID = &$this->CACHE_beginEndPos_2_findPosKey[$RegEx_begin_CACHE][$RegEx_end_CACHE][$pos_of_next_search];
         if (isset($findPosID)) {
-            $return = & $this->findPos_list[$findPosID];
+            $return = &$this->findPos_list[$findPosID];
 
             return $return;
         }
@@ -660,7 +363,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         $count_end = 0;
 
         while (($count_begin == 0 || $count_begin > $count_end)
-            && $emergency_Stop < 1000
+          && $emergency_Stop < 1000
         ) {
             $emergency_Stop++;
             if ($count_begin == 0) {
@@ -673,12 +376,12 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         * searching after the first match.
                  */
                 $preg_match_result = preg_match(
-                    '/'
-                    . $RegEx_begin . '/sm',
-                    $txt,
-                    $matches_begin,
-                    PREG_OFFSET_CAPTURE,
-                    $pos_of_next_search
+                  '/'
+                  . $RegEx_begin . '/sm',
+                  $txt,
+                  $matches_begin,
+                  PREG_OFFSET_CAPTURE,
+                  $pos_of_next_search
                 );
 
                 if (!$preg_match_result) {
@@ -694,7 +397,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
 
                 $pos_of_last_found = $matches_begin[0][1];
                 $pos_of_next_search = $pos_of_last_found
-                    + strlen($matches_begin[0][0]) + 0;
+                  + strlen($matches_begin[0][0]) + 0;
 
                 $findPos['begin_end'] = $pos_of_next_search;
 
@@ -719,16 +422,18 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             if (preg_match($pattern, $txt, $matches, PREG_OFFSET_CAPTURE, $pos_of_next_search)) {
                 $pos_of_last_found = $matches[1][1];
                 $pos_of_next_search = $pos_of_last_found
-                    + strlen($matches[1][0]); # you could also use + 0 it also works correct in the tests.
+                  + strlen($matches[1][0]); # you could also use + 0 it also works correct in the tests.
                 if (preg_match('/' . $RegEx_end . '/sm', $matches[1][0])) {
                     $findPos['end_begin'] = $pos_of_last_found;
                     $findPos['end_end'] = $pos_of_next_search;
                     $count_end++;
-                } else {
+                }
+                else {
                     #$findPos['begin_begin'] = $pos_of_last_found;
                     $count_begin++;
                 }
-            } else {
+            }
+            else {
                 $pos_of_next_search = $pos_of_next_search_backup + $strLen_txt;
                 break;
             }
@@ -741,7 +446,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
 //        echo('<br>' . __LINE__ . ':' . $findPos['end_begin'] . ", $count_begin = $count_end ");
 
         if (!isset($matches[1][0])) {
-            $matches[1] = & $matches[0];
+            $matches[1] = &$matches[0];
         }
 
         if (is_numeric($findPos['end_begin'])) {
@@ -763,32 +468,32 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         $key_findPos_list = $this->update_key_findPos_list($findPos, $matchesReturn);
 
         $this->setCACHE_beginEndPos(
-            $RegEx_begin_CACHE,
-            $RegEx_end_CACHE,
-            $pos_of_next_search_backup,
-            $key_findPos_list
+          $RegEx_begin_CACHE,
+          $RegEx_end_CACHE,
+          $pos_of_next_search_backup,
+          $key_findPos_list
         );
 
         if ($bugIt || true) {
             $temp = substr($txt, $pos_of_next_search_backup);
             $content = (@$findPos['end_begin'])
-                ? substr(
-                    $txt,
-                    @$findPos['begin_end'],
-                    @$findPos['end_begin'] - @$findPos['begin_end']
-                )
-                :
-                substr(
-                    $txt,
-                    (isset($findPos['begin_end']) && is_numeric(
-                            $findPos['begin_end']
-                        )) ? $findPos['begin_end'] : $pos_of_next_search_backup
-                );
+              ? substr(
+                $txt,
+                @$findPos['begin_end'],
+                @$findPos['end_begin'] - @$findPos['begin_end']
+              )
+              :
+              substr(
+                $txt,
+                (isset($findPos['begin_end']) && is_numeric(
+                    $findPos['begin_end']
+                  )) ? $findPos['begin_end'] : $pos_of_next_search_backup
+              );
 
         }
 //    $findPos['matches'] = $matchesReturn;
         $this->findPos_list[$findPosID]['matches'] = $matchesReturn;
-        $return = & $this->findPos_list[$findPosID];
+        $return = &$this->findPos_list[$findPosID];
 
         return $return;
     }
@@ -797,9 +502,8 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
      * @param string key pos_of_next_search, begin, end
      * @return bool|null
      */
-    public function CACHE_current($key = null)
-    {
-        $t = & $this;
+    public function CACHE_current($key = null) {
+        $t = &$this;
         if ($key == 'pos_of_next_search') {
             return $t->pos_of_next_search;
         }
@@ -809,6 +513,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         if ($key == 'end') {
             return $t->regEx_end;
         }
+
         return false;
     }
 
@@ -816,9 +521,8 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
      * @param integer $id
      * @return string false if id not exist
      */
-    public function getContentByID($id)
-    {
-        $t = & $this;
+    public function getContent_ByID($id) {
+        $t = &$this;
         if (is_nan($id) || $id < 0) {
             debug_print_backtrace();
             die(__FUNCTION__ . __LINE__ . ": \$id=is_nan($id)");
@@ -832,9 +536,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         $backup = $t->doOverwriteSetup_OF_pos_of_next_search;
         $t->doOverwriteSetup_OF_pos_of_next_search = false;
         $content = $t->getContent(
-            $C['begin_begin'],
-            $C['end_begin'],
-            (is_null(@$C['pos_of_next_search'])) ? 0 : $C['pos_of_next_search']
+          $C['begin_begin'],
+          $C['end_begin'],
+          (is_null(@$C['pos_of_next_search'])) ? 0 : $C['pos_of_next_search']
         );
         $t->doOverwriteSetup_OF_pos_of_next_search = $backup;
 
@@ -844,15 +548,14 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     /**
      * @return string string before current ID. false if id not exist
      */
-    public function getContentPrev()
-    {
+    public function getContent_Prev() {
         $id = $this->findPos_list_current_ID;
         if (is_nan($id)) {
             $return = false;
 
             return $return;
         }
-        $return = (--$id < 0) ? '' : $this->getContentByID($id);
+        $return = (--$id < 0) ? '' : $this->getContent_ByID($id);
 
         return $return;
     }
@@ -860,30 +563,27 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     /**
      * @return string string behind current ID. false if id not exist
      */
-    public function getContentNext()
-    {
+    public function getContent_Next() {
         $id = $this->findPos_list_current_ID;
         if (is_nan($id)) {
             $return = false;
 
             return $return;
         }
-        $return = $this->getContentByID($id + 1);
+        $return = $this->getContent_ByID($id + 1);
 
         return $return;
     }
 
     /**
-     * @return current ID . always exist.
+     * @return current ID .
      */
-    public function getID()
-    {
+    public function getID() {
         return $this->findPos_list_current_ID;
     }
 
     private
-    static function selfTest_init_defaults()
-    {
+    static function selfTest_init_defaults() {
         $temp = self::$selfTest_defaults;
         if (count(self::$selfTest_defaults) > 0) {
             return true;
@@ -901,8 +601,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     /**
      * @param $id
      */
-    public function setID($id)
-    {
+    public function setID($id) {
         if (!isset($this->findPos_list_current_ID)) {
             $this->findPos_list_current_ID = $id;
         }
@@ -911,19 +610,17 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     /**
      * @return string
      */
-    public function getContentBetweenNext2Current()
-    {
+    public function getContent_BetweenNext2Current() {
         $current_ID = $this->findPos_list_current_ID;
         $next_ID = $current_ID + 1;
 
-        return $this->getContentBetweenIDs($current_ID, $next_ID);
+        return $this->getContent_BetweenIDs($current_ID, $next_ID);
     }
 
     /**
      * @return string or false if is is_nan
      */
-    public function getContentBetweenPrev2Current()
-    {
+    public function getContent_BetweenPrev2Current() {
         $current_ID = $this->findPos_list_current_ID;
         if (is_nan($current_ID)) {
             $return = false;
@@ -944,7 +641,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             return substr($this->content, 0, $p['end_end']);
         }
 
-        $findPos_list = & $this->findPos_list;
+        $findPos_list = &$this->findPos_list;
         if (!isset($findPos_list[$prev_ID])) {
             $prev_end_end = $findPos_list[$prev_ID]['end_end'];
 
@@ -955,7 +652,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             return $c;
         }
 
-        return $this->getContentBetweenIDs($prev_ID, $current_ID);
+        return $this->getContent_BetweenIDs($prev_ID, $current_ID);
     }
 
     /**
@@ -963,16 +660,15 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
      * @param integer $id2
      * @return string
      */
-    public function getContentBetweenIDs($id1, $id2)
-    {
+    public function getContent_BetweenIDs($id1, $id2) {
         if (is_nan($id1) || is_nan($id2)) {
             die("(is_nan($id1) || is_nan($id2)");
         }
 
-        $t = & $this;
+        $t = &$this;
 
-        $id_1_CH = & $t->findPos_list[$id1];
-        $id_2_CH = & $t->findPos_list[$id2];
+        $id_1_CH = &$t->findPos_list[$id1];
+        $id_2_CH = &$t->findPos_list[$id2];
         if (!@isset($id_1_CH) || !@isset($id_2_CH)) {
             debug_print_backtrace();
             die(__FUNCTION__ . __LINE__ . ": !isset(...) $id1, $id2");
@@ -984,7 +680,8 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         if ($p1begin < $p2begin) {
             $p1end_end = $id_1_CH['end_end'];
             $c = substr($t->content, $p1end_end, $p2begin - $p1end_end);
-        } else {
+        }
+        else {
             $p2end_end = $id_2_CH['end_end'];
             $c = substr($t->content, $p2end_end, $p1begin - $p2end_end);
         }
@@ -992,9 +689,8 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return $c;
     }
 
-    private function setCACHE_beginEndPos($begin, $end, $pos_of_next_search, $key_findPos_list)
-    {
-        $t = & $this;
+    private function setCACHE_beginEndPos($begin, $end, $pos_of_next_search, $key_findPos_list) {
+        $t = &$this;
         if (true) {
             #;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             # plausibilitiy checks
@@ -1024,368 +720,11 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         return true;
     }
 
-    /**
-     * @param integer $nr
-     * @return string
-     */
-    public static function getExampleContent($nr = null)
-    {
-        $bugIt = false;
-
-
-        $content = str_repeat(implode('', range(0, 9)), 2) . '0';
-        $numbers = str_repeat(implode('', range(0, 9)), 2) . '0';
-        $contentArray = str_split($content);
-        $content = '';
-        $delimiters = array('(', ')', ')');
-        foreach ($contentArray as $pos => $v) {
-            if ($nr == 1) {
-                $temp = (($pos + 1) % 4 == 2) ? $v : $delimiters[$pos % 3];
-                $temp = (($pos + 1) % 3 == 2) ? $v : $delimiters[$pos % 3];
-                if (in_array($v, array(5, 2))) {
-                    $temp = ($pos > 9) ? ($pos - 10) : $pos;
-                }
-                $content .= $temp;
-            } else {
-                $content .= (($pos + 1) % 3 == 2) ? $v : $delimiters[$pos % 3];
-            }
-        }
-        if ($bugIt) {
-            echo __LINE__ . ':$content=<br>' . $content . '<br>';
-        }
-        if ($bugIt) {
-            echo $numbers . '<br><br>';
-        }
-
-        return $content . (($nr == 1) ? '' : "\n" . $numbers);
-    }
-
-    /**
-     * @param $content
-     * @return bool|string
-     */
-    public static function recursion_example($content)
-    {
-
-        $silentMode = true;
-        if (!$silentMode) {
-            echo '<pre>';
-        }
-        if (!$silentMode) {
-            echo '<font style="font-family: monospace">';
-        }
-        $cf = new SL5_preg_contentFinder($content);
-        if ($cut = @$cf->getContent($b = '(', $e = ')')) {
-//            great(__LINE__ . ":\n \$cut= \n$content ==> " . $cut);
-//            @$cf->getContent($b,$e,0,$cut);
-            return self::recursion_example($cut);
-        }
-
-//        info(__LINE__ . ":\n \$cut= \n" . var_export($cut, true));
-        return $cut;
-    }
-
-    /**
-     * @param $content
-     * @param null $before
-     * @param null $behind
-     * @return array
-     */
-    private static function recursion_example2($content, $before = null, $behind = null)
-    {
-        $silentMode = true;
-        if (is_null($before)) {
-            if (!$silentMode) {
-                echo('<u>' . __FUNCTION__ . '</u>:');
-            }
-        }
-
-        echo '<pre>';
-        echo '<font style="font-family: monospace">';
-        $cf = new SL5_preg_contentFinder($content);
-        $delimiters = array('(', ')');
-        $delimiters[1];
-        if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
-            $p = $cf->get_borders_left(__LINE__, $delimiters[0], $delimiters[1]);
-            if (is_null($p['begin_begin'])) {
-                die(__FUNCTION__ . __LINE__);
-            }
-
-            $before .= substr($content, 0, $p['begin_begin']) . $delimiters[0];
-            $behind = $delimiters[1] . substr($content, $p['end_end']) . $behind;
-
-//            great(__LINE__ . ":\n" . '$before.$cut.$behind=' . "\n$content ==> " . "$before#$cut#$behind");
-//            @$cf->getContent($b,$e,0,$cut);
-
-
-            return self::recursion_example2($cut, $before, $behind);
-        }
-
-//        info(__LINE__ . ":\n \$cut= \n" . var_export($cut, true));
-        return array(($cut) ? $cut : $content, $before, $behind);
-    }
-
-    /**
-     * @param $content
-     * @param null $before
-     * @param null $behind
-     * @return array
-     */
-    public static function recursionExample3_search_NOT_in_rest_of_the_string($content, $before = null, $behind = null)
-    {
-        $silentMode = true;
-        if (is_null($before)) {
-            if (!$silentMode) {
-                echo('<u>' . __FUNCTION__ . '</u>:');
-            }
-        }
-
-        echo '<pre>';
-        echo '<font style="font-family: monospace">';
-        $cf = new SL5_preg_contentFinder($content);
-        $delimiters = array('(', ')');
-        $delimiters[1];
-        if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
-            $p = $cf->get_borders_left(__LINE__, $delimiters[0], $delimiters[1]);
-            if (is_null($p['begin_begin'])) {
-                die(__FUNCTION__ . __LINE__);
-            }
-
-
-            $before .= substr($content, 0, $p['begin_begin']) . $delimiters[0];
-            $behind = $delimiters[1] . substr($content, $p['end_end']) . $behind;
-
-
-//            great(__LINE__ . ": \n" . '$before.$cut.$behind=' . "\n$content ==> " . "$before#$cut#$behind");
-//            @$cf->getContent($b,$e,0,$cut);
-
-            if (true) {
-                # change cut a little
-                $dataExample = 1;
-                if (preg_match("/\d/", $cut, $e)) {
-                    $dataExample = $e[0] + 1;
-                }
-                $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
-            }
-
-            return self::recursionExample3_search_NOT_in_rest_of_the_string($cut, $before, $behind);
-        }
-
-//        info(__LINE__ . ":\n \$cut= \n" . var_export($cut, true));
-
-        return array(($cut) ? $cut : $content, $before, $behind);
-    }
-
-    private static function recursionExample6_search_also_in_rest_of_the_string(
-        $content,
-        $delimiters = array('(', ')'),
-        $newDelimiter = null,
-        $before = null,
-        $behind = null
-    ) {
-        $isFirsRecursion = is_null($before);
-        $cf = new SL5_preg_contentFinder($content);
-        if (is_null($newDelimiter)) {
-            $newDelimiter =& $delimiters;
-        }
-        if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
-            $function = 'self::' . __FUNCTION__;
-
-            $p = $cf->get_borders_left(__LINE__, $delimiters[0], $delimiters[1]);
-            if (is_null($p['begin_begin'])) {
-                die(__FUNCTION__ . __LINE__);
-            }
-
-            $before .= substr($content, 0, $p['begin_begin']) . $newDelimiter[0];
-            $behindTemp = substr($content, $p['end_end']);
-
-            if (!$isFirsRecursion) {
-                $behind = $newDelimiter[1] . $behindTemp;
-            }
-            if ($isFirsRecursion) {
-                $return = call_user_func(
-                    $function,
-                    $behindTemp
-                    ,
-                    $delimiters,
-                    $newDelimiter
-                );
-                list($c, $bf, $bh) = $return;
-                $behind = (is_null($c)) ? $newDelimiter[1]
-                    . $behindTemp : $newDelimiter[1] . $bf . $c . $bh;
-            }
-
-            # change cut a little
-            $dataExample = 1;
-            if (preg_match("/\d/", $cut, $e)) {
-                $dataExample = $e[0] + 1;
-            }
-            $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
-
-            great(
-                __LINE__ . ": \n" . "\n$content (content) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
-                false
-            );
-            $return = call_user_func(
-                $function,
-                $cut,
-                $delimiters,
-                $newDelimiter,
-                $before,
-                $behind
-            );
-
-            return $return;
-        }
-
-//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $content=' . var_export($content, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $content) . " ,  \$behind=$behind");
-        $return = array(($cut) ? $cut : $content, $before, $behind);
-
-        return $return;
-    }
-
-    private static function recursionExample5_search_also_in_rest_of_the_string(
-        $content,
-        $newDelimiter = null,
-        $before = null,
-        $behind = null
-    ) {
-        $silentMode = true;
-        $isFirsRecursion = is_null($before);
-        $cf = new SL5_preg_contentFinder($content);
-        $delimiters = array('(', ')');
-        if (is_null($newDelimiter)) {
-            $newDelimiter =& $delimiters;
-        }
-        if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
-            $p = $cf->get_borders_left(__LINE__, $delimiters[0], $delimiters[1]);
-            if (is_null($p['begin_begin'])) {
-                die(__FUNCTION__ . __LINE__);
-            }
-            $before .= substr($content, 0, $p['begin_begin']) . $newDelimiter[0];
-            $behindTemp = substr($content, $p['end_end']);
-
-            if (!$isFirsRecursion) {
-                $behind = $newDelimiter[1] . $behindTemp;
-            }
-            if ($isFirsRecursion) {
-                list($c, $bf, $bh) =
-                    self::recursionExample5_search_also_in_rest_of_the_string(
-                        $behindTemp
-                        ,
-                        $newDelimiter
-                    );
-                $behind = (is_null($c)) ? $newDelimiter[1]
-                    . $behindTemp : $newDelimiter[1] . $bf . $c . $bh;
-            }
-
-            # change cut a little
-            $dataExample = 1;
-            if (preg_match("/\d/", $cut, $e)) {
-                $dataExample = $e[0] + 1;
-            }
-            $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
-
-
-            if (!$silentMode) {
-                great(
-                    __LINE__ . ": \n" . "\n$content (content) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
-                    false
-                );
-            }
-            $return = self::recursionExample5_search_also_in_rest_of_the_string(
-                $cut,
-                $newDelimiter,
-                $before,
-                $behind
-            );
-
-            return $return;
-        }
-
-//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $content=' . var_export($content, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $content) . " ,  \$behind=$behind");
-        $return = array(($cut) ? $cut : $content, $before, $behind);
-
-        return $return;
-    }
-
-
-    public static function recursionExample4_search_also_in_rest_of_the_string(
-        $content,
-        $before = null,
-        $behind = null
-    ) {
-        $silentMode = true;
-        $isFirsRecursion = is_null($before);
-
-        if ($isFirsRecursion) {
-            if (!$silentMode) {
-                echo('<u>' . __FUNCTION__ . '</u>:');
-            }
-        }
-
-        echo '<pre>';
-        echo '<font style="font-family: monospace">';
-        $cf = new SL5_preg_contentFinder($content);
-        $delimiters = array('(', ')');
-        $delimiters[1];
-        if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
-            $p = $cf->get_borders_left(__LINE__, $delimiters[0], $delimiters[1]);
-            if (is_null($p['begin_begin'])) {
-                die(__FUNCTION__ . __LINE__);
-            }
-
-
-            $before .= substr($content, 0, $p['begin_begin']) . $delimiters[0];
-            $behindTemp = substr($content, $p['end_end']) . $behind;
-
-            if (!$isFirsRecursion) {
-                $behind = $delimiters[1] . $behindTemp;
-            }
-            if ($isFirsRecursion) {
-                'breakpoint';
-                list($c, $bf, $bh) =
-                    self::recursionExample4_search_also_in_rest_of_the_string($behindTemp);
-//                info(__LINE__ . ": $c");
-                $behind = (is_null($c)) ? $delimiters[1] . $behindTemp : $delimiters[1] . $bf . $c . $bh;
-//                info(__LINE__ . ": $behind");
-            }
-
-            # change cut a little
-            $dataExample = 1;
-            if (preg_match("/\d/", $cut, $e)) {
-                $dataExample = $e[0] + 1;
-            }
-            $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
-
-
-            if (!$silentMode) {
-                great(
-                    __LINE__ . ": \n" . "\n$content (content) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
-                    false
-                );
-            }
-            $return = self::recursionExample4_search_also_in_rest_of_the_string(
-                $cut,
-                $before,
-                $behind
-            );
-
-            return $return;
-        }
-
-//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $content=' . var_export($content, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $content) . " ,  \$behind=$behind");
-        $return = array(($cut) ? $cut : $content, $before, $behind);
-
-        return $return;
-    }
-
 
     /**
      * @return bool no meaning
      */
-    public static function selfTest_collection()
-    {
+    public static function selfTest_collection() {
         if (self::$selfTest_collection_finished) {
             return true;
         }
@@ -1394,8 +733,8 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         $silentMode = false; # only shows errors 13-10-23_13-39
 //    $silentMode = true; # only shows errors 13-10-23_13-39
 
-        list($source, $content1, $maxLoopCount, $pos_of_next_search, $begin, $end, $cf, $findPos, $sourceCF, $expectedContent) = self::selfTest_Tags_Parsing_Example(
-            $silentMode
+        list($source, $content1, $maxLoopCount, $pos_of_next_search, $begin, $end, $cf, $findPos, $sourceCF, $expectedContent) = SL5_preg_contentFinderTest1::selfTest_Tags_Parsing_Example(
+          $silentMode
         );
 
 
@@ -1451,7 +790,7 @@ ho  <!--{03}-->3<!--{/03}-->
 
                 $cf->setPosOfNextSearch($pos_of_next_search);
 //                echo __LINE__ . ": \$maxLoopCount=$maxLoopCount<br>";
-                $findPos = $cf->get_borders_left(__LINE__);
+                $findPos = $cf->getBorders();
                 $sourceCF = @$cf->getContent();
 //                echo '' . __LINE__ . ': $content=' . $content . '<br>';
                 $expectedContent = $maxLoopCount;
@@ -1472,9 +811,9 @@ ho  <!--{03}-->3<!--{/03}-->
             }
         }
 
-        list($cf, $b, $e, $sourceCF) = self::simple123example($silentMode);
+        list($cf, $b, $e, $sourceCF) = SL5_preg_contentFinderTest1::simple123example($silentMode);
 
-       if (true)         list($cf, $b, $e, $sourceCF) = self::simple123example($silentMode);
+        if (true) list($cf, $b, $e, $sourceCF) = SL5_preg_contentFinderTest1::simple123example($silentMode);
         if (true) {
             # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
             # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
@@ -1502,11 +841,11 @@ ho  <!--{03}-->3<!--{/03}-->
             $content1 = '123#abc';
             $cf = new SL5_preg_contentFinder($content1);
             $sourceCF = @$cf->getContent(
-                $begin = '\d+',
-                $end = '\w+',
-                $p = null,
-                $t = null,
-                $searchMode = 'dontTouchThis'
+              $begin = '\d+',
+              $end = '\w+',
+              $p = null,
+              $t = null,
+              $searchMode = 'dontTouchThis'
             );
             if (!$silentMode) {
                 info(__LINE__ . ': ' . "$content1 => $sourceCF");
@@ -1523,9 +862,9 @@ ho  <!--{03}-->3<!--{/03}-->
             if (!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
-            $cut = self::recursionExample5_search_also_in_rest_of_the_string(
-                $sourceCF,
-                array('[', ']')
+            $cut = SL5_preg_contentFinderTest1::recursionExample5_search_also_in_rest_of_the_string(
+              $sourceCF,
+              array('[', ']')
             );
             $result = $cut[1] . $cut[0] . $cut[2];
             if (!$silentMode) {
@@ -1544,7 +883,7 @@ ho  <!--{03}-->3<!--{/03}-->
             if (!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
-            $cut = self::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
+            $cut = SL5_preg_contentFinderTest1::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
             $result = $cut[1] . $cut[0] . $cut[2];
             if (!$silentMode) {
                 great(__LINE__ . ": \n$result (result)");
@@ -1584,13 +923,13 @@ ho  <!--{03}-->3<!--{/03}-->
 
         if (true) {
             # recursion example 4
-            $sourceCF = self::getExampleContent(1);
+            $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
             $sourceCF = ' A ' . $sourceCF . ' B ' . $sourceCF . ' C ';
             $sourceCF = preg_replace('/\d/', 'i', $sourceCF);
             if (!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
-            $cut = self::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
+            $cut = SL5_preg_contentFinderTest1::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
             $result = $cut[1] . $cut[0] . $cut[2];
             $proof = 'A (11(22(3)(2)22)11)(1) B (11(22(3)(2)22)11)(1) C';
             if (!$silentMode) {
@@ -1603,12 +942,12 @@ ho  <!--{03}-->3<!--{/03}-->
 //        die('' . __LINE__);
 
         # recursion example 3
-        $sourceCF = self::getExampleContent(1);
+        $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
         $sourceCF = preg_replace('/\d/', 'i', $sourceCF);
         if (!$silentMode) {
             info(__LINE__ . ':' . $sourceCF);
         }
-        $cut = self::recursionExample3_search_NOT_in_rest_of_the_string($sourceCF);
+        $cut = SL5_preg_contentFinderTest1::recursionExample3_search_NOT_in_rest_of_the_string($sourceCF);
         $result = $cut[1] . $cut[0] . $cut[2];
 //       if(!$silentMode)great("$content\n?=\n$result");
         if (strpos($result, '(11(22(3)(2)22)11)(i)') === false) {
@@ -1616,8 +955,8 @@ ho  <!--{03}-->3<!--{/03}-->
         }
 
         # recursion example 2
-        $sourceCF = self::getExampleContent(1);
-        $cut = self::recursion_example2($sourceCF);
+        $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
+        $cut = SL5_preg_contentFinderTest1::recursion_example2($sourceCF);
         $result = $cut[1] . $cut[0] . $cut[2];
         if (!$silentMode) {
             great("$sourceCF\n?=\n$result");
@@ -1628,13 +967,13 @@ ho  <!--{03}-->3<!--{/03}-->
 
         # recursion example
 
-        $sourceCF = self::getExampleContent(1);
+        $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
 
         $silentMode = false;
         if (!$silentMode) {
             echo(__LINE__ . ': <u>recursion_example</u>:');
         }
-        $cut = self::recursion_example($sourceCF);
+        $cut = SL5_preg_contentFinderTest1::recursion_example($sourceCF);
         if (false !== $cut) {
             die(__LINE__ . ': ' . " != $cut");
         }
@@ -1654,14 +993,14 @@ ho  <!--{03}-->3<!--{/03}-->
         $t->selfTest('[1', ']', 0, 'asdf[12]fdsa', $expectedBehind = 'fdsa', '2');
 
         $t->selfTest(
-            '{d w>',
-            '{/d paul>',
-            0,
-            "{d w>something{/d paul>"
-            ,
-            $expectedBehind = "",
-            'something',
-            true
+          '{d w>',
+          '{/d paul>',
+          0,
+          "{d w>something{/d paul>"
+          ,
+          $expectedBehind = "",
+          'something',
+          true
         ); # new lines should be ignored
         $t->selfTest('[', ']c', 0, 'ab[1]cd', $expectedBehind = 'd', '1');
         $t->selfTest('{', ']', 3, '{1234]' . __LINE__, $expectedBehind = __LINE__, '34');
@@ -1669,47 +1008,47 @@ ho  <!--{03}-->3<!--{/03}-->
         $t->selfTest('[', ']n', 0, '[12]nbb', $expectedBehind = 'bb', '12');
         # rest is not well formated yet 13-09-25_14-44
         $t->selfTest(
-            '{d l>',
-            '{/d ju>',
-            0,
-            "{d   l>something{/d ju>",
-            $expectedBehind = "",
-            'something'
+          '{d l>',
+          '{/d ju>',
+          0,
+          "{d   l>something{/d ju>",
+          $expectedBehind = "",
+          'something'
         ); # new lines should be ignored
         $t->selfTest(
-            '{d paul>',
-            '{/d paul>',
-            0,
-            "{d \n paul>something{/d paul>",
-            $expectedBehind = "",
-            'something'
+          '{d paul>',
+          '{/d paul>',
+          0,
+          "{d \n paul>something{/d paul>",
+          $expectedBehind = "",
+          'something'
         ); # new lines should be ignored
         $t->selfTest(
-            '[',
-            ']',
-            0,
-            'ulm]]]uu',
-            $expectedBehind = ']]uu',
-            'ulm'
+          '[',
+          ']',
+          0,
+          'ulm]]]uu',
+          $expectedBehind = ']]uu',
+          'ulm'
         ); # this is very special. because its without beginning delimiter. may you want it not work?
         $t->selfTest(
-            '[',
-            ']',
-            0,
-            ']]]',
-            $expectedBehind = ']]',
-            ''
+          '[',
+          ']',
+          0,
+          ']]]',
+          $expectedBehind = ']]',
+          ''
         ); # this is very special. because its without beginning delimiter. may you want it not work?
         $t->selfTest();
         $t->selfTest('[A', ']', 0, "[A\n2]", $expectedBehind = "", '2');
         $line = __LINE__;
         $t->selfTest(
-            '[w',
-            ']',
-            0,
-            '[w' . $line,
-            $expectedBehind = '',
-            $line
+          '[w',
+          ']',
+          0,
+          '[w' . $line,
+          $expectedBehind = '',
+          $line
         ); # this is very special. becouse its without ending delimiter. may you want it not work?
         $t->selfTest('[', ']', 0, '[]]' . __LINE__, $expectedBehind = ']' . __LINE__, '');
         $t->selfTest('[', ']', 0, '[[[]]]' . __LINE__, $expectedBehind = __LINE__, '[[]]');
@@ -1730,10 +1069,10 @@ ho  <!--{03}-->3<!--{/03}-->
         $t->selfTest('[1', '9]', 0, '[123456789]', $expectedBehind = '', '2345678', true);
 
 
-        $rebuild = self::recursion_example4($silentMode);
+        $rebuild = SL5_preg_contentFinderTest1::recursion_example4($silentMode);
 
 
-        self::bordersBeetweenExample($cf, $silentMode, $rebuild, $source);
+        SL5_preg_contentFinderTest1::bordersBeetweenExample($cf, $silentMode, $rebuild, $source);
 
 
         self::content_before_behind_example($silentMode);
@@ -1755,12 +1094,12 @@ ho  <!--{03}-->3<!--{/03}-->
      * @return bool|string
      */
     public function getContent(
-        &$RegEx_begin = null,
-        &$RegEx_end = null,
-        $pos_of_next_search = null,
-        &$txt = null,
-        $searchMode = null,
-        $bugIt = false
+      &$RegEx_begin = null,
+      &$RegEx_end = null,
+      $pos_of_next_search = null,
+      &$txt = null,
+      $searchMode = null,
+      $bugIt = false
     ) {
         if (is_null($txt)) {
             $txt = $this->content;
@@ -1770,13 +1109,12 @@ ho  <!--{03}-->3<!--{/03}-->
         if (!$searchMode) {
             $searchMode = $this->getSearchMode();
         }
-        $p = $this->get_borders_left(
-            __LINE__,
-            $RegEx_begin,
-            $RegEx_end,
-            $pos_of_next_search,
-            $txt,
-            $searchMode
+        $p = $this->getBorders(
+          $RegEx_begin,
+          $RegEx_end,
+          $pos_of_next_search,
+          $txt,
+          $searchMode
         );
         $count_null = count_null(array($p['begin_begin'], $p['end_begin']), false);
         if ($count_null > 0) {
@@ -1790,16 +1128,17 @@ ho  <!--{03}-->3<!--{/03}-->
             if (is_null($p['end_begin'])) {
                 if ($this->stopIf_EndBorder_NotExistInContent === true) {
                     return false;
-                } else {
+                }
+                else {
                     $p['end_begin'] = strlen($txt);
                 }
             }
 
             if (is_null($p['begin_begin'])) {
                 return substr(
-                    $txt,
-                    $pos_of_next_search,
-                    $p['end_begin'] - $pos_of_next_search
+                  $txt,
+                  $pos_of_next_search,
+                  $p['end_begin'] - $pos_of_next_search
                 );
             }
 
@@ -1822,19 +1161,19 @@ ho  <!--{03}-->3<!--{/03}-->
      */
     public
     static function selfTest(
-        $begin = '[',
-        $end = ']',
-        $pos_of_next_search = 0,
-        $txt = '_[123]_',
-        $expectedBehind = null,
-        $expectedContent = '123',
-        $searchMode = null,
-        $bugIt = false
+      $begin = '[',
+      $end = ']',
+      $pos_of_next_search = 0,
+      $txt = '_[123]_',
+      $expectedBehind = null,
+      $expectedContent = '123',
+      $searchMode = null,
+      $bugIt = false
     ) {
         if (false) {
             $bugIt = (basename(__FILE__) == basename(
-                    $_SERVER['PHP_SELF']
-                ));
+                $_SERVER['PHP_SELF']
+              ));
         } # // TODO attention: bugIt parameter is ignored here 13-09-20_08-59
         echo '</pre>';
 //        var_export(get_func_argNames_of_Method('ContentFinder', 'selfTest')); # it works :)
@@ -1868,10 +1207,11 @@ ho  <!--{03}-->3<!--{/03}-->
             $temp2 = self::$selfTest_called_from_init_defaults;
             if ($temp2 === true) {
                 self::$selfTest_defaults =
-                    array($begin, $end, $pos_of_next_search, $txt, $expectedBehind, $expectedContent, $bugIt);
+                  array($begin, $end, $pos_of_next_search, $txt, $expectedBehind, $expectedContent, $bugIt);
 
                 return true; # this call from constructor was only for init default values.
-            } else {
+            }
+            else {
 
                 self::selfTest_init_defaults();
 //                $t::selfTest_init_defaults();
@@ -1886,13 +1226,12 @@ ho  <!--{03}-->3<!--{/03}-->
         }
         #;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         if ($bugIt) {
-            list($findPos['begin_begin'], $findPos['end_begin']) = $t->get_borders_left(
-                __LINE__,
-                $begin,
-                $end,
-                $pos_of_next_search,
-                $txt,
-                $searchMode
+            list($findPos['begin_begin'], $findPos['end_begin']) = $t->getBorders(
+              $begin,
+              $end,
+              $pos_of_next_search,
+              $txt,
+              $searchMode
             );
         }
         $content = $t->getContent($begin, $end, $pos_of_next_search, $txt, $searchMode, $bugIt);
@@ -1907,28 +1246,27 @@ ho  <!--{03}-->3<!--{/03}-->
             if (true) {
                 info(__LINE__ . ': ' . $txt);
                 echo '<hr>line <u>' . __LINE__ . '</u>: </pre>' . "   b= '<b>" . htmlspecialchars(
-                        $begin
-                    ) . "</b>' , e= '<b>" . htmlspecialchars($end) . "</b>' , from pos= $pos_of_next_search </pre>";
+                    $begin
+                  ) . "</b>' , e= '<b>" . htmlspecialchars($end) . "</b>' , from pos= $pos_of_next_search </pre>";
                 echo "<b>" . htmlspecialchars($txt) . '</b> => ' . "<b>" . htmlspecialchars(
-                        $content
-                    ) . '</b> (' . $findPos['begin_begin'] . '-' . $findPos['end_begin'] . ")";
+                    $content
+                  ) . '</b> (' . $findPos['begin_begin'] . '-' . $findPos['end_begin'] . ")";
                 echo '<br>' . implode('', range(0, 9)) . implode('', range(0, 9)) . implode('', range(0, 9));
             }
             if ($content != $expectedContent) {
 
-                $findPos = $t->get_borders_left(
-                    __LINE__,
-                    $begin,
-                    $end,
-                    0,
-                    $txt,
-                    $searchMode
+                $findPos = $t->getBorders(
+                  $begin,
+                  $end,
+                  0,
+                  $txt,
+                  $searchMode
                 );
 
                 echo '<br>' . __LINE__ . ':' . 'list(' . $findPos['begin_begin'] . ', ' . $findPos['end_begin'] . ') ';
                 die("\n" . '<br><b>ERROR \'' . htmlspecialchars($content) . '\' != \'' . htmlspecialchars(
-                        $expectedContent
-                    ) . "'</b> (expected)");
+                    $expectedContent
+                  ) . "'</b> (expected)");
 
             }
             if (!is_null($expectedBehind)) {
@@ -1948,8 +1286,7 @@ ho  <!--{03}-->3<!--{/03}-->
         return true;
     } # EndOf selfTest
 
-    private static function get_func_argNames_of_Method($className, $funcName)
-    {
+    private static function get_func_argNames_of_Method($className, $funcName) {
         # // TODO this function not really net to be a part of a this class, but this class use it.
         $f = new ReflectionMethod($className, $funcName);
         $result = array();
@@ -1966,18 +1303,21 @@ ho  <!--{03}-->3<!--{/03}-->
      * @param int $size2
      */
     public function echo_content_little_excerpt(
-        $Content
-        ,
-        $size1 = 60,
-        $size2 = 50
+      $Content
+      ,
+      $size1 = 60,
+      $size2 = 50
     ) {
         great(
-            __LINE__ . ': echo_content_little_excerpt: <b>'
-            . htmlspecialchars(substr($Content, 0, $size1))
-            . " ...\n   "
-            . htmlspecialchars(substr($Content, -$size2)) . '</b>',
-            false
+          __LINE__ . ': echo_content_little_excerpt: <b>'
+          . htmlspecialchars(substr($Content, 0, $size1))
+          . " ...\n   "
+          . htmlspecialchars(substr($Content, -$size2)) . '</b>',
+          false
         );
+
+        return substr($Content, 0, $size1) . "..." . (substr($Content, -$size2));
+
     }
 
     /**
@@ -1985,8 +1325,7 @@ ho  <!--{03}-->3<!--{/03}-->
      * @param string $file fileName . may help debuging
      * @param string $s
      */
-    public function nl2br_Echo($fromLine, $file, $s)
-    {
+    public function nl2br_Echo($fromLine, $file, $s) {
         # // TODO this function not really net to be a part of a this class, but this class use it.
         echo '' . $fromLine . ': ' . nl2br($s) . '<br>';
     }
@@ -1995,29 +1334,28 @@ ho  <!--{03}-->3<!--{/03}-->
      * @param $string
      * @return string Quoted regular expression
      */
-    public static function preg_quote_by_SL5(&$string)
-    {
+    public static function preg_quote_by_SL5(&$string) {
         # btw must have lib: http://regexlib.com/Search.aspx?k=email
         $r = preg_quote($string);
         # preg_quote Quote regular expression characters
-    # @link http://php.net/manual/en/function.preg-quote.php
+        # @link http://php.net/manual/en/function.preg-quote.php
         $r = str_replace('/', '\/', $r);
         $r = preg_replace('/\s+/sm', '\s+', $r);
 
         return $r;
     }
 
-    private function update_RegEx_BeginEndPos(&$RegEx_begin, &$RegEx_end, &$pos_of_next_search)
-    {
+    private function update_RegEx_BeginEndPos(&$RegEx_begin, &$RegEx_end, &$pos_of_next_search) {
         $doOverwriteSetup = false;
-        $t = & $this;
+        $t = &$this;
         $doOverwriteSetup_OF_pos_of_next_search = $t->doOverwriteSetup_OF_pos_of_next_search;
         if (is_null($RegEx_begin)) {
             if (is_null($t->getRegEx_begin())) {
                 die(__LINE__ . ':is_null(BeginRegEx');
             }
             $RegEx_begin = $t->getRegEx_begin();
-        } elseif ($doOverwriteSetup || is_null($t->getRegEx_begin())) {
+        }
+        elseif ($doOverwriteSetup || is_null($t->getRegEx_begin())) {
             $t->setRegEx_begin($RegEx_begin);
         }
         if (is_null($RegEx_end)) {
@@ -2025,29 +1363,30 @@ ho  <!--{03}-->3<!--{/03}-->
                 die(__LINE__ . ':is_null(EndRegEx');
             }
             $RegEx_end = $t->getRegEx_end();
-        } elseif ($doOverwriteSetup || is_null($t->getRegEx_end())) {
+        }
+        elseif ($doOverwriteSetup || is_null($t->getRegEx_end())) {
             $t->setRegEx_end($RegEx_end);
         }
 
         if (is_null($pos_of_next_search)) {
             if (is_null(
-                $t->pos_of_next_search
+              $t->pos_of_next_search
             )
             ) {
                 $t->pos_of_next_search = 0;
             } // that's default value. if you want start search from the beginning. 13-10-25_12-38
             $pos_of_next_search = $t->getPosOfNextSearch();
-        } elseif ($doOverwriteSetup_OF_pos_of_next_search || is_null($t->getRegEx_begin())) {
+        }
+        elseif ($doOverwriteSetup_OF_pos_of_next_search || is_null($t->getRegEx_begin())) {
             $t->setPosOfNextSearch(
-                $pos_of_next_search
+              $pos_of_next_search
             );
         }
 
         return true;
     }
 
-    private function update_key_findPos_list(&$findPos, &$matchesReturn)
-    {
+    private function update_key_findPos_list(&$findPos, &$matchesReturn) {
         $count = count($this->findPos_list);
         $key_findPos_list = (is_numeric($count)) ? $count : 0;
         $this->findPos_list[$key_findPos_list] = $findPos;
@@ -2061,8 +1400,7 @@ ho  <!--{03}-->3<!--{/03}-->
         return $key_findPos_list;
     }
 
-    private function setRegEx(&$RegEx_old, &$RegEx_new)
-    {
+    private function setRegEx(&$RegEx_old, &$RegEx_new) {
         if (!is_null($RegEx_new) && !is_string($RegEx_new)) {
             die(__FUNCTION__ . __LINE__ . ': !is_string(' . htmlspecialchars($RegEx_new) . ')');
         }
@@ -2073,8 +1411,7 @@ ho  <!--{03}-->3<!--{/03}-->
 
 }
 
-function get_func_argValues_of_Method($className, $funcName)
-{
+function get_func_argValues_of_Method($className, $funcName) {
     # // TODO unused function
     $f = new ReflectionMethod($className, $funcName);
     $result = array();
@@ -2083,8 +1420,7 @@ function get_func_argValues_of_Method($className, $funcName)
     }
 
     return $result;
-    function wwwSearchResults()
-    {
+    function wwwSearchResults() {
         echo '
 
 google search: "php parser yiidecoda +milesj.me"
@@ -2104,8 +1440,7 @@ http://php.net/manual/de/function.json-decode.php
     }
 }
 
-function get_func_argNames($funcName)
-{
+function get_func_argNames($funcName) {
 # // TODO unused function
     $f = new ReflectionFunction($funcName);
     $result = array();
@@ -2117,24 +1452,21 @@ function get_func_argNames($funcName)
 # print_r(get_func_argNames('get_func_argNames'));
 }
 
-function bad($message)
-{
+function bad($message) {
     echo "<div style='background-color: #ff0000'>:-( $message</div><p>";
     echo '</pre>';
     debug_print_backtrace(); # http://www.php.net/manual/de/function.debug-print-backtrace.php
     #PHP_com
 }
 
-function bad_little($message)
-{
+function bad_little($message) {
     echo "<div style='background-color: #ff5555'>:-( $message</div><p>";
     #debug_print_backtrace(); # http://www.php.net/manual/de/function.debug-print-backtrace.php
     #PHP_com
 }
 
 
-function great($message, $htmlSpecialChars = true)
-{
+function great($message, $htmlSpecialChars = true) {
     echo "\n";
     if ($htmlSpecialChars) {
         $messageNEW = htmlspecialchars($message);
@@ -2148,8 +1480,7 @@ function great($message, $htmlSpecialChars = true)
     return true;
 }
 
-function info($message, $color = 'yellow', $htmlSpecialChars = true)
-{
+function info($message, $color = 'yellow', $htmlSpecialChars = true) {
     if ($htmlSpecialChars) {
         $messageNEW = htmlspecialchars($message);
         if ($messageNEW != '') {
@@ -2157,11 +1488,10 @@ function info($message, $color = 'yellow', $htmlSpecialChars = true)
         }
     }
     echo "<div style='background-color: $color'>"
-        . $message . "</div><p>";
+      . $message . "</div><p>";
 }
 
-function count_null($arr, $dieIfIsNull = true)
-{
+function count_null($arr, $dieIfIsNull = true) {
 
     $countNull = 0;
     if (!is_bool($dieIfIsNull)) {
@@ -2174,7 +1504,8 @@ function count_null($arr, $dieIfIsNull = true)
         if (is_null($v)) {
             if ($dieIfIsNull !== true) {
                 $countNull++;
-            } else {
+            }
+            else {
                 echo(__FUNCTION__ . '>' . __LINE__ . ": $n => is_null($v)");
                 debug_print_backtrace();
                 die(__FUNCTION__ . __LINE__);

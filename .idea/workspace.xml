@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1c1d556e-7c7b-4ba0-8741-67f7073d1d0a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/examples/1.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/SL5_preg_contentFinder.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/php.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/SL5_preg_contentFinderTest1.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/1.php" afterPath="$PROJECT_DIR$/examples/1.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SL5_preg_contentFinder.php" afterPath="$PROJECT_DIR$/SL5_preg_contentFinder.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\phpdesktop-msie-1.14-php-5.4.33\www\SL5_preg_contentFinder\test\SL5_preg_contentFinderTest.php" afterPath="$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php" />
     </list>
     <ignored path="SL5_preg_contentFinder.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,55 +22,36 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="DaemonCodeAnalyzer">
-    <disable_hints />
-  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="SL5_preg_contentFinder" />
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SL5_preg_contentFinder.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/SL5_preg_contentFinder.php">
+      <file leaf-file-name="PHPUnit_SL5_preg_contentFinderTest.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334" vertical-offset="35745" max-vertical-offset="37910">
-              <caret line="2075" column="9" selection-start-line="2075" selection-start-column="9" selection-end-line="2075" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.36627907">
+              <caret line="306" column="42" selection-start-line="306" selection-start-column="15" selection-end-line="306" selection-end-column="42" />
               <folding>
-                <marker date="1434394739709" expanded="true" signature="3226:3248" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="14368:14472" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="35806:35828" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="36656:36678" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="38061:38083" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="44631:44653" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="48329:48415" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="66271:66293" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="73350:73375" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="73585:73610" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="74003:74032" placeholder="..." />
-                <marker date="1434394739709" expanded="true" signature="74355:74373" placeholder="..." />
+                <marker date="1434447568782" expanded="true" signature="7437:7523" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="1.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/1.php">
+      <file leaf-file-name="SL5_preg_contentFinder.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/SL5_preg_contentFinder.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.5" vertical-offset="0" max-vertical-offset="323">
-              <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SL5_preg_contentFinderTest.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/SL5_preg_contentFinderTest.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="4012">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="10.488372">
+              <caret line="465" column="9" selection-start-line="465" selection-start-column="9" selection-end-line="465" selection-end-column="9" />
               <folding>
-                <marker date="1434390099288" expanded="true" signature="1214:1300" placeholder="..." />
+                <marker date="1434446638517" expanded="true" signature="25342:25428" placeholder="..." />
+                <marker date="1434446638517" expanded="true" signature="43401:43423" placeholder="..." />
+                <marker date="1434446638517" expanded="true" signature="50477:50502" placeholder="..." />
+                <marker date="1434446638517" expanded="true" signature="50712:50737" placeholder="..." />
+                <marker date="1434446638517" expanded="true" signature="51130:51159" placeholder="..." />
+                <marker date="1434446638517" expanded="true" signature="51482:51500" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -88,20 +65,30 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/test/SL5_preg_contentFinderTest.php" />
+        <option value="E:/xampp568/php/php.ini" />
         <option value="$PROJECT_DIR$/examples/1.php" />
         <option value="$PROJECT_DIR$/SL5_preg_contentFinder.php" />
+        <option value="$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php" />
       </list>
     </option>
   </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="R:\xampp1.8.3-2\php" />
+  <component name="NamedScopeManager">
+    <order />
+  </component>
+  <component name="PhpServers">
+    <servers />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP" />
   <component name="ProjectFrameBounds">
     <option name="x" value="-9" />
     <option name="y" value="-9" />
-    <option name="width" value="1293" />
-    <option name="height" value="1098" />
+    <option name="width" value="1618" />
+    <option name="height" value="918" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -126,53 +113,9 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SL5_preg_contentFinder" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="examples" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+        <subPane />
       </pane>
       <pane id="Scope" />
     </panes>
@@ -185,6 +128,11 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="settings.editor.selected.configurable" value="reference.webide.settings.project.settings.php" />
+    <property name="js.eslint.eslintPackage" value="" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="FullScreen" value="false" />
+    <property name="last_opened_file_path" value="E:/xampp568/php/php.ini" />
   </component>
   <component name="RemoteSynchronizer">
     <option name="generalOptions">
@@ -201,51 +149,74 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="PHP Script.SL5_preg_contentFinder.php">
+  <component name="RunManager" selected="PHPUnit.SL5_preg_contentFinderTest">
+    <configuration default="false" name="SL5_preg_contentFinderTest on xampp" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" temporary="true" class="SL5_preg_contentFinderTest" path="$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php" server_id="dbfeb8c3-72ee-4969-823b-aa1f0cfe6f89" server_name="xampp">
+      <RunnerSettings RunnerId="PhpUnitRemoteDebugRunner" />
+      <ConfigurationWrapper RunnerId="PhpUnitRemoteDebugRunner" />
+      <method />
+    </configuration>
     <configuration default="false" name="SL5_preg_contentFinder.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/SL5_preg_contentFinder.php">
       <RunnerSettings RunnerId="PhpScriptDebugRunner" />
       <ConfigurationWrapper RunnerId="PhpScriptDebugRunner" />
       <method />
     </configuration>
-    <configuration default="false" name="SL5_preg_contentFinderTest on xampp" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server" temporary="true" class="SL5_preg_contentFinderTest" path="$PROJECT_DIR$/test/SL5_preg_contentFinderTest.php" server_id="dbfeb8c3-72ee-4969-823b-aa1f0cfe6f89" server_name="xampp">
-      <RunnerSettings RunnerId="PhpUnitRemoteDebugRunner" />
-      <ConfigurationWrapper RunnerId="PhpUnitRemoteDebugRunner" />
+    <configuration default="false" name="SL5_preg_contentFinderTest" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
+      <TestRunner class="SL5_preg_contentFinderTest" file="$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php" scope="Class" />
+      <method />
+    </configuration>
+    <configuration default="false" name="SL5_preg_contentFinderTest.test_CACHE_current_begin_end2" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
+      <TestRunner class="SL5_preg_contentFinderTest" file="$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php" method="test_CACHE_current_begin_end2" scope="Method" />
+      <method />
+    </configuration>
+    <configuration default="false" name="SL5_preg_contentFinderTest.test_getContent_2" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" temporary="true">
+      <TestRunner class="SL5_preg_contentFinderTest" file="$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php" method="test_getContent_2" scope="Method" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
     <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner />
       <method />
     </configuration>
-    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
-      <method />
-    </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
-      <method />
-    </configuration>
     <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
       <BehatRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
       <method />
     </configuration>
     <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <pass-parent-envs>true</pass-parent-envs>
+      <envs />
       <method />
     </configuration>
-    <list size="2">
-      <item index="0" class="java.lang.String" itemvalue="PHP Script.SL5_preg_contentFinder.php" />
-      <item index="1" class="java.lang.String" itemvalue="PHPUnit on Server.SL5_preg_contentFinderTest on xampp" />
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="PHPUnit by HTTP.SL5_preg_contentFinderTest on xampp" />
+      <item index="1" class="java.lang.String" itemvalue="PHP Script.SL5_preg_contentFinder.php" />
+      <item index="2" class="java.lang.String" itemvalue="PHPUnit.SL5_preg_contentFinderTest" />
+      <item index="3" class="java.lang.String" itemvalue="PHPUnit.SL5_preg_contentFinderTest.test_CACHE_current_begin_end2" />
+      <item index="4" class="java.lang.String" itemvalue="PHPUnit.SL5_preg_contentFinderTest.test_getContent_2" />
     </list>
     <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="PHP Script.SL5_preg_contentFinder.php" />
-        <item index="1" class="java.lang.String" itemvalue="PHPUnit on Server.SL5_preg_contentFinderTest on xampp" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="PHPUnit.SL5_preg_contentFinderTest" />
+        <item index="1" class="java.lang.String" itemvalue="PHP Script.SL5_preg_contentFinder.php" />
+        <item index="2" class="java.lang.String" itemvalue="PHPUnit.SL5_preg_contentFinderTest.test_getContent_2" />
+        <item index="3" class="java.lang.String" itemvalue="PHPUnit.SL5_preg_contentFinderTest.test_CACHE_current_begin_end2" />
       </list>
     </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="StructureViewFactory">
-    <option name="ACTIVE_ACTIONS" value=",Show Constants,Show Fields" />
+    <option name="ACTIVE_ACTIONS" value=",Show Constants,Show Fields,Show Private Members,ALPHA_COMPARATOR" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -260,32 +231,58 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1293" height="1098" extended-state="0" />
+    <frame x="-9" y="-9" width="1618" height="918" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="RemoteSynchronizer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34102833" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3303499" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28462073" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.32857144" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="326" y="-635" width="1182" height="573" />
+      <window_info id="Floobits" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16193548" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.17539267" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="7" y="730" width="1559" height="142" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2767742" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.34025973" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" x="1647" y="-702" width="1651" height="1048" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="RemoteSynchronizer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="RemoteSynchronizer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.32857144" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="326" y="-635" width="1182" height="573" />
+      <window_info id="Floobits" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16258064" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3115183" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2767742" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.34025973" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" x="1647" y="-702" width="1651" height="1048" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -298,64 +295,143 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <option name="myTodoPanelSettings">
-      <TodoPanelSettings />
-    </option>
-  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/test/SL5_preg_contentFinderTest.php</url>
-          <line>19</line>
+          <url>file://$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php</url>
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/SL5_preg_contentFinder.php</url>
-          <line>450</line>
-          <option name="timeStamp" value="3" />
+          <line>552</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/SL5_preg_contentFinder.php</url>
+          <line>551</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/SL5_preg_contentFinder.php</url>
+          <line>566</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/SL5_preg_contentFinder.php</url>
+          <line>497</line>
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="4" />
+      <option name="time" value="9" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/test/SL5_preg_contentFinderTest.php">
+    <entry file="file://$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3961">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="66" column="11" selection-start-line="66" selection-start-column="11" selection-end-line="66" selection-end-column="11" />
+          <folding>
+            <marker date="1434447568782" expanded="true" signature="7437:7523" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="66" column="100" selection-start-line="66" selection-start-column="100" selection-end-line="66" selection-end-column="100" />
+          <folding>
+            <marker date="1434447568782" expanded="true" signature="7437:7523" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SL5_preg_contentFinder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1434390099288" expanded="true" signature="1214:1300" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="25342:25428" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="43401:43423" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="50477:50502" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="50712:50737" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="51130:51159" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="51482:51500" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/1.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.5" vertical-offset="0" max-vertical-offset="323">
+        <state vertical-scroll-proportion="0.0">
           <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1434447568782" expanded="true" signature="7437:7523" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/1.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.18681319">
+          <caret line="3" column="12" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/com/jetbrains/php/lang/psi/stubs/data/standard_1.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.056686047">
+          <caret line="946" column="27" selection-start-line="946" selection-start-column="3" selection-end-line="946" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://E:/xampp568/php/php.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.50615597">
+          <caret line="2082" column="34" selection-start-line="2082" selection-start-column="34" selection-end-line="2082" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/SL5_preg_contentFinderTest1.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33238232">
+          <caret line="36" column="30" selection-start-line="36" selection-start-column="30" selection-end-line="36" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SL5_preg_contentFinder.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="35745" max-vertical-offset="37910">
-          <caret line="2075" column="9" selection-start-line="2075" selection-start-column="9" selection-end-line="2075" selection-end-column="9" />
+        <state vertical-scroll-proportion="10.488372">
+          <caret line="465" column="9" selection-start-line="465" selection-start-column="9" selection-end-line="465" selection-end-column="9" />
           <folding>
-            <marker date="1434394739709" expanded="true" signature="3226:3248" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="14368:14472" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="35806:35828" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="36656:36678" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="38061:38083" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="44631:44653" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="48329:48415" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="66271:66293" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="73350:73375" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="73585:73610" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="74003:74032" placeholder="..." />
-            <marker date="1434394739709" expanded="true" signature="74355:74373" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="25342:25428" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="43401:43423" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="50477:50502" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="50712:50737" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="51130:51159" placeholder="..." />
+            <marker date="1434446638517" expanded="true" signature="51482:51500" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/PHPUnit_SL5_preg_contentFinderTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36627907">
+          <caret line="306" column="42" selection-start-line="306" selection-start-column="15" selection-end-line="306" selection-end-column="42" />
+          <folding>
+            <marker date="1434447568782" expanded="true" signature="7437:7523" placeholder="..." />
           </folding>
         </state>
       </provider>
