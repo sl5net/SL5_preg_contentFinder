@@ -5,7 +5,27 @@
  * Date: 16.06.2015
  * Time: 00:09
  */
+
 class SL5_preg_contentFinderTest1 {
+
+    /**
+     * setID please use integer not text. why?
+     * todo: needs discussed
+     */
+    public static function test_getContent_setID() {
+        $cf = new SL5_preg_contentFinder("{2_{1_2}_");
+        $cf->setBeginEnd_RegEx('{', '}');
+        $cf->setID(1);
+        $content1 = $cf->getContent();
+//        $this->assertEquals('1: ' . "2_{1_2", '1: ' . $content1);;
+//        $this->assertEquals($content1, $cf->getContent_ByID(1));;
+        $cf->setBeginEnd_RegEx('1', '2');
+        $cf->setID(2);
+//        $this->assertEquals($content1, $cf->getContent_ByID(1));;
+//        $this->assertEquals("1_2", $cf->getContent_ByID(2));;
+//        $this->setExpectedException('InvalidArgumentException');
+    }
+
 
     public static function recursion_example4($silentMode) {
         if (true) {
@@ -22,7 +42,7 @@ class SL5_preg_contentFinderTest1 {
                 $source .= (($pos + 1) % 3 == 2) ? $v : $delimiters[$pos % 3];
             }
             if (!$silentMode) {
-                echo __LINE__ . ':$content=<br>' . $source . '<br>';
+                echo __LINE__ . ':$contentDemo=<br>' . $source . '<br>';
             }
             if (!$silentMode) {
                 echo $numbers . '<br><br>';
@@ -277,9 +297,9 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
                     info(__LINE__ . ': $content_before = "' . $before_content . '"');
                 }
                 if (!$silentMode) {
-                    info(__LINE__ . ': content _ _ _ _ = "' . $content1 . '"');
+                    info(__LINE__ . ': contentDemo _ _ _ _ = "' . $content1 . '"');
                 }
-                bad_little(__LINE__ . ': was muss content sein???? inklusive rest??? ');
+                bad_little(__LINE__ . ': was muss contentDemo sein???? inklusive rest??? ');
             }
             if (!$silentMode) {
                 info(__LINE__ . ': $content_behind = "' . $behind_content . '"');
@@ -331,7 +351,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             $before .= substr($content, 0, $p['begin_begin']) . $delimiters[0];
             $behind = $delimiters[1] . substr($content, $p['end_end']) . $behind;
 
-//            great(__LINE__ . ":\n" . '$before.$cut.$behind=' . "\n$content ==> " . "$before#$cut#$behind");
+//            great(__LINE__ . ":\n" . '$before.$cut.$behind=' . "\n$contentDemo ==> " . "$before#$cut#$behind");
 //            @$cf->getContent($b,$e,0,$cut);
 
 
@@ -388,7 +408,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
 
             great(
-              __LINE__ . ": \n" . "\n$content (content) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
+              __LINE__ . ": \n" . "\n$content (contentDemo) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
               false
             );
             $return = call_user_func(
@@ -403,7 +423,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             return $return;
         }
 
-//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $content=' . var_export($content, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $content) . " ,  \$behind=$behind");
+//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $contentDemo=' . var_export($contentDemo, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $contentDemo) . " ,  \$behind=$behind");
         $return = array(($cut) ? $cut : $content, $before, $behind);
 
         return $return;
@@ -453,7 +473,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
 
             if (!$silentMode) {
                 great(
-                  __LINE__ . ": \n" . "\n$content (content) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
+                  __LINE__ . ": \n" . "\n$content (contentDemo) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
                   false
                 );
             }
@@ -467,7 +487,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             return $return;
         }
 
-//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $content=' . var_export($content, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $content) . " ,  \$behind=$behind");
+//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $contentDemo=' . var_export($contentDemo, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $contentDemo) . " ,  \$behind=$behind");
         $return = array(($cut) ? $cut : $content, $before, $behind);
 
         return $return;
@@ -499,7 +519,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             }
         }
         if ($bugIt) {
-            echo __LINE__ . ':$content=<br>' . $content . '<br>';
+            echo __LINE__ . ':$contentDemo=<br>' . $content . '<br>';
         }
         if ($bugIt) {
             echo $numbers . '<br><br>';
@@ -524,54 +544,37 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         echo '<pre>';
         echo '<font style="font-family: monospace">';
         $cf = new SL5_preg_contentFinder($content);
-        $delimiters = array('(', ')');
-        $delimiters[1];
-        if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
-            $p = $cf->getBorders( $delimiters[0], $delimiters[1]);
-            if (is_null($p['begin_begin'])) {
-                die(__FUNCTION__ . __LINE__);
-            }
-
-
-            $before .= substr($content, 0, $p['begin_begin']) . $delimiters[0];
-            $behindTemp = substr($content, $p['end_end']) . $behind;
+        if ($cut = @$cf->getContent($b='(', $e=')')) {
+            $before .= $cf->getContent_Before() . '(';
+            $behindTemp = $cf->getContent_Behind() . $behind;
 
             if (!$isFirsRecursion) {
-                $behind = $delimiters[1] . $behindTemp;
+                $behind = ')' . $behindTemp;
             }
             if ($isFirsRecursion) {
-                'breakpoint';
                 list($c, $bf, $bh) =
                   self::recursionExample4_search_also_in_rest_of_the_string($behindTemp);
-//                info(__LINE__ . ": $c");
-                $behind = (is_null($c)) ? $delimiters[1] . $behindTemp : $delimiters[1] . $bf . $c . $bh;
-//                info(__LINE__ . ": $behind");
+                $behind = (is_null($c)) ? ')' . $behindTemp : ')' . $bf . $c . $bh;
             }
 
             # change cut a little
-            $dataExample = 1;
-            if (preg_match("/\d/", $cut, $e)) {
-                $dataExample = $e[0] + 1;
-            }
-            $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
-
-
-            if (!$silentMode) {
-                great(
-                  __LINE__ . ": \n" . "\n$content (content) ==> \n" . "$before<u><b>$cut</b></u>$behind" . ' (before.cut.behind)',
-                  false
-                );
+            # why? only for demonstration different result as Original source
+            if(true) {
+                $dataExample = 1;
+                if (preg_match("/\d/", $cut, $e)) {
+                    $dataExample = $e[0] + 1;
+                }
+                $cut = preg_replace("/\w/", ($dataExample > 9) ? $dataExample - 10 : $dataExample, $cut);
             }
             $return = self::recursionExample4_search_also_in_rest_of_the_string(
               $cut,
               $before,
               $behind
             );
-
             return $return;
         }
 
-//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $content=' . var_export($content, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $content) . " ,  \$behind=$behind");
+//        info(__LINE__ . ":\n \$cut=" . var_export($cut, true) . ' $contentDemo=' . var_export($contentDemo, true) . "\n \$before=$before, \$cut=" . (($cut) ? $cut : $contentDemo) . " ,  \$behind=$behind");
         $return = array(($cut) ? $cut : $content, $before, $behind);
 
         return $return;
@@ -609,7 +612,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
             $behind = $delimiters[1] . substr($content, $p['end_end']) . $behind;
 
 
-//            great(__LINE__ . ": \n" . '$before.$cut.$behind=' . "\n$content ==> " . "$before#$cut#$behind");
+//            great(__LINE__ . ": \n" . '$before.$cut.$behind=' . "\n$contentDemo ==> " . "$before#$cut#$behind");
 //            @$cf->getContent($b,$e,0,$cut);
 
             if (true) {
@@ -643,7 +646,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         }
         $cf = new SL5_preg_contentFinder($content);
         if ($cut = @$cf->getContent($b = '(', $e = ')')) {
-//            great(__LINE__ . ":\n \$cut= \n$content ==> " . $cut);
+//            great(__LINE__ . ":\n \$cut= \n$contentDemo ==> " . $cut);
 //            @$cf->getContent($b,$e,0,$cut);
             return self::recursion_example($cut);
         }
