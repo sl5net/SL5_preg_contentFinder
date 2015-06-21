@@ -54,7 +54,7 @@ class SL5_preg_contentFinder {
     private static $selfTest_called_from_init_defaults = false;
     private static $selfTest_collection_finished = false;
     public $isUniqueSignUsed = false;
-    private $content = "";
+    private $content = null;
     private $regEx_begin = null;
     private $regEx_end = null;
 
@@ -99,6 +99,9 @@ class SL5_preg_contentFinder {
      * @return bool false if !is_numeric($pos_of_next_search)
      */
     public function setPosOfNextSearch($pos_of_next_search) {
+        return false;
+
+
         if(!is_numeric($pos_of_next_search)) {
             bad(__FUNCTION__ . __LINE__ . ' : !is_numeric($pos_of_next_search)' . $pos_of_next_search);
 
@@ -110,6 +113,7 @@ class SL5_preg_contentFinder {
     }
 
     private function getPosOfNextSearch() {
+        return false;
         $pos_of_next_search = $this->pos_of_next_search;
         if(!is_numeric($pos_of_next_search)) {
             $pos_of_next_search = 0;
@@ -276,91 +280,104 @@ class SL5_preg_contentFinder {
       $openFunc = null,
       $contentFunc = null,
       $closeFunc = null,
+
       $before = null,
       $behind = null) {
-        list($bfCut, $cCut, $bhCut) = $this->getContent_user_func_recursivePRIV(
-          $this->content,
-          $openFunc,
-          $contentFunc,
-          $closeFunc,
-          $before,
-          $behind);
+
+
+        $functions = ['open' => $openFunc,
+                      'content' => $contentFunc,
+                      'close' => $closeFunc];
+
+        $content = ['before' => $before, 'middle' => $this->content, 'behind' => $behind];
+
+//        list($bfCut, $cCut, $bhCut) = $this->getContent_user_func_recursivePRIV(
+//          $content,
+//          $functions);
 
 //        if(!$cCut)$cCut=$this->content;
-        return [$bfCut, $cCut, $bhCut];
+
+        $return = $this->getContent_user_func_recursivePRIV(
+          $content,
+          $functions);
+
+        $break = 'break';
+
+//        return [$bfCut, $cCut, $bhCut];
+        return $return;
     }
     /**
      * todo: proof performance. call by reference inside userFunc is not supported actually
      * @param null $content
-     * @param null $openFunc
-     * @param null $contentFunc
-     * @param null $closeFunc
-     * @param null $before
-     * @param null $behind
+     * @param null $f functions callback
      * @param int $deepCount
      * @return array
      */
     private function getContent_user_func_recursivePRIV(
-      $content = null,
-      $openFunc = null,
-      $contentFunc = null,
-      $closeFunc = null,
-      $before = null,
-      $behind = null,
+      $content,
+      $f,
       $deepCount = -1
     ) {
-        $deepCount++; # we starting with $deepCount 0
+        $deepCount++; # starts with $deepCount = 0
+        if($content['middle'] == false || is_null($content['middle'])) {
+            # create $content_return
+            $content_return = (isset($content['before'])) ? $content['before'] : '' . $content['middle'] . (isset($content['behind'])) ? $content['behind'] : '';
 
-        $cf = new SL5_preg_contentFinder($content, $this->regEx_begin, $this->regEx_end);
-        $cut = $cf->getContent();
-        $content_Before = '';
-        $content_Behind = '';
-        $content_Before = $cf->getContent_Before();
-        if($cut) $content_Behind = $cf->getContent_Behind();
+            return $content_return;
+        }
 
-        $break = "break";
-        if(!$cut) return [$before . $content_Before . $content . $content_Behind, $cut, '']; # end of recursion.
+        # search in $content['middle'], create $cut Array
+        $C = new SL5_preg_contentFinder($content['middle'], $this->regEx_begin, $this->regEx_end);
+        $cut = [
+          'before' => $C->getContent_Before(),
+          'middle' => $C->getContent(),
+          'behind' => $C->getContent_Behind()];
 
-        # no changes if $deepCount 0 :
-        $cut = call_user_func($contentFunc, $before, $cut, $content_Behind, $deepCount + 1);
-        $content_Before = call_user_func($openFunc, $content_Before, $cut, $content_Behind, $deepCount + 1);
-        $content_Behind = call_user_func($closeFunc, $content_Before, $cut, $content_Behind, $deepCount + 1);
 
-        $break = "break";
-        # needed engines: 1) for content and 2) for behind (we want inclusive behind).
+        $terminate_seaching_inside_cut_because_nothing_found = $cut['middle'] === false;
 
-        # engine 1) for content (inner content , thats the cut)
-        list($cutBef, $cutCut, $cutBeh) =
-          $this->getContent_user_func_recursivePRIV(
-            $cut,
-            $openFunc, $contentFunc, $closeFunc,
-            $content_Before, '', $deepCount);
 
-        # engine 2) for behind
-        # move behind into cut (that's middle position or next content)
-        list($behBef, $behCut, $behBeh) =
-          $this->getContent_user_func_recursivePRIV(
-            $cutBeh . $content_Behind,
-            $openFunc, $contentFunc, $closeFunc,
-            $nope2 = "", $behind, $deepCount - 1);
+        # search in $cut['behind'], create $cut_behind_return
+        $cut_behind_return = $this->getContent_user_func_recursivePRIV(
+          ['middle' => $cut['behind']],
+          $f, $deepCount-1);
+//        $cut_behind_return = ''; __LINE__;
 
-//        $before .= $behBef ;
-        $before .= $cutBef . $behBef;
-//        $before .=  $behBef ;
 
-        $break = "break";
-        $content = $cutCut . $behCut;
-//        $before .= $cutBef;
-        $behind = $behBeh;
-        $return = [$before, $content, $behind]; // thats the most inner element. core element.
-        return $return;
+        # search in $cut['middle'], create $cut_middle_return
+        if($terminate_seaching_inside_cut_because_nothing_found) {
+            $cut_middle_return = $content['middle'] ;
+        } else {
+            $cut_middle_return = $this->getContent_user_func_recursivePRIV(
+              ['middle' => $cut['middle']],
+              $f, $deepCount);
 
-//                $behind .= $behindAll;
+            $cut['before'] = call_user_func($f['open'], $cut['before'], $cut_middle_return, $cut['behind'], $deepCount + 1);
 
-//            $return = $this->getContent_user_func_recursivePRIV(
-//              $cut, $openFunc, $contentFunc, $closeFunc, $before, $behind, $deepCount
-//            );
-//        }
+            $cut_middle_return = call_user_func($f['content'], $cut['before'], $cut_middle_return, $cut['behind'], $deepCount + 1);
+
+            $break = 'brak';
+            $cut['behind'] = call_user_func($f['close'], $cut['before'], $cut_middle_return, $cut['behind'], $deepCount + 1);
+            $break = 'brak';
+        }
+
+
+        $cut_return = $cut['before'] . '' . $cut_middle_return . $cut['behind'];
+
+
+        # search in $content['behind'], create $behind_return
+        $behind_return = $this->getContent_user_func_recursivePRIV(
+          ['middle' => @$content['behind']],
+          $f, $deepCount);
+
+
+        $break = 'break';
+        $return = (isset($content['before'])) ? $content['before'] : '' . '' . $cut_return . '' . $cut_behind_return . $behind_return;
+
+        $break = 'break';
+
+        return "" . $return . "";
+
     }
 
 
@@ -369,7 +386,12 @@ class SL5_preg_contentFinder {
      * todo: discuss implementation performance. relevant?
      */
     public function getContent_Before() {
-        return substr($this->content, 0, $this->getBorders()['begin_begin']);
+        if(is_null($this->content)) $this->getContent();
+        if($this->content === false) return false;
+        $begin_begin = &$this->getBorders()['begin_begin'];
+        if($begin_begin == 0) return '';
+
+        return substr($this->content, 0, $begin_begin);
 //        return substr($this->getContent(), 0, $this->getBorders()['begin_begin']);
     }
     /**
@@ -377,7 +399,14 @@ class SL5_preg_contentFinder {
      * todo: discuss implementation performance. relevant?
      */
     public function getContent_Behind() {
-        return substr($this->content, $this->getBorders()['end_end']);
+        if(is_null($this->content)) $this->getContent();
+        if($this->content === false) return false;
+        $end_end = &$this->getBorders()['end_end'];
+//        $borders = $end_end;
+        if($end_end == strlen($this->content)) return '';
+        $sub_str = substr($this->content, $end_end);
+
+        return $sub_str;
 //        return substr($this->getContent(), $this->getBorders()['end_end']);
     }
 
@@ -462,7 +491,7 @@ class SL5_preg_contentFinder {
         $count_begin = 0;
         $count_end = 0;
 
-        if($this->isUniqueSignUsed && ( !$this->uniqueSignExtreme || strpos($txt, $this->uniqueSignExtreme) !== false)) {
+        if($this->isUniqueSignUsed && (!$this->uniqueSignExtreme || strpos($txt, $this->uniqueSignExtreme) !== false)) {
             # better unique sign is needed
             $this->setUniqueSignExtreme($txt);
         }
@@ -599,6 +628,7 @@ class SL5_preg_contentFinder {
 //    $findPos['matches'] = $matchesReturn;
         $this->findPos_list[$findPosID]['matches'] = $matchesReturn;
         $return = &$this->findPos_list[$findPosID];
+        $dummy = 1;
 
         return $return;
     }
@@ -703,6 +733,7 @@ class SL5_preg_contentFinder {
 
             if(strpos($txt, $uniqueSignExtreme) === false && strpos($this->regEx_begin, $uniqueSignExtreme) === false && strpos($this->regEx_end, $uniqueSignExtreme) === false) {
                 $this->uniqueSignExtreme = $uniqueSignExtreme;
+
                 return;
                 # everything fine :)
                 # usually it should not trigger at first loop. but anyway.
@@ -729,11 +760,12 @@ class SL5_preg_contentFinder {
 
             $loopI++;
         }
-        $this->uniqueSignExtreme = $uniqueSignExtremeOLD . $uniqueSignExtreme ;
+        $this->uniqueSignExtreme = $uniqueSignExtremeOLD . $uniqueSignExtreme;
 
         if($loopMaxCount < 1) {
             die("dont uniqueSignExtreme :( could found");
         }
+
         return true;
         # better unique sign is needed
         # http://stackoverflow.com/questions/1879860/most-reliable-split-character
@@ -746,7 +778,6 @@ answered Dec 10 '09 at 9:59
 nd.
 Decimal: 28 = 0b0011100 = 0x1C = CTRL-\
          */
-
 
         /*
          * lectures:
@@ -766,14 +797,18 @@ I think this is the beep sound, if i am not mistaken.
      */
     public function getUniqueSignExtreme() {
         # unique is checked during generation of borders. see getBorders.
-        if(!$this->uniqueSignExtreme)
+        if(!$this->uniqueSignExtreme) {
             die(" pls call this function not before using getBorders or getContent... or so");
-       return $this->uniqueSignExtreme;
+        }
+
+        return $this->uniqueSignExtreme;
 
         if(!$this->isUniqueSignUsed) $this->isUniqueSignUsed = true; // customer is king.
-        if(!$this->content         )   die("you need set content first before you try get a unique sign.");
-        if(!$this->uniqueSignExtreme)
+        if(!$this->content) die("you need set content first before you try get a unique sign.");
+        if(!$this->uniqueSignExtreme) {
             $this->setUniqueSignExtreme($this->content);
+        }
+
         return $this->uniqueSignExtreme();
     }
 
@@ -894,7 +929,7 @@ I think this is the beep sound, if i am not mistaken.
                 debug_print_backtrace();
                 die(__FUNCTION__ . '>' . __LINE__);
             }
-            if(!is_numeric($pos_of_next_search)) {
+            if(!is_numeric($pos_of_next_search) && $pos_of_next_search !== false) {
                 echo(__LINE__ . ': ' . "!is_numeric($pos_of_next_search)");
                 debug_print_backtrace();
                 die(__FUNCTION__ . '>' . __LINE__);
@@ -1297,6 +1332,11 @@ ho  <!--{03}-->3<!--{/03}-->
       $searchMode = null,
       $bugIt = false
     ) {
+        if(false && !is_null($this->content)
+          && !is_null($this->findPos_list)
+        ) {
+            return $this->content;
+        }
         if(is_null($txt)) {
             $txt = $this->content;
         }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: lauffer
- * Date: 16.06.2015
- * Time: 00:09
- */
 
 class SL5_preg_contentFinderTest1 {
 

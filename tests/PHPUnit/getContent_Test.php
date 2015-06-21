@@ -1,11 +1,14 @@
 <?php
 //@include_once("../SL5_preg_contentFinder.php");
 //
-require("../SL5_preg_contentFinder.php");
-
-
-class SL5_preg_contentFinderTest extends PHPUnit_Framework_TestCase {
-
+$f = 'SL5_preg_contentFinder.php';
+while(!file_exists($f)) {
+    $f = '../' . $f;
+    echo "$f exist.";
+}
+include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
+include_once $f;
+class GetContent_Test extends PHPUnit_Framework_TestCase {
 
     /**
      * empty means it found an empty.
@@ -20,7 +23,7 @@ class SL5_preg_contentFinderTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($contentEmpty !== false);
         $this->assertTrue($contentEmpty !== null);
 
-        $cf_False_IfNoResult = new SL5_preg_contentFinder("{}");
+        $cf_False_IfNoResult = new SL5_preg_contentFinder("mi{SOME}mo");
         $cf_False_IfNoResult->setBeginEnd_RegEx('[', ']');
         $contentFalse = $cf_False_IfNoResult->getContent();
         $this->assertTrue($contentFalse !== "");
@@ -282,3 +285,4 @@ class SL5_preg_contentFinderTest extends PHPUnit_Framework_TestCase {
     }
 
 }
+?>
