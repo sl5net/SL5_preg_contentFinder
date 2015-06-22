@@ -5,7 +5,7 @@ a PHP Template Engine class using Perl Compatible Regular Expressions (PCRE)
 
 See complete examples inside example folder or inside the tests folder. :)
 
-
+<pre>
 Example source conversion :
 
 a{b{B}}
