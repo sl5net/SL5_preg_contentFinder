@@ -7,6 +7,259 @@
 include_once $f;
 include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
+//     $collectString = '';
+
+
+    function test_parse_expected_actual() {
+//        $file_content_original = file_get_contents(__FILE__);
+        $file_content_original = file_get_contents('PHPUnitAllTest_AutoCollected.php');
+        $mode = 1;
+        if($mode == 2) {
+            $file_content_original
+              =
+              'function a() {a} function b() {b}';
+        }
+        $cf = new SL5_preg_contentFinder($file_content_original);
+        $cf->setSearchMode('dontTouchThis');
+        if($mode == 2) {
+            $beginEnd = ['function \w+\(\)\s*\{', '\}'];
+        }
+        else {
+            $beginEnd = [
+              '\n\s+'
+              . 'function\s+'
+              . '\w+\s*'
+              . '\(\)\s*\{'
+              . '\s*\n'
+              ,
+              '\}\s*function'];
+        }
+
+//        $beginEnd = ['\{'
+//                     ,
+//        '\}'];
+
+
+        $cf->setBeginEnd_RegEx($beginEnd);
+//        $collectString = &$this->collectString;
+        $fileName = 'examples_extracted_from_UnitTest.txt';
+        @unlink($fileName);
+
+        $msg = 'following examples are automatically extracted from the UnitTest source. For implementation please look into the UnitTest( https://github.com/sl5net/SL5_preg_contentFinder/tree/master/tests/PHPUnit ).';
+        file_put_contents($fileName, "\n\n" . $msg . "\n\n", FILE_APPEND | LOCK_EX);
+
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount) use ($fileName) {
+              if(strpos($cut['middle'], '$expected') !== false) {
+                  $m = &$cut['middle'];
+                  #         $source1 = $LINE__ . ':{k}';
+
+                  $reg_expected = ['\$expected\s*=[^\'"]*("|\')', '("|\')'];
+                  $reg_source = ['\$source1\s*=[^\'"]*("|\')', '("|\')'];
+
+//                  $source1 = $LINE__ . ':a{b{c{o}c}b}a';
+
+
+                  $p = new SL5_preg_contentFinder($m, $reg_expected);
+                  $p->setSearchMode('dontTouchThis');
+                  $expectedStr = $p->getContent();
+
+                  $p->setBeginEnd_RegEx($reg_source);
+                  $sourceStr = $p->getContent();
+
+                  if(trim($sourceStr) && strpos($sourceStr, '$cfEmpty_IfEmptyResult') === false) {
+                      $msg = "Example source conversion :
+
+$sourceStr
+
+==>
+
+$expectedStr
+
+______________________
+";
+                      file_put_contents($fileName, "\n\n" . $msg . "\n\n", FILE_APPEND | LOCK_EX);
+                  }
+
+
+              }
+              else {
+//                  $cut['before'] = "\n";
+              }
+              $cut['middle'] .= $cut['behind'];
+
+              return $cut;
+          });
+        $break = 'break';
+        $break = 'break';
+//        $collectString;
+    }
+
+
+    function test_simple_a_A_â() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':a{A}â';
+        $expected = $LINE__ . ':a[A]â';
+        $old_open = '{';
+        $old_close = '}';
+
+        $new_open_default = '[';
+        $new_close_default = ']';
+        $charSpace = "";
+        $newline = "\r\n";
+        $newline = "";
+        $indentSize = 2;
+
+        $source1 = $source1;
+
+
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
+
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+
+            return $indentStr;
+        };
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+
+              $n = $newline;
+              $indentStr0 = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $indentStr1 = $getIndentStr($deepCount, $charSpace, $indentSize);
+
+              $cut['middle'] = $n . $indentStr0 . $new_open_default . $n . $indentStr1 . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr1 . "$1", $cut['middle']) . $n
+                . $indentStr0 . $new_close_default . $cut['behind'];
+
+              return $cut;
+          });
+
+        $this->assertEquals($expected, $actual);
+
+    }
+    function test_simple_aAâ() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':a{A}â';
+        $expected = $LINE__ . ':aAâ';
+        $old_open = '{';
+        $old_close = '}';
+
+        $new_open_default = '';
+        $new_close_default = '';
+        $charSpace = "";
+        $newline = "\r\n";
+        $newline = "";
+        $indentSize = 2;
+
+        $source1 = $source1;
+
+
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
+
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+
+            return $indentStr;
+        };
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
+//              $n .= $deepCount.'|';
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $cut['before'] .= $n . $indentStr . $new_open_default;
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
+              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
+
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
+
+//      {{o}}
+//        $actual = $cBefore . $content . $cBehind;
+
+        $this->assertEquals($expected, $actual);
+
+    }
+    function test_a_b_B_callback() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':a{b{B}}';
+        $expected = $LINE__ . ':a<b<B>>';
+        $old = ['{', '}'];
+
+        $new_open_default = '<';
+        $new_close_default = '>';
+        $charSpace = "";
+        $newline = "\r\n";
+        $newline = "";
+        $indentSize = 2;
+        $source1 = $source1;
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old);
+
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+
+            return $indentStr;
+        };
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
+//              $n .= $deepCount.'|';
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $cut['before'] .= $n . $indentStr . $new_open_default;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
+//              $n .= $deepCount.':';
+//              $charSpace ='`';
+              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
+
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
+//              $n .= $deepCount.';';
+//              $charSpace ='´';
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+
+              // return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
+
+//      {{o}}
+//        $actual = $cBefore . $content . $cBehind;
+
+        $this->assertEquals($expected, $actual);
+
+    }
 
 
     function test_recursive_02() {
@@ -15,7 +268,7 @@ include_once '_callbackShortExample.php';
 //    $file_content_original = file_get_contents('SciTEUpdate.ahk');
         $LINE__ = __LINE__;
 
-        $file_content_compressed = $LINE__ . ':a{b{c{o}c}b}a';
+        $source1 = $LINE__ . ':a{b{c{o}c}b}a';
 
         $expected = $LINE__ . ':a[_´b[_´´c[_´´´o_´´`]_´´c_´`]_´b_`]_a';
         $old_open = '{';
@@ -27,7 +280,7 @@ include_once '_callbackShortExample.php';
         $newline = "_";
         $indentSize = 1;
 
-        $cf = new SL5_preg_contentFinder($file_content_compressed);
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -37,42 +290,44 @@ include_once '_callbackShortExample.php';
             return $indentStr;
         };
 
-        $file_content_reformatted = $cf->getContent_user_func_recursive(
-          function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
               $charSpace = "'";
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-              return $before  . $new_open_default  ;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut === false) return $cut;
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $cut['before'] .= $new_open_default;
+//              return $cut  ;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-              $charSpace ='´';
+              $charSpace = '´';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
-              $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-              $cut .= $n;
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-              return $cut;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-              if($cut === false || $behind === false){
-//                  return $behind;
-                  return false;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) {
+//                  return $cut['behind'];
+//                  return false;
               }
               $n = $newline;
 //          $n .= $deepCount.';';
-              $charSpace ='`';
+              $charSpace = '`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-              return $indentStr . $new_close_default . $n ;
-              # todo: $behind dont need newline at the beginning
+//              $cut['behind'] .= $indentStr . $new_close_default . $n;
+              $cut['middle'] .= $indentStr . $new_close_default . $n . $cut['behind'];
+
+              // return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
 
 //      {{o}}
 
-        $this->assertEquals($expected, $file_content_reformatted);
+        $this->assertEquals($expected, $actual);
 
     }
 
@@ -88,7 +343,7 @@ a{b{B}}';
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
-        $file_content_compressed = $source1;
+        $source1 = $source1;
         $expected = $LINE__ . ':
 a
 1|[
@@ -98,7 +353,7 @@ a
 2:..]
 1:]';
 
-        $cf = new SL5_preg_contentFinder($file_content_compressed);
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -112,116 +367,44 @@ a
 //      $contentFunc = null,
 //      $closeFunc = null
 
-        $file_content_reformatted = $cf->getContent_user_func_recursive(
-          function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
-              $n .= $deepCount.'|';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-              return $before  . $n . $indentStr . $new_open_default  ;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut === false) return $cut;
+              $n .= $deepCount . '|';
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $cut['before'] .= $n . $indentStr . $new_open_default;
+
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
               $n = $newline;
-              $n .= $deepCount.':';
+              $n .= $deepCount . ':';
 //              $charSpace ='`';
               $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-              $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-              $cut .= $n;
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-              return $cut;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-              if($cut === false || $behind === false){
-//                  return $behind;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
                   return false;
               }
               $n = $newline;
-              $n .= $deepCount.';';
+              $n .= $deepCount . ';';
 //              $charSpace ='´';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              return $indentStr . $new_close_default  ;
-              # todo: $behind dont need newline at the beginning
+              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
 
 //      {{o}}
-//        $file_content_reformatted = $cBefore . $content . $cBehind;
+//        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $file_content_reformatted);
-
-
-    }
-    function test_simple2() {
-        $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':a{b{B}}';
-        $old_open = '{';
-        $old_close = '}';
-
-        $new_open_default = '<';
-        $new_close_default = '>';
-        $charSpace = "";
-        $newline = "\r\n";
-        $newline = "";
-        $indentSize = 2;
-
-        $file_content_compressed = $source1;
-
-//        $expected = $LINE__.':1[_.2[_..3[_...o_...]_3_..]_2_.]_1';
-        $expected = $LINE__ . ':a<b<B>>';
-//        $expected = $LINE__ . ':a<b<B>>';
-
-
-        $cf = new SL5_preg_contentFinder($file_content_compressed);
-        $cf->setBeginEnd_RegEx($old_open, $old_close);
-
-        $getIndentStr = function ($indent, $char, $indentSize) {
-            $multiplier = $indentSize * $indent;
-            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-
-            return $indentStr;
-        };
-
-        //        $openFunc = null,
-//      $contentFunc = null,
-//      $closeFunc = null
-
-        $file_content_reformatted = $cf->getContent_user_func_recursive(
-          function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
-              $n = $newline;
-//              $n .= $deepCount.'|';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-              return $before  . $n . $indentStr . $new_open_default  ;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut === false) return $cut;
-              $n = $newline;
-//              $n .= $deepCount.':';
-//              $charSpace ='`';
-              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-              $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-              $cut .= $n;
-
-              return $cut;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-              if($cut === false || $behind === false){
-//                  return $behind;
-                  return false;
-              }
-              $n = $newline;
-//              $n .= $deepCount.';';
-//              $charSpace ='´';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-
-              return $indentStr . $new_close_default  ;
-              # todo: $behind dont need newline at the beginning
-          });
-
-//      {{o}}
-//        $file_content_reformatted = $cBefore . $content . $cBehind;
-
-        $this->assertEquals($expected, $file_content_reformatted);
-
+        $this->assertEquals($expected, $actual);
 
     }
     function test_simple() {
@@ -237,7 +420,7 @@ a{A}b{B}';
         $newline = "\r\n";
         $indentSize = 2;
 
-        $file_content_compressed = $source1;
+        $source1 = $source1;
 
 //        $expected = $LINE__.':1[_.2[_..3[_...o_...]_3_..]_2_.]_1';
         $expected = $LINE__ . ':
@@ -251,7 +434,7 @@ a
 1:]
 1;';
 
-        $cf = new SL5_preg_contentFinder($file_content_compressed);
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -264,43 +447,46 @@ a
         //        $openFunc = null,
 //      $contentFunc = null,
 //      $closeFunc = null
-        $file_content_reformatted = $cf->getContent_user_func_recursive(
-          function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
-              $n .= $deepCount.'|';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-              return $before  . $n . $indentStr . $new_open_default  ;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut === false) return $cut;
+              $n .= $deepCount . '|';
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['before'] .= $n . $indentStr . $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
               $n = $newline;
-              $n .= $deepCount.':';
+              $n .= $deepCount . ':';
 //              $charSpace ='`';
               $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-              $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-              $cut .= $n;
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-              return $cut;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-              if($cut === false || $behind === false){
-//                  return $behind;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
                   return false;
               }
               $n = $newline;
-              $n .= $deepCount.';';
+              $n .= $deepCount . ';';
 //              $charSpace ='´';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              return $indentStr . $new_close_default . $n ;
-              # todo: $behind dont need newline at the beginning
+//              $cut['behind'] .= $indentStr . $new_close_default . $n;
+//              $cut['behind'] = $indentStr . $new_close_default . $n . $cut['behind'];
+              $cut['middle'] .= $indentStr . $new_close_default . $n . $cut['behind'];
+
+              // return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
 
 //      {{o}}
-//        $file_content_reformatted = $cBefore . $content . $cBehind;
+//        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $file_content_reformatted);
-
+        $this->assertEquals($expected, $actual);
 
     }
 
@@ -318,7 +504,7 @@ if(a1){$A1;}if(a2){$A2;}';
         $newline = "\r\n";
         $indentSize = 2;
 
-        $file_content_compressed = $source1;
+        $source1 = $source1;
 
 //        $expected = $LINE__.':1[_.2[_..3[_...o_...]_3_..]_2_.]_1';
         $expected = $LINE__ . ':
@@ -332,7 +518,7 @@ if(a1)
 1:]
 1;';
 
-        $cf = new SL5_preg_contentFinder($file_content_compressed);
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -346,585 +532,570 @@ if(a1)
 //      $contentFunc = null,
 //      $closeFunc = null
 
-        $file_content_reformatted = $cf->getContent_user_func_recursive(
-          function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
-              $n .= $deepCount.'|';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-              return $before  . $n . $indentStr . $new_open_default  ;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut === false) return $cut;
+              $n .= $deepCount . '|';
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['before'] .= $n . $indentStr . $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
               $n = $newline;
-              $n .= $deepCount.':';
+              $n .= $deepCount . ':';
 //              $charSpace ='`';
               $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-              $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-              $cut .= $n;
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-              return $cut;
-          },
-          function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-              if($cut === false || $behind === false){
-//                  return $behind;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
                   return false;
               }
               $n = $newline;
-              $n .= $deepCount.';';
+              $n .= $deepCount . ';';
 //              $charSpace ='´';
-              $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              return $indentStr . $new_close_default . $n ;
-              # todo: $behind dont need newline at the beginning
+//              $cut['behind'] .= $indentStr . $new_close_default . $n;
+              $cut['middle'] .= $indentStr . $new_close_default . $n . $cut['behind'];
+
+              // return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
 
 //      {{o}}
-//        $file_content_reformatted = $cBefore . $content . $cBehind;
+//        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $file_content_reformatted);
-
+        $this->assertEquals($expected, $actual);
 
     }
 
 
-
-
-function test_shortest_new_close_recursive() {
-//        return true;
+    function test_shortest_new_close_recursive() {
 //    include_once 'input_compressed.ahk'
 //    $file_content_original = file_get_contents('SciTEUpdate.ahk');
-    $LINE__ = __LINE__;
+        $LINE__ = __LINE__;
 
-    $file_content_compressed = $LINE__ . ':{}';
-    $expected = $LINE__ . ':{#';
-    $old_open = '{';
-    $old_close = '}';
+        $source1 = $LINE__ . ':{}';
+        $expected = $LINE__ . ':{#';
+        $old_open = '{';
+        $old_close = '}';
 
-    $new_open_default = $old_open;
-    $new_close_default = '#';
+        $new_open_default = $old_open;
+        $new_close_default = '#';
 //        $new_close_default = $old_close; // this line is reason for endless loop
-    $charSpace = "";
-    $newline = "";
-    $indentSize = 1;
+        $charSpace = "";
+        $newline = "";
+        $indentSize = 1;
 
-    $cf = new SL5_preg_contentFinder($file_content_compressed);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
 
-    $getIndentStr = function ($indent, $char, $indentSize) {
-        $multiplier = $indentSize * $indent;
-        $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
 
-        return $indentStr;
-    };
+            return $indentStr;
+        };
 
-    $file_content_reformatted = $cf->getContent_user_func_recursive(
-      function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
-          $n = $newline;
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
 //          $n .= $deepCount.'|';
-          $charSpace = "'";
-          $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-          return $before  . $new_open_default  ;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-          if($cut === false) return $cut;
-          $n = $newline;
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['before'] .= $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
 //          $n .= $deepCount.':';
 //          $charSpace ='´';
-          $indentStr = $getIndentStr(1, $charSpace, $indentSize);
-          $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-          $cut .= $n;
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-          return $cut;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-          if($cut === false || $behind === false){
-//                  return $behind;
-              return false;
-          }
-          $n = $newline;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
 //          $n .= $deepCount.';';
 //          $charSpace ='`';
-          $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-          return $indentStr . $new_close_default . $n ;
-          # todo: $behind dont need newline at the beginning
-      });
+              $cut['middle'] .= $indentStr . $new_close_default . $n;
+
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
 
 //      {{o}}
 
-    $this->assertEquals($expected, $file_content_reformatted);
+        $this->assertEquals($expected, $actual);
 
-}
+    }
 
 
-function test_reformat_compressed_AutoHotKey() {
+    function test_reformat_compressed_AutoHotKey() {
 //        return true;
 //    include_once 'input_compressed.ahk'
 //    $file_content_original = file_get_contents('SciTEUpdate.ahk');
-    $LINE__ = __LINE__;
+        $LINE__ = __LINE__;
 
-    $file_content_compressed = $LINE__ . ':{{o}}';
-    $expected = $LINE__ . ':{n {n on >n >';
-    $old_open = '{';
-    $old_close = '}';
+        $source1 = $LINE__ . ':{{o}}';
+        $expected = $LINE__ . ':{n {n on >n >';
+        $old_open = '{';
+        $old_close = '}';
 
-    $new_open_default = $old_open;
-    $new_close_default = '>';
+        $new_open_default = $old_open;
+        $new_close_default = '>';
 //        $new_close_default = $old_close; // this line is reason for endless loop
-    $charSpace = " ";
-    $newline = "n";
+        $charSpace = " ";
+        $newline = "n";
 //        $newline = "aölsdkfjösaldkjfsöalfdkj"; // see closure functions
-    $indentSize = 1;
+        $indentSize = 1;
 
-    $cf = new SL5_preg_contentFinder($file_content_compressed);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
 
-    $getIndentStr = function ($indent, $char, $indentSize) {
-        $multiplier = $indentSize * $indent;
-        $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
 
-        return $indentStr;
-    };
+            return $indentStr;
+        };
 
-    $file_content_reformatted = $cf->getContent_user_func_recursive(
-      function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
-          $n = $newline;
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
-          $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-          return $before  . $new_open_default  ;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-          if($cut === false) return $cut;
-          $n = $newline;
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['before'] .= $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
 //          $n .= $deepCount.':';
 //          $charSpace ='´';
-          $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-          $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-          $cut .= $n;
+              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-          return $cut;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-          if($cut === false || $behind === false){
-//                  return $behind;
-              return false;
-          }
-          $n = $newline;
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
 //          $n .= $deepCount.';';
 //          $charSpace ='`';
-          $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-          return $indentStr . $new_close_default  ;
-          # todo: $behind dont need newline at the beginning
-      });
+              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
 //      {{o}}
-//    $file_content_reformatted = $cBefore . $content . $cBehind;
+//    $actual = $cBefore . $content . $cBehind;
 
-    $this->assertEquals($expected, $file_content_reformatted);
+        $this->assertEquals($expected, $actual);
 
-}
+    }
 
 
+    function test_shortest_lette_in_middle_recursive() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':{l}';
+        $expected = $LINE__ . ':{l}';
+        $old_open = '{';
+        $old_close = '}';
 
-function test_shortest_lette_in_middle_recursive() {
-    return true;
-//    include_once 'input_compressed.ahk'
-//    $file_content_original = file_get_contents('SciTEUpdate.ahk');
-    $LINE__ = __LINE__;
-
-    $file_content_compressed = $LINE__ . ':{l}';
-    $expected = $LINE__ . ':{l}';
-    $old_open = '{';
-    $old_close = '}';
-
-    $new_open_default = '{';
-    $new_close_default = '}';
+        $new_open_default = '{';
+        $new_close_default = '}';
 //        $new_close_default = $old_close; // this line is reason for endless loop
-    $charSpace = "";
-    $newline = "";
-    $indentSize = 1;
+        $charSpace = "";
+        $newline = "";
+        $indentSize = 1;
 
-    $cf = new SL5_preg_contentFinder($file_content_compressed);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
 
-    $getIndentStr = function ($indent, $char, $indentSize) {
-        $multiplier = $indentSize * $indent;
-        $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
 
-        return $indentStr;
-    };
+            return $indentStr;
+        };
 
-    list($cBefore, $content, $cBehind) = $cf->getContent_user_func_recursive(
-      function ($before, $cut, $behind, $deepCount) use ($new_open_default) {
-          if($deepCount > 50) {
-              die(__LINE__ . ':to much for this example. $deepCount=' . $deepCount);
-          }
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
+//          $n .= $deepCount.'|';
+//          $charSpace = "'";
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-          return $before . $new_open_default;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-          if($deepCount > 55) {
-              die(__LINE__ . ':to much for this example. $deepCount=' . $deepCount);
-          }
-          if($cut === false) return $cut;
-          $n = $newline;
-          $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-          $cut = $n . $indentStr . preg_replace('/' . $n . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-          $cut .= $n;
+              $cut['before'] .= $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
+//          $n .= $deepCount.':';
+//          $charSpace ='´';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-          return $cut;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-          if($deepCount > 50) {
-              die(__LINE__ . ':to much for this example. $deepCount=' . $deepCount);
-          }
-          if($cut === false || $behind === false) return $behind;
-          $n = $newline;
-          $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              // return $cut;
+              // , function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
+//          $n .= $deepCount.';';
+//          $charSpace ='`';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-          return $indentStr . $new_close_default . $n . ltrim($behind);
-          # todo: $behind dont need newline at the beginning
-      });
+              $cut['middle'] .= $indentStr . $new_close_default . $n;
+
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
 
 //      {{o}}
-    $file_content_reformatted = $cBefore . $content . $cBehind;
 
-    $this->assertEquals($expected, $file_content_reformatted);
+        $this->assertEquals($expected, $actual);
 
-}
+    }
 
 
-function test_recursive_01() {
-    return true;
+    function test_recursive_01() {
 //    include_once 'input_compressed.ahk'
 //    $file_content_original = file_get_contents('SciTEUpdate.ahk');
-    $LINE__ = __LINE__;
-    $file_content_compressed = $LINE__ . ':{k}';
-    $expected = $LINE__ . ':[k]';
-    $old_open = '{';
-    $old_close = '}';
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':{k}';
+        $expected = $LINE__ . ':[k]';
+        $old_open = '{';
+        $old_close = '}';
+        $charSpace = ' ';
+        $charSpace = '';
+        $newline = "\n";
+        $newline = "";
+        $indentSize = 1;
+        $new_open_default = '[';
+        $new_close_default = ']';
 
-    $new_open_default = '[';
-    $new_close_default = ']';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
 
-    $cf = new SL5_preg_contentFinder($file_content_compressed);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
 
-    $getIndentStr = function ($indent, $char, $indentSize) {
-        $multiplier = $indentSize * $indent;
-        $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+            return $indentStr;
+        };
 
-        return $indentStr;
-    };
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
+//          $n .= $deepCount.'|';
+//          $charSpace = "'";
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-    list($cBefore, $content, $cBehind) = $cf->getContent_user_func_recursive(
-      function ($before) use ($new_open_default) {
-          return $before . $new_open_default;
-      },
-      function ($before, $cut) {
-          return $cut;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($new_close_default) {
-          if($cut === false) return $behind;
+              $cut['before'] .= $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
+//          $n .= $deepCount.':';
+//          $charSpace ='´';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-          return $new_close_default;
-      });
-    $file_content_reformatted = $cBefore . $content . $cBehind;
-    $this->assertEquals($expected, $file_content_reformatted);
-}
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
+//          $n .= $deepCount.';';
+//          $charSpace ='`';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-function test_shortest_new_open_recursive() {
-    return true;
-//    include_once 'input_compressed.ahk'
-//    $file_content_original = file_get_contents('SciTEUpdate.ahk');
-    $LINE__ = __LINE__;
+              $cut['middle'] .= $indentStr . $new_close_default . $n;
 
-    $file_content_compressed = $LINE__ . ':{}';
-    $expected = $LINE__ . ':#}';
-    $old_open = '{';
-    $old_close = '}';
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
+        $this->assertEquals($expected, $actual);
+    }
 
-    $new_open_default = '#';
-    $new_close_default = '}';
+    function test_shortest_new_open_recursive() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':{}';
+        $expected = $LINE__ . ':#}';
+        $old_open = '{';
+        $old_close = '}';
+
+        $new_open_default = '#';
+        $new_close_default = '}';
 //        $new_close_default = $old_close; // this line is reason for endless loop
-    $charSpace = " ";
-    $newline = "n";
-    $indentSize = 1;
+        $charSpace = "";
+        $newline = "";
+        $indentSize = 1;
 
-    $cf = new SL5_preg_contentFinder($file_content_compressed);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
 
-    $getIndentStr = function ($indent, $char, $indentSize) {
-        $multiplier = $indentSize * $indent;
-        $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
 
-        return $indentStr;
-    };
+            return $indentStr;
+        };
 
-    list($cBefore, $content, $cBehind) = $cf->getContent_user_func_recursive(
-      function ($before, $cut, $behind, $deepCount) use ($new_open_default) {
-          if($deepCount > 50) {
-              die(__LINE__ . ':to much for this example. $deepCount=' . $deepCount);
-          }
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
+//          $n .= $deepCount.'|';
+//          $charSpace = "'";
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-          return $before . $new_open_default;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-          if($deepCount > 55) {
-              die(__LINE__ . ':to much for this example. $deepCount=' . $deepCount);
-          }
-          if($cut === false) return $cut;
-          $n = $newline;
-          $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-          $cut = $n . $indentStr . preg_replace('/' . $n . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-          $cut .= $n;
+              $cut['before'] .= $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
+//          $n .= $deepCount.':';
+//          $charSpace ='´';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
+              $cut['middle'] .= $n;
 
-          return $cut;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-          if($deepCount > 50) {
-              die(__LINE__ . ':to much for this example. $deepCount=' . $deepCount);
-          }
-          if($cut === false) return $behind;
-          $n = $newline;
-          $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
+//          $n .= $deepCount.';';
+//          $charSpace ='`';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-          return $indentStr . $new_close_default . $n . ltrim($behind);
-          # todo: $behind dont need newline at the beginning
-      });
+              $cut['middle'] .= $indentStr . $new_close_default . $n;
+
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
 
 //      {{o}}
-    $file_content_reformatted = $cBefore . $content . $cBehind;
 
-    $this->assertEquals($expected, $file_content_reformatted);
+        $this->assertEquals($expected, $actual);
 
-}
-
-//    function test_shortest_new_close_recursive() {
-////        return true;
-////    include_once 'input_compressed.ahk'
-////    $file_content_original = file_get_contents('SciTEUpdate.ahk');
-//        $LINE__=__LINE__;
-//
-//        $file_content_compressed = $LINE__.':{}';
-//        $expected = $LINE__.':{#';
-//        $old_open = '{';
-//        $old_close = '}';
-//
-//        $new_open_default = $old_open;
-//        $new_close_default = '#';
-////        $new_close_default = $old_close; // this line is reason for endless loop
-//        $charSpace = " ";
-//        $newline = "n";
-//        $indentSize = 1;
-//
-//        $cf = new SL5_preg_contentFinder($file_content_compressed);
-//        $cf->setBeginEnd_RegEx($old_open, $old_close);
-//
-//        $getIndentStr = function ($indent, $char, $indentSize) {
-//            $multiplier = $indentSize * $indent;
-//            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-//
-//            return $indentStr;
-//        };
-//
-//        list($cBefore, $content, $cBehind) = $cf->getContent_user_func_recursive(
-//          function ($before, $cut, $behind, $deepCount) use ($new_open_default) {
-//              if($deepCount>50)
-//              {
-//                  die(__LINE__. ':to much for this example. $deepCount=' . $deepCount);
-//              }
-//              return $before . $new_open_default; },
-//          function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-//              if($deepCount>55)
-//              {
-//                  die(__LINE__. ':to much for this example. $deepCount=' . $deepCount);
-//              }
-//              if($cut === false) return $cut;
-//              $n = $newline;
-//              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-//              $cut = $n . $indentStr . preg_replace('/' . $n . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut);
-//              $cut .= $n;
-//
-//              return $cut;
-//          },
-//          function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-//              if($deepCount>50)
-//              {
-//                  die(__LINE__. ':to much for this example. $deepCount=' . $deepCount);
-//              }
-//              if($cut === false || $behind === false) return $behind;
-//              $n = $newline;
-//              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-//
-//              return $indentStr . $new_close_default . $n . ltrim($behind);
-//              # todo: $behind dont need newline at the beginning
-//          });
-//
-////      {{o}}
-//        $file_content_reformatted = $cBefore . $content . $cBehind;
-//
-//        $this->assertEquals($expected, $file_content_reformatted);
-//
-//    }
+    }
 
 
-
-public
-function test_recursion_simplyReproduction() {
-    # this recursion is deprecated and not implemented into the core class. so dont waste time ;)
+    function test_recursion_simplyReproduction() {
+        # this recursion is deprecated and not implemented into the core class. so dont waste time ;)
 //        return false;
-    $source = 'A {11{22{3}{2}22}11}{1} B';
-    $cf = new SL5_preg_contentFinder($source);
-    list($c, $bf, $bh) = recursion_simplyReproduction($source);
-    $cut = $bf . $c . $bh;
-    $cf->setBeginEnd_RegEx('{', '}');
-    $this->assertEquals($source, $cut);
-}
+        $expected = 'A {11{22{3}{2}22}11}{1} B';
+        $cf = new SL5_preg_contentFinder($expected);
+        list($c, $bf, $bh) = recursion_simplyReproduction($expected);
+        $actual = $bf . $c . $bh;
+        $cf->setBeginEnd_RegEx('{', '}');
+        $this->assertEquals($expected, $actual);
+    }
 
 
+    /**
+     * using class SL5_preg_contentFinder
+     * and ->getContent_user_func_recursive.
+     * in a case i don't like this style using closures to much. so you only need one function (advantage) from the outside. but looks more ugly from the inside. not best way for debugging later (inside). you need to compare, decide for your business.
+     */
 
-
-
-
-
-
-
-/**
- * using class SL5_preg_contentFinder
- * and ->getContent_user_func_recursive.
- * in a case i don't like this style using closures to much. so you only need one function (advantage) from the outside. but looks more ugly from the inside. not best way for debugging later (inside). you need to compare, decide for your business.
- */
-public
-function test_callback_with_closures() {
-    $source1 = 'if(X1){$X1;if(X2){$X2;}}';
-    $expected = 'if(X1)[
+    function test_callback_with_closures() {
+        $source1 = '_if(X1){$X1;if(X2){$X2;}}';
+        $expected = '_if(X1)[
 ..$X1;if(X2)[
 ....$X2;
 ..]
 ]';
-    $old_open = '{';
-    $old_close = '}';
-    $new_open_default = '[';
-    $new_close_default = ']';
-    $charSpace = ".";
-    $newline = "\r\n";
-    $indentSize = 2;
+        $old_open = '{';
+        $old_close = '}';
+        $new_open_default = '[';
+        $new_close_default = ']';
+        $charSpace = ".";
+        $newline = "\r\n";
+        $indentSize = 2;
 
-    $cf = new SL5_preg_contentFinder($source1);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
 
-    $getIndentStr = function ($indent, $char, $indentSize) {
-        $multiplier = $indentSize * $indent;
-        $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
 
-        return $indentStr;
-    };
+            return $indentStr;
+        };
 
-    $source2 = $cf->getContent_user_func_recursive(
-      function ($before, $cut, $behind, $deepCount) use ($new_open_default,$charSpace, $newline, $indentSize,$getIndentStr) {
-          $n = $newline;
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
-          $indentStr = $getIndentStr($deepCount-1, $charSpace, $indentSize);
-          return $before  . $new_open_default  ;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
-          if($cut === false) return $cut;
-          $n = $newline;
+              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+
+              $cut['before'] .= $new_open_default;
+// return $cut;
+              // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+              $n = $newline;
 //          $n .= $deepCount.':';
 //          $charSpace ='´';
-          $indentStr = $getIndentStr(1, $charSpace, $indentSize);
-          $cut = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n]+)/', $n . $indentStr . "$1", $cut);
-//          $cut .= $n;
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n]+)/', $n . $indentStr . "$1", $cut['middle']);
 
-          return $cut;
-      },
-      function ($before, $cut, $behind, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
-          if($cut === false || $behind === false){
-//                  return $behind;
-              return false;
-          }
-          $n = $newline;
+//          $cut['middle'] .= $n;
+
+              // return $cut;
+              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false || $cut['behind'] === false) {
+//                  return $cut['behind'];
+                  return false;
+              }
+              $n = $newline;
 //          $n .= $deepCount.';';
 //          $charSpace ='-';
 //          $indentStr = $getIndentStr(0, $charSpace, $indentSize);
 
-          return $n . $new_close_default  ;
-          # todo: $behind dont need newline at the beginning
-      });
+              $cut['middle'] .= $n . $new_close_default;
 
-    $this->assertEquals($expected,
-      $source2);
-}
+// return $cut;
+              return $cut; # todo: $cut['behind'] dont need newline at the beginning
+          });
+
+        $this->assertEquals($expected,
+          $actual);
+    }
 
 
-public
-function test_reformatCode_recursion_add() {
-    $source1 = "if(InStr(tc,needle)){win:=needle}else{win:=needle2}";
-    $source2 =
-      "if(InStr(tc,needle)){
+    function test_reformatCode_recursion_add() {
+        $source1 = "if(InStr(tc,needle)){win:=needle}else{win:=needle2}";
+        $expected =
+          "if(InStr(tc,needle)){
    win:=needle;
 }else{
    win:=needle2;
 }";
-    $cf = new SL5_preg_contentFinder($source1);
-    $cf->setBeginEnd_RegEx('{', '}');
-    list($c, $bf, $bh) = self::recursion_add($source1, "{\r\n   ", ";\r\n}");
-    $cut = $bf . $c . $bh;
-    $this->assertEquals($source2, $cut);
-    $this->assertEquals(strlen($source2), strlen($cut));
-}
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx('{', '}');
+        list($c, $bf, $bh) = self::recursion_add($source1, "{\r\n   ", ";\r\n}");
+        $actual = $bf . $c . $bh;
+        $this->assertEquals($expected, $actual);
+        $this->assertEquals(strlen($expected), strlen($actual));
+    }
 
-public
-static function recursion_add(
-  $content,
-  $addBefore = null,
-  $addBehind = null,
-  $before = null,
-  $behind = null
-) {
-    $isFirstRecursion = is_null($before); # null is used as trigger for first round.
-    $cf = new SL5_preg_contentFinder($content);
-    if($cut = @$cf->getContent($b = '{', $e = '}')) {
-        $before .= $cf->getContent_Before() . $addBefore;
-        $behindTemp = $cf->getContent_Behind() . $behind;
 
-        if($isFirstRecursion) {
-            list($c, $bf, $bh) =
-              self::recursion_add($behindTemp,
-                $addBefore,
-                $addBehind); // this version of recursion also includes the rest of contentDemo.
-            $behind = (is_null($c)) ? $addBehind . $behindTemp : $addBehind . $bf . $c . $bh;
+    static function recursion_add(
+      $content,
+      $addBefore = null,
+      $addBehind = null,
+      $before = null,
+      $behind = null
+    ) {
+        $isFirstRecursion = is_null($before); # null is used as trigger for first round.
+        $cf = new SL5_preg_contentFinder($content);
+        if($cut['middle'] = @$cf->getContent($b = '{', $e = '}')) {
+            $before .= $cf->getContent_Before() . $addBefore;
+            $behindTemp = $cf->getContent_Behind() . $behind;
+
+            if($isFirstRecursion) {
+                list($c, $bf, $bh) =
+                  self::recursion_add($behindTemp,
+                    $addBefore,
+                    $addBehind); // this version of recursion also includes the rest of contentDemo.
+                $behind = (is_null($c)) ? $addBehind . $behindTemp : $addBehind . $bf . $c . $bh;
+            }
+            else {
+                $behind = $addBehind . $behindTemp;
+            }
+
+            $return = self::recursion_add(
+              $cut['middle'],
+              $addBefore,
+              $addBehind,
+              $before,
+              $behind
+            );
+
+            return $return;
         }
-        else {
-            $behind = $addBehind . $behindTemp;
-        }
-
-        $return = self::recursion_add(
-          $cut,
-          $addBefore,
-          $addBehind,
-          $before,
-          $behind
-        );
-
+        $return = array($content, $before, $behind); // core element.
         return $return;
     }
-    $return = array($content, $before, $behind); // core element.
-    return $return;
-}
 
 
 
 
+     function test_Grabbing_HTML_Tag() {
+        return false;
+//        $source1 = file_get_contents(__FILE__);
+        $expected = 'hiHo';
+        $source1 = '<P>hiHo</P>';
+        $cf = new SL5_preg_contentFinder($source1);
+        $rB = '<([A-Z][A-Z0-9]*)\b[^>]*>';
+        $rE = '<\/{1}>';
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $cf->setBeginEnd_RegEx($rB, $rE);
+//          '\s*\}\s*function\s+\s+function');
+        $actual = $cf->getContent();
+        $this->assertEquals($expected, $actual);
+        $break = 'b';
+    }
 
-    public function test_123_abc_v1() {
-        # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
-        # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
-        $content1 = '123#abc';
-        $cf = new SL5_preg_contentFinder($content1);
+
+     function test_parseFunctions() {
+//        $source1 = file_get_contents(__FILE__);
+        $expected = 'getIt();';
+        $source1 = '
+    function fo() { getIt(); }  function ';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $rB = $cf->preg_quote_by_SL5($s='function ')
+          .'\w+'
+          .'\(\)\s*\{'.'[\s\n\r\t]*';
+        $rE = ' }   function';
+        $rE = $cf->preg_quote_by_SL5($rE);
+        $cf->setBeginEnd_RegEx($rB, $rE);
+
+        if(true) {
+            $actualCmp = preg_replace('/.*' . $rB . '(.*?)' . $rE . '.*/misS', '$1', $source1);
+            $break = 'b';
+        }
+//          '\s*\}\s*function\s+\s+function');
+        $actual = $cf->getContent();
+        $break = 'b';
+        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $actualCmp);
+    }
+
+     function test_123_g() {
+        $source1 = '123#g';
+        $cf = new SL5_preg_contentFinder($source1);
         $sourceCF = @$cf->getContent(
           $begin = '\d+',
           $end = '\w+',
@@ -932,43 +1103,54 @@ static function recursion_add(
           $t = null,
           $searchMode = 'dontTouchThis'
         );
-        $expectedContent = '#';
-        $this->assertEquals($sourceCF, $expectedContent);
+        $expected = '#';
+        $this->assertEquals($sourceCF, $expected);
     }
-    public function test_123_abc_v2() {
-        $content1 = '123#abc';
-        $expectedContent = '#';
-        $cf = new SL5_preg_contentFinder($content1);
+     function test_123_z() {
+        $source1 = '123#z';
+        $expected = '#';
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('\d+','\w+');
-        $sourceCF=$cf->getContent();
-        $this->assertEquals($sourceCF, $expectedContent);
+        $cf->setBeginEnd_RegEx('\d+', '\w+');
+        $sourceCF = $cf->getContent();
+        $this->assertEquals($sourceCF, $expected);
     }
-    public function test_123_abc_v3() {
-        $content1 = '{
+     function test_123_abc_v3() {
+        $source1 = '{
         hiHo
         }';
-        $expectedContent = 'hiHo';
-        $cf = new SL5_preg_contentFinder($content1);
+        $expected = 'hiHo';
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('^\s*{\s*$\s*','\s*^\s*}\s*$');
-        $sourceCF=$cf->getContent();
-        $this->assertEquals($sourceCF, $expectedContent);
+        $cf->setBeginEnd_RegEx('^\s*{\s*$\s*', '\s*^\s*}\s*$');
+        $sourceCF = $cf->getContent();
+        $this->assertEquals($sourceCF, $expected);
     }
-    public function test_123_abc_v4() {
-        $content1 = '
+     function test_123_abc_v4() {
+        $source1 = '
 class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
-15-06-19_15-32
-}
-';
-        $expectedContent = '
-15-06-19_15-32
-';
-        $cf = new SL5_preg_contentFinder($content1);
+15-06-19_15-32';
+        $expected = '15-06-19_15-32';
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('\w\s*\{\s*$', '^\s*\}\s*$');
-        $sourceCF=$cf->getContent();
-        $this->assertEquals($expectedContent,$sourceCF);
+        $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*');
+        $sourceCF = $cf->getContent();
+        $levenshtein = levenshtein($expected, $sourceCF);
+//        $this->assertEquals(0,$levenshtein);
+        $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
+    }
+     function test_123_abc_v5() {
+        $source1 = '
+class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+15-06-19_15-32';
+        $expected = '15-06-19_15-32';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*$');
+        $sourceCF = $cf->getContent();
+        $levenshtein = levenshtein($expected, $sourceCF);
+//        $this->assertEquals(0,$levenshtein);
+        $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
     }
 
 
@@ -976,7 +1158,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * empty means it found an empty.
      * false means nothing was found.
      */
-    public function test_false_versus_empty() {
+     function test_false_versus_empty() {
 
         $cfEmpty_IfEmptyResult = new SL5_preg_contentFinder("{}");
         $cfEmpty_IfEmptyResult->setBeginEnd_RegEx('{', '}');
@@ -998,7 +1180,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * echo and return from a big string a bit of the start and a bit from the end.
      */
-    public function test_echo_content_little_excerpt() {
+     function test_echo_content_little_excerpt() {
         $cf = new SL5_preg_contentFinder("dummy");
         $this->assertEquals("12...45", $cf->echo_content_little_excerpt("12345", 2, 2));
     }
@@ -1006,28 +1188,28 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * nl2br_Echo returns nothong, returns null. it simly echo
      */
-    public function test_nl2br_Echo() {
+     function test_nl2br_Echo() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals($cf->nl2br_Echo(__LINE__, "filename", "<br>"), null);
     }
     /**
      * getContent_Next returns false if there is not a next contentDemo
      */
-    public function test_getContentNext() {
+     function test_getContentNext() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->getContent_Next());
     }
     /**
      * false if parameter is not  'pos_of_next_search' or 'begin' or 'end'
      */
-    public function test_CACHE_current() {
+     function test_CACHE_current() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->CACHE_current());
     }
     /**
      * CACHE_current: false if there is no matching cache. no found contentDemo.
      */
-    public function test_CACHE_current_begin_end_false() {
+     function test_CACHE_current_begin_end_false() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->CACHE_current("begin"));
         $this->assertEquals(false, $cf->CACHE_current("end"));
@@ -1035,7 +1217,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * CACHE_current: simply the string of the current begin / end quote
      */
-    public function test_CACHE_current_begin_end() {
+     function test_CACHE_current_begin_end() {
         $cf = new SL5_preg_contentFinder(00123456);
         $cf->setBeginEnd_RegEx('2', '4');
         $this->assertEquals(2, $cf->CACHE_current("begin"));
@@ -1046,7 +1228,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * getContent ... gives false if there isn't a contentDemo. if it found a contentDemo it gives true
      */
-    public function test_getContent() {
+     function test_getContent() {
         $cf = new SL5_preg_contentFinder("00123456");
         $cf->setBeginEnd_RegEx('2', '4');
         $this->assertEquals(false, $cf->getContent_Prev());
@@ -1054,7 +1236,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(3, $cf->getContent());
     }
 
-    public function test_getUniqueSignExtreme() {
+     function test_getUniqueSignExtreme() {
         $cf = new SL5_preg_contentFinder(123456);
         $cf->isUniqueSignUsed = true; # needs to switched on first !! performance reasons
         $cf->setBeginEnd_RegEx('2', '4');
@@ -1063,7 +1245,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($probablyUsedUnique, $cf->getUniqueSignExtreme());
     }
 
-    public function test_protect_a_string() {
+     function test_protect_a_string() {
         $cf = new SL5_preg_contentFinder('"{{mo}}"');
         $cf->isUniqueSignUsed = true; # needs to switched on first !! performance reasons
         $cf->setBeginEnd_RegEx('{', '}');
@@ -1091,7 +1273,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * get_borders ... you could get contents by using substr.
      * its different to getContent_Prev (matching contentDemo)
      */
-    public function test_content_getBorders_before() {
+     function test_content_getBorders_before() {
         $content = "before0[in0]behind0,before1[in1]behind1";
         $cf = new SL5_preg_contentFinder($content);
         $cf->setBeginEnd_RegEx('[', ']');
@@ -1104,7 +1286,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      *
      * todo: discuss getContent_Next ?? discuss getContent_Behind ?? (15-06-16_10-28)
      */
-    public function test_content_getBorders_behind() {
+     function test_content_getBorders_behind() {
         $content = "before0[in0]behind0,before1[in1]behind1";
         $cf = new SL5_preg_contentFinder($content);
         $cf->setBeginEnd_RegEx('[', ']');
@@ -1114,7 +1296,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * gets contentDemo using borders with substring
      */
-    public function test_getContentBefore_delimiterWords() {
+     function test_getContentBefore_delimiterWords() {
         $cf = new SL5_preg_contentFinder("1_before0_behind0_2");
         $cf->setBeginEnd_RegEx('before0', 'behind0');
         $this->assertEquals("1_", $cf->getContent_Before());
@@ -1123,7 +1305,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * gets contentDemo using borders with substring
      */
-    public function test_getContentBefore() {
+     function test_getContentBefore() {
         $cf = new SL5_preg_contentFinder("before0[in0]behind0,before1[in1]behind1");
         $cf->setBeginEnd_RegEx('[', ']');
         $this->assertEquals("before0", $cf->getContent_Before());
@@ -1131,7 +1313,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      *  gets contentDemo using borders with substring
      */
-    public function test_getContentBehind() {
+     function test_getContentBehind() {
         $cf = new SL5_preg_contentFinder("before0[in0]behind0,before1[in1]behind1");
         $cf->setBeginEnd_RegEx('[', ']');
         $this->assertEquals("behind0,before1[in1]behind1", $cf->getContent_Behind());
@@ -1143,7 +1325,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * todo: needs discussed
      */
-    public function test_getContent_ByID_1() {
+     function test_getContent_ByID_1() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals(null, $cf->getID());
@@ -1155,7 +1337,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * setID please use integer not text. why?
      * todo: needs discussed
      */
-    public function test_getContent_setID() {
+     function test_getContent_setID() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $cf->setID(1);
@@ -1171,7 +1353,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * todo: needs discussed
      */
-    public function test_getContent_ByID_3() {
+     function test_getContent_ByID_3() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
 //        $this->assertEquals("2_{1_2", $cf->getContent_ByID(0)); # dont work like expected
@@ -1179,7 +1361,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * getContent takes the first. from left to right
      */
-    public function test_getContent_2() {
+     function test_getContent_2() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_2}_3}{_4}");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals("2_{1_2}_2", $cf->getContent());
@@ -1188,7 +1370,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * Prev and Next using getContent_ByID
      * todo: discuss
      */
-    public function test_getContent_Prev_Next() {
+     function test_getContent_Prev_Next() {
         $cf = new SL5_preg_contentFinder("(1_3)_2_3_(_a)o");
         $cf->setBeginEnd_RegEx('(', ')');
         $this->assertEquals("1_3", $cf->getContent());
@@ -1199,7 +1381,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * Prev and Next using getContent_ByID
      * todo: discuss
      */
-    public function test_getContent_Prev_Next_3() {
+     function test_getContent_Prev_Next_3() {
         $cf = new SL5_preg_contentFinder("{1_4}_2_3_{_b}o");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals("1_4", $cf->getContent());
@@ -1209,22 +1391,60 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * Prev and Next using getContent_ByID
      */
-//    public function test_getContent_4() {
+//     function test_getContent_4() {
 //        $cf = new SL5_preg_contentFinder("o{2_{1_5}_2}_3}{_c}o");
 //        $cf->setBeginEnd_RegEx('{', '}');
 //        $this->assertEquals(false, $cf->getContent_Prev());
 //        $this->assertEquals("{_c}", $cf->getContent_Next());
 //    }
 
-    public function test_128() {
-        $sourceCF = "(1((2)1)8)";
-        $cf = new SL5_preg_contentFinder($sourceCF);
-        $result = '(' . $cf->getContent($b = '(', $e = ')') . ')';
-        $this->assertEquals($sourceCF, $result);
+     function test_128() {
+        $expected = "(1((2)1)8)";
+        $cf = new SL5_preg_contentFinder($expected);
+        $actual = '(' . $cf->getContent($b = '(', $e = ')') . ')';
+        $this->assertEquals($expected, $actual);
     }
 
-    public function test_123_abc() {
+     function test_123_abc() {
         # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
+        # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
+        $content1 = '123#abc';
+        $cf = new SL5_preg_contentFinder($content1);
+        $expected = @$cf->getContent(
+          $begin = '\d+',
+          $end = '\w+',
+          $p = null,
+          $t = null,
+          $searchMode = 'dontTouchThis'
+        );
+        $expectedContent = '#';
+        $this->assertEquals($expected, $expectedContent);
+    }
+
+     function test_2_1() {
+        $expected = "((2)1)";
+        $cf = new SL5_preg_contentFinder($expected);
+        $actual = '(' . @$cf->getContent($b = '(', $e = ')') . ')';
+        $this->assertEquals($expected, $actual);
+    }
+
+
+/*
+ * using use_BackReference_IfExists_()$1${1} is deprecated 15-06-22_10-37
+ */
+
+    public function test_123_abc_v2() {
+        $content1 = '1[2[]2>]3';
+        $expectedContent = '2[]2>';
+        $cf = new SL5_preg_contentFinder($content1);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $cf->setBeginEnd_RegEx('\[','\]');
+        $sourceCF=$cf->getContent();
+        $this->assertEquals($expectedContent,$sourceCF);
+    }
+
+    public function test_123_abc_v1() {
+        # 2 problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHPs Perl-compatible regular expressions.
         # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
         $content1 = '123#abc';
         $cf = new SL5_preg_contentFinder($content1);
@@ -1233,17 +1453,20 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
           $end = '\w+',
           $p = null,
           $t = null,
-          $searchMode = 'dontTouchThis'
+          $searchMode = 'use_BackReference_IfExists_()$1${1}'
         );
         $expectedContent = '#';
         $this->assertEquals($sourceCF, $expectedContent);
     }
-
-    public function test_2_1() {
-        $sourceCF = "((2)1)";
-        $cf = new SL5_preg_contentFinder($sourceCF);
-        $result = '(' . @$cf->getContent($b = '(', $e = ')') . ')';
-        $this->assertEquals($sourceCF, $result);
+    public function test_hiHo_use_BackReference_IfExists() {
+        $content1 = '{
+        hiHo
+        }';
+        $expectedContent = 'hiHo';
+        $cf = new SL5_preg_contentFinder($content1);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $cf->setBeginEnd_RegEx('^\s*{\s*$\s*','\s*^\s*}\s*$');
+        $sourceCF=$cf->getContent();
+        $this->assertEquals($sourceCF, $expectedContent);
     }
-
  }

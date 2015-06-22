@@ -89,8 +89,7 @@ class SL5_preg_contentFinder {
      */
     function __construct($content, $regEx_begin = null, $regEx_end = null) {
         $this->content = $content;
-        if(!is_null($regEx_begin)) $this->regEx_begin = $regEx_begin;
-        if(!is_null($regEx_end)) $this->regEx_end = $regEx_end;
+        $this->setBeginEnd_RegEx($regEx_begin, $regEx_end);
         self::$lastObject = $this;
     }
 
@@ -128,6 +127,11 @@ class SL5_preg_contentFinder {
      * @return bool always returns true - no meaning
      */
     public function setBeginEnd_RegEx($RegEx_begin = null, $RegEx_end = null) {
+        if(is_array($RegEx_begin))
+        {
+            $RegEx_end = $RegEx_begin[1]; // dont change this two lines!
+            $RegEx_begin = $RegEx_begin[0]; // dont change this two lines!
+        }
         if(!is_null($RegEx_begin)) {
             $this->setRegEx_begin($RegEx_begin);
         }
@@ -170,6 +174,7 @@ class SL5_preg_contentFinder {
             }
         }
         $pattern = '/(' . $RegEx_begin . '|' . $RegEx_end . ')(.*)/sm';
+        $breakPoint = 'breakPoint';
 
         return true;
     }
@@ -291,43 +296,38 @@ class SL5_preg_contentFinder {
 
         $content = ['before' => $before, 'middle' => $this->content, 'behind' => $behind];
 
-//        list($bfCut, $cCut, $bhCut) = $this->getContent_user_func_recursivePRIV(
-//          $content,
-//          $functions);
-
-//        if(!$cCut)$cCut=$this->content;
-
         $return = $this->getContent_user_func_recursivePRIV(
           $content,
-          $functions);
+          $functions, $callsCount = 0);
 
-        $break = 'break';
-
-//        return [$bfCut, $cCut, $bhCut];
         return $return;
     }
     /**
      * todo: proof performance. call by reference inside userFunc is not supported actually
      * @param null $content
-     * @param null $f functions callback
+     * @param null $func functions callback
      * @param int $deepCount
+     * @param $callsCount
      * @return array
      */
     private function getContent_user_func_recursivePRIV(
       $content,
-      $f,
+      $func,
+      &$callsCount,
       $deepCount = -1
     ) {
+//        $callsCount++;
         $deepCount++; # starts with $deepCount = 0
         if($content['middle'] == false || is_null($content['middle'])) {
-            # create $content_return
-            $content_return = (isset($content['before'])) ? $content['before'] : '' . $content['middle'] . (isset($content['behind'])) ? $content['behind'] : '';
+            # create $r_content
+            $r_content = (isset($content['before'])) ? $content['before'] : '' . $content['middle'] . (isset($content['behind'])) ? $content['behind'] : '';
 
-            return $content_return;
+            return $r_content;
         }
 
         # search in $content['middle'], create $cut Array
         $C = new SL5_preg_contentFinder($content['middle'], $this->regEx_begin, $this->regEx_end);
+        $C->setSearchMode($this->getSearchMode());
         $cut = [
           'before' => $C->getContent_Before(),
           'middle' => $C->getContent(),
@@ -337,46 +337,53 @@ class SL5_preg_contentFinder {
         $terminate_seaching_inside_cut_because_nothing_found = $cut['middle'] === false;
 
 
-        # search in $cut['behind'], create $cut_behind_return
-        $cut_behind_return = $this->getContent_user_func_recursivePRIV(
+        # search in $cut['behind'], create $r_cut_behind
+//        $r2_cut_behind =
+        $cut['behind'] = $this->getContent_user_func_recursivePRIV(
           ['middle' => $cut['behind']],
-          $f, $deepCount-1);
-//        $cut_behind_return = ''; __LINE__;
+          $func, $callsCount, $deepCount - 1);
+//        $r_cut_behind = ''; __LINE__;
 
 
-        # search in $cut['middle'], create $cut_middle_return
-        if($terminate_seaching_inside_cut_because_nothing_found) {
-            $cut_middle_return = $content['middle'] ;
-        } else {
-            $cut_middle_return = $this->getContent_user_func_recursivePRIV(
+        # search in $cut['middle'], create $r_cut_middle
+        if(true && !$terminate_seaching_inside_cut_because_nothing_found) {
+            $cut['middle'] = $this->getContent_user_func_recursivePRIV(
               ['middle' => $cut['middle']],
-              $f, $deepCount);
-
-            $cut['before'] = call_user_func($f['open'], $cut['before'], $cut_middle_return, $cut['behind'], $deepCount + 1);
-
-            $cut_middle_return = call_user_func($f['content'], $cut['before'], $cut_middle_return, $cut['behind'], $deepCount + 1);
-
-            $break = 'brak';
-            $cut['behind'] = call_user_func($f['close'], $cut['before'], $cut_middle_return, $cut['behind'], $deepCount + 1);
-            $break = 'brak';
+              $func, $deepCount, $callsCount);
+            $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount);
+//            $cut = call_user_func($func['content'], $cut, $deepCount + 1, $callsCount);
+//            $cut = call_user_func($func['close'], $cut, $deepCount + 1, $callsCount);
+        }
+        if($terminate_seaching_inside_cut_because_nothing_found) {
+            $cut['middle'] = $content['middle'];
         }
 
+        $r1_cut = $cut['before'] . $cut['middle'];// . $cut['behind'] ;
 
-        $cut_return = $cut['before'] . '' . $cut_middle_return . $cut['behind'];
-
-
-        # search in $content['behind'], create $behind_return
-        $behind_return = $this->getContent_user_func_recursivePRIV(
+        # search in $content['behind'], create $r_behind
+        $r3_behind = (isset($content['behind']) && $content['behind'] !== false) ? $this->getContent_user_func_recursivePRIV(
           ['middle' => @$content['behind']],
-          $f, $deepCount);
+          $func, $deepCount, $callsCount) : '';
+
+        $content['before'] = (isset($content['before'])) ? $content['before'] : '';
+//        $return = $content['before'] . $r1_cut . $r2_cut_behind;
+
+        $return = $content['before'] . $r1_cut ; //. $r3_behind ; // . '' . $r2_cut_behind;
+
+//        $return = (isset($content['before'])) ? $content['before'] : '' . '' . $r_cut . '' . $r_cut_behind . $r_behind; # last working version
 
 
         $break = 'break';
-        $return = (isset($content['before'])) ? $content['before'] : '' . '' . $cut_return . '' . $cut_behind_return . $behind_return;
+//        $return = (isset($content['before'])) ? $content['before'] : $r_cut . $r_behind ;
+        // $r_cut_behind  . $r_behind
+
+        // $r_cut_behind . $r_behind
+
+//        $return = (isset($content['before'])) ? $content['before'] : '' . '' . $r_cut . '' . $r_cut_behind . $r_behind;
 
         $break = 'break';
 
-        return "" . $return . "";
+        return $return;
 
     }
 
