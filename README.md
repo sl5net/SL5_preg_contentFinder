@@ -5,19 +5,20 @@ a PHP Template Engine class using Perl Compatible Regular Expressions (PCRE)
 
 See complete examples inside example folder or inside the tests folder. :)
 
-<pre>
+
 Example source conversion :
 
+<pre>
 a{b{B}}
 
 ==>
 
 a[b[B]]
-
+</pre>
 ______________________
 
 Example source conversion :
-
+<pre>
 if(X1){$X1;if(X2){$X2;}}
 
 ==>
@@ -27,7 +28,7 @@ if(X1)[
 ....$X2;
 ..]
 ]
-
+</pre>
 HowTo config conversion for this last example:
 
 $old_open = '{';
@@ -43,7 +44,7 @@ now simply start conversion. BTW optional you could use regular expressions and 
 ______________________
 
 Example source conversion :
-
+<pre>
 a{b{B}}
 
 ==>
@@ -55,6 +56,7 @@ a
 2:....B
 2:..]
 1:]
+</pre>
 ______________________
 
 
