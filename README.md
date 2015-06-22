@@ -28,6 +28,18 @@ if(X1)[
 ..]
 ]
 
+HowTo config conversion for this last example:
+
+$old_open = '{';
+$old_close = '}';
+$new_open_default = '[';
+$new_close_default = ']';
+$charSpace = ".";
+$newline = "\r\n";
+$indentSize = 2;
+
+now simply start conversion. BTW optional you could use regular expressions and much more. or you could use your own callback function. enjoy :) 
+
 ______________________
 
 Example source conversion :
