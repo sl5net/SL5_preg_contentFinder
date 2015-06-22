@@ -8,11 +8,11 @@ See complete examples inside example folder or inside the tests folder. :)
 
 Example source conversion :
 
-:a{b{B}}
+a{b{B}}
 
 ==>
 
-:a<b<B>>
+a[b[B]]
 
 ______________________
 
