@@ -9,6 +9,85 @@ include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
 //     $collectString = '';
 
+    function test_tag_to_UPPER_lower() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ': jO_2_maN nO_9_uP';
+        $expected = $LINE__ . ': JO_2_man NO_9_up';
+        $old_beginEnd = ['[a-zA-Z]+_', '_[a-zA-Z]+'];
+
+        $cf = new SL5_preg_contentFinder($source1, $old_beginEnd);
+        $cf->setSearchMode('dontTouchThis');
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1)   {
+              if($cut['middle'] === false) return $cut;
+
+              $posList0 = $foundPos_list;
+              $new_open_default  = strtoupper(substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']));
+              $new_close_default = strtolower( substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
+
+              $cut['middle'] = $new_open_default . $cut['middle'] . $new_close_default . $cut['behind'];
+
+              return $cut;
+          });
+
+        $this->assertEquals($expected, $actual);
+
+    }
+
+    function test_simple_a_A_â__o_O_ô() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':a{1}a b{2}b';
+        $expected = $LINE__ . ':a{1}A b{2}B';
+
+        $old_open = '\w{';
+        $old_close = '}\w';
+
+        $new_open_default = '[';
+        $new_close_default = ']';
+        $charSpace = "";
+        $newline = "\r\n";
+        $newline = "";
+        $indentSize = 2;
+
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf->setSearchMode('dontTouchThis');
+
+
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+
+            return $indentStr;
+        };
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1)  use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+
+              $n = $newline;
+              $indentStr0 = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $indentStr1 = $getIndentStr($deepCount, $charSpace, $indentSize);
+
+//              $foundPos_list, $source1
+
+              $posList0 = $foundPos_list;
+              $new_open_default  = substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']);
+              $new_close_default = strtoupper( substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
+
+
+
+              $cut['middle'] = $n . $indentStr0 . $new_open_default . $n . $indentStr1 . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr1 . "$1", $cut['middle']) . $n
+                . $indentStr0 . $new_close_default . $cut['behind'];
+
+              return $cut;
+          });
+
+        $this->assertEquals($expected, $actual);
+
+    }
+
 
     function test_parse_expected_actual() {
 //        $file_content_original = file_get_contents(__FILE__);
@@ -55,6 +134,7 @@ include_once '_callbackShortExample.php';
                   $m = &$cut['middle'];
                   #         $source1 = $LINE__ . ':{k}';
 
+
                   $reg_expected = ['\$expected\s*=[^\'"]*("|\')', '("|\')'];
                   $reg_source = ['\$source1\s*=[^\'"]*("|\')', '("|\')'];
 
@@ -82,7 +162,6 @@ ______________________
                       file_put_contents($fileName, "\n\n" . $msg . "\n\n", FILE_APPEND | LOCK_EX);
                   }
 
-
               }
               else {
 //                  $cut['before'] = "\n";
@@ -97,107 +176,6 @@ ______________________
     }
 
 
-    function test_simple_a_A_â() {
-        $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':a{A}â';
-        $expected = $LINE__ . ':a[A]â';
-        $old_open = '{';
-        $old_close = '}';
-
-        $new_open_default = '[';
-        $new_close_default = ']';
-        $charSpace = "";
-        $newline = "\r\n";
-        $newline = "";
-        $indentSize = 2;
-
-        $source1 = $source1;
-
-
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setBeginEnd_RegEx($old_open, $old_close);
-
-        $getIndentStr = function ($indent, $char, $indentSize) {
-            $multiplier = $indentSize * $indent;
-            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-
-            return $indentStr;
-        };
-
-        $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut['middle'] === false) return $cut;
-
-              $n = $newline;
-              $indentStr0 = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $indentStr1 = $getIndentStr($deepCount, $charSpace, $indentSize);
-
-              $cut['middle'] = $n . $indentStr0 . $new_open_default . $n . $indentStr1 . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr1 . "$1", $cut['middle']) . $n
-                . $indentStr0 . $new_close_default . $cut['behind'];
-
-              return $cut;
-          });
-
-        $this->assertEquals($expected, $actual);
-
-    }
-    function test_simple_aAâ() {
-        $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':a{A}â';
-        $expected = $LINE__ . ':aAâ';
-        $old_open = '{';
-        $old_close = '}';
-
-        $new_open_default = '';
-        $new_close_default = '';
-        $charSpace = "";
-        $newline = "\r\n";
-        $newline = "";
-        $indentSize = 2;
-
-        $source1 = $source1;
-
-
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setBeginEnd_RegEx($old_open, $old_close);
-
-        $getIndentStr = function ($indent, $char, $indentSize) {
-            $multiplier = $indentSize * $indent;
-            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-
-            return $indentStr;
-        };
-
-        $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
-              $n = $newline;
-//              $n .= $deepCount.'|';
-              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
-              if($cut['middle'] === false) return $cut;
-              $n = $newline;
-              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
-              $cut['middle'] .= $n;
-
-              if($cut['middle'] === false || $cut['behind'] === false) {
-//                  return $cut['behind'];
-                  return false;
-              }
-              $n = $newline;
-              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
-
-              return $cut; # todo: $cut['behind'] dont need newline at the beginning
-          });
-
-//      {{o}}
-//        $actual = $cBefore . $content . $cBehind;
-
-        $this->assertEquals($expected, $actual);
-
-    }
     function test_a_b_B_callback() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':a{b{B}}';
@@ -1067,32 +1045,6 @@ if(a1)
         $break = 'b';
     }
 
-
-     function test_parseFunctions() {
-//        $source1 = file_get_contents(__FILE__);
-        $expected = 'getIt();';
-        $source1 = '
-    function fo() { getIt(); }  function ';
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setSearchMode('dontTouchThis');
-        $rB = $cf->preg_quote_by_SL5($s='function ')
-          .'\w+'
-          .'\(\)\s*\{'.'[\s\n\r\t]*';
-        $rE = ' }   function';
-        $rE = $cf->preg_quote_by_SL5($rE);
-        $cf->setBeginEnd_RegEx($rB, $rE);
-
-        if(true) {
-            $actualCmp = preg_replace('/.*' . $rB . '(.*?)' . $rE . '.*/misS', '$1', $source1);
-            $break = 'b';
-        }
-//          '\s*\}\s*function\s+\s+function');
-        $actual = $cf->getContent();
-        $break = 'b';
-        $this->assertEquals($expected, $actual);
-        $this->assertEquals($expected, $actualCmp);
-    }
-
      function test_123_g() {
         $source1 = '123#g';
         $cf = new SL5_preg_contentFinder($source1);
@@ -1158,7 +1110,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * empty means it found an empty.
      * false means nothing was found.
      */
-     function test_false_versus_empty() {
+    function test_false_versus_empty() {
 
         $cfEmpty_IfEmptyResult = new SL5_preg_contentFinder("{}");
         $cfEmpty_IfEmptyResult->setBeginEnd_RegEx('{', '}');
@@ -1176,11 +1128,10 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     }
 
 
-
     /**
      * echo and return from a big string a bit of the start and a bit from the end.
      */
-     function test_echo_content_little_excerpt() {
+    function test_echo_content_little_excerpt() {
         $cf = new SL5_preg_contentFinder("dummy");
         $this->assertEquals("12...45", $cf->echo_content_little_excerpt("12345", 2, 2));
     }
@@ -1188,28 +1139,28 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * nl2br_Echo returns nothong, returns null. it simly echo
      */
-     function test_nl2br_Echo() {
+    function test_nl2br_Echo() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals($cf->nl2br_Echo(__LINE__, "filename", "<br>"), null);
     }
     /**
      * getContent_Next returns false if there is not a next contentDemo
      */
-     function test_getContentNext() {
+    function test_getContentNext() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->getContent_Next());
     }
     /**
      * false if parameter is not  'pos_of_next_search' or 'begin' or 'end'
      */
-     function test_CACHE_current() {
+    function test_CACHE_current() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->CACHE_current());
     }
     /**
      * CACHE_current: false if there is no matching cache. no found contentDemo.
      */
-     function test_CACHE_current_begin_end_false() {
+    function test_CACHE_current_begin_end_false() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->CACHE_current("begin"));
         $this->assertEquals(false, $cf->CACHE_current("end"));
@@ -1217,7 +1168,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * CACHE_current: simply the string of the current begin / end quote
      */
-     function test_CACHE_current_begin_end() {
+    function test_CACHE_current_begin_end() {
         $cf = new SL5_preg_contentFinder(00123456);
         $cf->setBeginEnd_RegEx('2', '4');
         $this->assertEquals(2, $cf->CACHE_current("begin"));
@@ -1228,7 +1179,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * getContent ... gives false if there isn't a contentDemo. if it found a contentDemo it gives true
      */
-     function test_getContent() {
+    function test_getContent() {
         $cf = new SL5_preg_contentFinder("00123456");
         $cf->setBeginEnd_RegEx('2', '4');
         $this->assertEquals(false, $cf->getContent_Prev());
@@ -1236,7 +1187,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(3, $cf->getContent());
     }
 
-     function test_getUniqueSignExtreme() {
+    function test_getUniqueSignExtreme() {
         $cf = new SL5_preg_contentFinder(123456);
         $cf->isUniqueSignUsed = true; # needs to switched on first !! performance reasons
         $cf->setBeginEnd_RegEx('2', '4');
@@ -1245,20 +1196,20 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($probablyUsedUnique, $cf->getUniqueSignExtreme());
     }
 
-     function test_protect_a_string() {
+    function test_protect_a_string() {
         $cf = new SL5_preg_contentFinder('"{{mo}}"');
         $cf->isUniqueSignUsed = true; # needs to switched on first !! performance reasons
         $cf->setBeginEnd_RegEx('{', '}');
         $content = $cf->getContent(); # needs to be searched first !! performance reasons
         $mo = '{mo}';
-        $this->assertEquals('_'.$mo, '_'.$content);
+        $this->assertEquals('_' . $mo, '_' . $content);
         $uniqueSignExtreme = $cf->getUniqueSignExtreme();
 
         $o = $uniqueSignExtreme . 'o';
         $c = $uniqueSignExtreme . 'c';
         $content1 = str_replace(['{', '}'], [$o, $c], $content);
         $contentRedo = str_replace([$o, $c], ['{', '}'], $content1);
-        $this->assertEquals('-'.$contentRedo, '-'.$content);
+        $this->assertEquals('-' . $contentRedo, '-' . $content);
 
         $cf2 = new SL5_preg_contentFinder($content1);
         $cf2->setBeginEnd_RegEx('{', '}');
@@ -1266,14 +1217,14 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $content_Before = $cf2->getContent_Before();
         $content_Behind = $cf2->getContent_Behind();
         $content3 = str_replace([$o, $c], ['{', '}'], $content2);
-        $this->assertEquals('', $content_Before.$content3.$content_Behind); # means cut is not  found / created.
+        $this->assertEquals('', $content_Before . $content3 . $content_Behind); # means cut is not  found / created.
     }
 
     /**
      * get_borders ... you could get contents by using substr.
      * its different to getContent_Prev (matching contentDemo)
      */
-     function test_content_getBorders_before() {
+    function test_content_getBorders_before() {
         $content = "before0[in0]behind0,before1[in1]behind1";
         $cf = new SL5_preg_contentFinder($content);
         $cf->setBeginEnd_RegEx('[', ']');
@@ -1286,7 +1237,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      *
      * todo: discuss getContent_Next ?? discuss getContent_Behind ?? (15-06-16_10-28)
      */
-     function test_content_getBorders_behind() {
+    function test_content_getBorders_behind() {
         $content = "before0[in0]behind0,before1[in1]behind1";
         $cf = new SL5_preg_contentFinder($content);
         $cf->setBeginEnd_RegEx('[', ']');
@@ -1296,7 +1247,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * gets contentDemo using borders with substring
      */
-     function test_getContentBefore_delimiterWords() {
+    function test_getContentBefore_delimiterWords() {
         $cf = new SL5_preg_contentFinder("1_before0_behind0_2");
         $cf->setBeginEnd_RegEx('before0', 'behind0');
         $this->assertEquals("1_", $cf->getContent_Before());
@@ -1305,7 +1256,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * gets contentDemo using borders with substring
      */
-     function test_getContentBefore() {
+    function test_getContentBefore() {
         $cf = new SL5_preg_contentFinder("before0[in0]behind0,before1[in1]behind1");
         $cf->setBeginEnd_RegEx('[', ']');
         $this->assertEquals("before0", $cf->getContent_Before());
@@ -1313,7 +1264,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      *  gets contentDemo using borders with substring
      */
-     function test_getContentBehind() {
+    function test_getContentBehind() {
         $cf = new SL5_preg_contentFinder("before0[in0]behind0,before1[in1]behind1");
         $cf->setBeginEnd_RegEx('[', ']');
         $this->assertEquals("behind0,before1[in1]behind1", $cf->getContent_Behind());
@@ -1321,11 +1272,10 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     }
 
 
-
     /**
      * todo: needs discussed
      */
-     function test_getContent_ByID_1() {
+    function test_getContent_ByID_1() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals(null, $cf->getID());
@@ -1337,7 +1287,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * setID please use integer not text. why?
      * todo: needs discussed
      */
-     function test_getContent_setID() {
+    function test_getContent_setID() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $cf->setID(1);
@@ -1353,7 +1303,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * todo: needs discussed
      */
-     function test_getContent_ByID_3() {
+    function test_getContent_ByID_3() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
 //        $this->assertEquals("2_{1_2", $cf->getContent_ByID(0)); # dont work like expected
@@ -1361,7 +1311,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     /**
      * getContent takes the first. from left to right
      */
-     function test_getContent_2() {
+    function test_getContent_2() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_2}_3}{_4}");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals("2_{1_2}_2", $cf->getContent());
@@ -1370,7 +1320,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * Prev and Next using getContent_ByID
      * todo: discuss
      */
-     function test_getContent_Prev_Next() {
+    function test_getContent_Prev_Next() {
         $cf = new SL5_preg_contentFinder("(1_3)_2_3_(_a)o");
         $cf->setBeginEnd_RegEx('(', ')');
         $this->assertEquals("1_3", $cf->getContent());
@@ -1381,31 +1331,25 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
      * Prev and Next using getContent_ByID
      * todo: discuss
      */
-     function test_getContent_Prev_Next_3() {
-        $cf = new SL5_preg_contentFinder("{1_4}_2_3_{_b}o");
+    function test_getContent_Prev_Next_3() {
+        $source1 = "{1_4}_2_3_{_b}o";
+        $expected = "1_4";
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx('{', '}');
-        $this->assertEquals("1_4", $cf->getContent());
+        $this->assertEquals($expected, $cf->getContent());
         $this->assertEquals(false, $cf->getContent_Prev());
         $this->assertEquals(false, $cf->getContent_Next());
     }
-    /**
-     * Prev and Next using getContent_ByID
-     */
-//     function test_getContent_4() {
-//        $cf = new SL5_preg_contentFinder("o{2_{1_5}_2}_3}{_c}o");
-//        $cf->setBeginEnd_RegEx('{', '}');
-//        $this->assertEquals(false, $cf->getContent_Prev());
-//        $this->assertEquals("{_c}", $cf->getContent_Next());
-//    }
 
-     function test_128() {
+    function test_128() {
+        $source1 = "(1((2)1)8)";
         $expected = "(1((2)1)8)";
-        $cf = new SL5_preg_contentFinder($expected);
+        $cf = new SL5_preg_contentFinder($source1);
         $actual = '(' . $cf->getContent($b = '(', $e = ')') . ')';
         $this->assertEquals($expected, $actual);
     }
 
-     function test_123_abc() {
+    function test_123_abc() {
         # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
         # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
         $content1 = '123#abc';
@@ -1421,7 +1365,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $expectedContent);
     }
 
-     function test_2_1() {
+    function test_2_1() {
         $expected = "((2)1)";
         $cf = new SL5_preg_contentFinder($expected);
         $actual = '(' . @$cf->getContent($b = '(', $e = ')') . ')';
@@ -1429,44 +1373,182 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     }
 
 
-/*
- * using use_BackReference_IfExists_()$1${1} is deprecated 15-06-22_10-37
- */
-
-    public function test_123_abc_v2() {
-        $content1 = '1[2[]2>]3';
-        $expectedContent = '2[]2>';
-        $cf = new SL5_preg_contentFinder($content1);
+    /*
+     * suggestion: look inside https://github.com/sl5net/SL5_preg_contentFinder/blob/master/tests/PHPUnit/Callback_Test.php before using this technicals.
+     */
+    function test_AABBCC() {
+        $source1 = '<A>.</A><B>..</B><C>...</C>';
+        $expected = 'Aa: . Bb: .. Cc: ... ';
+        $beginEnd = ['(<)([^>]*)(>)?', '<\/($2)>'];
+        $maxLoopCount = $pos_of_next_search = 0;
+        $cf = new SL5_preg_contentFinder($source1, $beginEnd);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
-        $cf->setBeginEnd_RegEx('\[','\]');
-        $sourceCF=$cf->getContent();
-        $this->assertEquals($expectedContent,$sourceCF);
+        $actual = '';
+        while($maxLoopCount++ < 30) {
+            $cf->setPosOfNextSearch($pos_of_next_search);
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) {
+                break;
+            }
+            $tagName = $borders['matches']['begin_begin'][1][0];
+            $actual .= $tagName . strtolower($tagName);
+            $actual .= ': ' . $cf->getContent() . ' ';
+            $pos_of_next_search = $borders['end_end'];
+        }
+        $this->assertEquals($expected, $actual);
+
     }
 
-    public function test_123_abc_v1() {
-        # 2 problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHPs Perl-compatible regular expressions.
-        # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
-        $content1 = '123#abc';
-        $cf = new SL5_preg_contentFinder($content1);
-        $sourceCF = @$cf->getContent(
-          $begin = '\d+',
-          $end = '\w+',
-          $p = null,
-          $t = null,
-          $searchMode = 'use_BackReference_IfExists_()$1${1}'
-        );
-        $expectedContent = '#';
-        $this->assertEquals($sourceCF, $expectedContent);
-    }
-    public function test_hiHo_use_BackReference_IfExists() {
-        $content1 = '{
-        hiHo
-        }';
-        $expectedContent = 'hiHo';
-        $cf = new SL5_preg_contentFinder($content1);
+
+    function test_AA_xo_A() {
+        /*
+         * this test works not as expected. the misspelled source is not usable enough.
+         */
+        $source1 = ' some </A><A>xo1</A><A>xo2</A> thing ';
+        $expected = 'A: xo1 A: xo2 ';
+        $beginEndRegEx = ['(<)(A)(>)?', '<\/($2)>'];
+        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
-        $cf->setBeginEnd_RegEx('^\s*{\s*$\s*','\s*^\s*}\s*$');
-        $sourceCF=$cf->getContent();
-        $this->assertEquals($sourceCF, $expectedContent);
+        $maxLoopCount = 1000;
+        $actual = '';
+        while($maxLoopCount-- > 0) {
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) break;
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= ': ' . $cf->getContent() . ' ';
+            $pos_of_next_search = $borders['end_end'];
+            $cf->setPosOfNextSearch($pos_of_next_search);
+        }
+        $this->assertEquals($expected, $actual);
     }
+
+    function test_A_A2_A_A2() {
+        /*
+         * in this example you really need for correct termination additionally:
+         * is_null($borders['end_begin'])
+         */
+        $source1 = ' some <A>XO</A></A> thing ';
+        $expected = 'A: XO ';
+        $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
+        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $maxLoopCount = 1000;
+        $actual = '';
+        while($maxLoopCount-- > 0) {
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])
+              || is_null($borders['end_begin'])
+            ) {
+                break;
+            }
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= ': ' . $cf->getContent() . ' ';
+            $pos_of_next_search = $borders['end_end'];
+            $cf->setPosOfNextSearch($pos_of_next_search);
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
+    function test_A1_B2B_A() {
+        $source1 = ' some <A>1<B>2</B></A> thing ';
+        $expected = 'A: 1<B>2</B> ';
+        $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
+        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $maxLoopCount = 1000;
+        $actual = '';
+        while($maxLoopCount-- > 0) {
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) break;
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= ': ' . $cf->getContent() . ' ';
+            $pos_of_next_search = $borders['end_end'];
+            $cf->setPosOfNextSearch($pos_of_next_search);
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
+    function test_ABBA() {
+        $source1 = '<A>a<B>b</B></A>';
+        $expected = 'Aa<B>b</B>';
+        $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
+        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $actual = '';
+        $maxLoopCount = 1000;
+        while($maxLoopCount-- > 0) {
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) break;
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= $cf->getContent();
+            $pos_of_next_search = $borders['end_end'];
+            $cf->setPosOfNextSearch($pos_of_next_search);
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
+
+    function test_AA_BB() {
+        $source1 = '<A>a</A><B>b</B>';
+        $expected = 'AaBb';
+        $actual = '';
+        $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
+        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $maxLoopCount = 1000;
+        while($maxLoopCount-- > 0) {
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) break;
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= $cf->getContent();
+            $pos_of_next_search = $borders['end_end'];
+            $cf->setPosOfNextSearch($pos_of_next_search);
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
+
+    function test_AaA_BbB() {
+        $source1 = '<!--[A]-->a<!--[/A]--><!--[B]-->b<!--[/B]-->';
+        $expected = 'AaBb';
+        $actual = '';
+        $maxLoopCount = $pos_of_next_search = 0;
+        $beginEnd = ['(<!--)?\[([^>]*)\](-->)?', '<!--\[\/($2)\]-->'];
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($beginEnd);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        while($maxLoopCount++ < 30) {
+            $cf->setPosOfNextSearch($pos_of_next_search);
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) {
+                break;
+            }
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= $cf->getContent();
+            $pos_of_next_search = $borders['end_end'];
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
+    function test_tags_AaA_BbB() {
+        $source1 = '<A>a</A> some <B>b</B>';
+        $expected = 'A: a B: b ';
+        $beginEnd = ['(<)([^>]*)(>)?', '<\/($2)>'];
+        $maxLoopCount = $pos_of_next_search = 0;
+        $cf = new SL5_preg_contentFinder($source1, $beginEnd);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $actual = '';
+        while($maxLoopCount++ < 30) {
+            $cf->setPosOfNextSearch($pos_of_next_search);
+            $borders = $cf->getBorders();
+            if(is_null($borders['begin_begin'])) {
+                break;
+            }
+            $actual .= $borders['matches']['begin_begin'][1][0];
+            $actual .= ': ' . $cf->getContent() . ' ';
+            $pos_of_next_search = $borders['end_end'];
+        }
+        $this->assertEquals($expected, $actual);
+    }
+
  }

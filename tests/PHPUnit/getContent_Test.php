@@ -14,7 +14,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
      * empty means it found an empty.
      * false means nothing was found.
      */
-     function test_false_versus_empty() {
+    function test_false_versus_empty() {
 
         $cfEmpty_IfEmptyResult = new SL5_preg_contentFinder("{}");
         $cfEmpty_IfEmptyResult->setBeginEnd_RegEx('{', '}');
@@ -32,11 +32,10 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     }
 
 
-
     /**
      * echo and return from a big string a bit of the start and a bit from the end.
      */
-     function test_echo_content_little_excerpt() {
+    function test_echo_content_little_excerpt() {
         $cf = new SL5_preg_contentFinder("dummy");
         $this->assertEquals("12...45", $cf->echo_content_little_excerpt("12345", 2, 2));
     }
@@ -44,28 +43,28 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * nl2br_Echo returns nothong, returns null. it simly echo
      */
-     function test_nl2br_Echo() {
+    function test_nl2br_Echo() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals($cf->nl2br_Echo(__LINE__, "filename", "<br>"), null);
     }
     /**
      * getContent_Next returns false if there is not a next contentDemo
      */
-     function test_getContentNext() {
+    function test_getContentNext() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->getContent_Next());
     }
     /**
      * false if parameter is not  'pos_of_next_search' or 'begin' or 'end'
      */
-     function test_CACHE_current() {
+    function test_CACHE_current() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->CACHE_current());
     }
     /**
      * CACHE_current: false if there is no matching cache. no found contentDemo.
      */
-     function test_CACHE_current_begin_end_false() {
+    function test_CACHE_current_begin_end_false() {
         $cf = new SL5_preg_contentFinder(123456);
         $this->assertEquals(false, $cf->CACHE_current("begin"));
         $this->assertEquals(false, $cf->CACHE_current("end"));
@@ -73,7 +72,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * CACHE_current: simply the string of the current begin / end quote
      */
-     function test_CACHE_current_begin_end() {
+    function test_CACHE_current_begin_end() {
         $cf = new SL5_preg_contentFinder(00123456);
         $cf->setBeginEnd_RegEx('2', '4');
         $this->assertEquals(2, $cf->CACHE_current("begin"));
@@ -84,7 +83,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * getContent ... gives false if there isn't a contentDemo. if it found a contentDemo it gives true
      */
-     function test_getContent() {
+    function test_getContent() {
         $cf = new SL5_preg_contentFinder("00123456");
         $cf->setBeginEnd_RegEx('2', '4');
         $this->assertEquals(false, $cf->getContent_Prev());
@@ -92,7 +91,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(3, $cf->getContent());
     }
 
-     function test_getUniqueSignExtreme() {
+    function test_getUniqueSignExtreme() {
         $cf = new SL5_preg_contentFinder(123456);
         $cf->isUniqueSignUsed = true; # needs to switched on first !! performance reasons
         $cf->setBeginEnd_RegEx('2', '4');
@@ -101,20 +100,20 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($probablyUsedUnique, $cf->getUniqueSignExtreme());
     }
 
-     function test_protect_a_string() {
+    function test_protect_a_string() {
         $cf = new SL5_preg_contentFinder('"{{mo}}"');
         $cf->isUniqueSignUsed = true; # needs to switched on first !! performance reasons
         $cf->setBeginEnd_RegEx('{', '}');
         $content = $cf->getContent(); # needs to be searched first !! performance reasons
         $mo = '{mo}';
-        $this->assertEquals('_'.$mo, '_'.$content);
+        $this->assertEquals('_' . $mo, '_' . $content);
         $uniqueSignExtreme = $cf->getUniqueSignExtreme();
 
         $o = $uniqueSignExtreme . 'o';
         $c = $uniqueSignExtreme . 'c';
         $content1 = str_replace(['{', '}'], [$o, $c], $content);
         $contentRedo = str_replace([$o, $c], ['{', '}'], $content1);
-        $this->assertEquals('-'.$contentRedo, '-'.$content);
+        $this->assertEquals('-' . $contentRedo, '-' . $content);
 
         $cf2 = new SL5_preg_contentFinder($content1);
         $cf2->setBeginEnd_RegEx('{', '}');
@@ -122,14 +121,14 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
         $content_Before = $cf2->getContent_Before();
         $content_Behind = $cf2->getContent_Behind();
         $content3 = str_replace([$o, $c], ['{', '}'], $content2);
-        $this->assertEquals('', $content_Before.$content3.$content_Behind); # means cut is not  found / created.
+        $this->assertEquals('', $content_Before . $content3 . $content_Behind); # means cut is not  found / created.
     }
 
     /**
      * get_borders ... you could get contents by using substr.
      * its different to getContent_Prev (matching contentDemo)
      */
-     function test_content_getBorders_before() {
+    function test_content_getBorders_before() {
         $content = "before0[in0]behind0,before1[in1]behind1";
         $cf = new SL5_preg_contentFinder($content);
         $cf->setBeginEnd_RegEx('[', ']');
@@ -142,7 +141,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
      *
      * todo: discuss getContent_Next ?? discuss getContent_Behind ?? (15-06-16_10-28)
      */
-     function test_content_getBorders_behind() {
+    function test_content_getBorders_behind() {
         $content = "before0[in0]behind0,before1[in1]behind1";
         $cf = new SL5_preg_contentFinder($content);
         $cf->setBeginEnd_RegEx('[', ']');
@@ -152,7 +151,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * gets contentDemo using borders with substring
      */
-     function test_getContentBefore_delimiterWords() {
+    function test_getContentBefore_delimiterWords() {
         $cf = new SL5_preg_contentFinder("1_before0_behind0_2");
         $cf->setBeginEnd_RegEx('before0', 'behind0');
         $this->assertEquals("1_", $cf->getContent_Before());
@@ -161,7 +160,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * gets contentDemo using borders with substring
      */
-     function test_getContentBefore() {
+    function test_getContentBefore() {
         $cf = new SL5_preg_contentFinder("before0[in0]behind0,before1[in1]behind1");
         $cf->setBeginEnd_RegEx('[', ']');
         $this->assertEquals("before0", $cf->getContent_Before());
@@ -169,7 +168,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      *  gets contentDemo using borders with substring
      */
-     function test_getContentBehind() {
+    function test_getContentBehind() {
         $cf = new SL5_preg_contentFinder("before0[in0]behind0,before1[in1]behind1");
         $cf->setBeginEnd_RegEx('[', ']');
         $this->assertEquals("behind0,before1[in1]behind1", $cf->getContent_Behind());
@@ -177,11 +176,10 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     }
 
 
-
     /**
      * todo: needs discussed
      */
-     function test_getContent_ByID_1() {
+    function test_getContent_ByID_1() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals(null, $cf->getID());
@@ -193,7 +191,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
      * setID please use integer not text. why?
      * todo: needs discussed
      */
-     function test_getContent_setID() {
+    function test_getContent_setID() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $cf->setID(1);
@@ -209,7 +207,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * todo: needs discussed
      */
-     function test_getContent_ByID_3() {
+    function test_getContent_ByID_3() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
 //        $this->assertEquals("2_{1_2", $cf->getContent_ByID(0)); # dont work like expected
@@ -217,7 +215,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
     /**
      * getContent takes the first. from left to right
      */
-     function test_getContent_2() {
+    function test_getContent_2() {
         $cf = new SL5_preg_contentFinder("{2_{1_2}_2}_3}{_4}");
         $cf->setBeginEnd_RegEx('{', '}');
         $this->assertEquals("2_{1_2}_2", $cf->getContent());
@@ -226,7 +224,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
      * Prev and Next using getContent_ByID
      * todo: discuss
      */
-     function test_getContent_Prev_Next() {
+    function test_getContent_Prev_Next() {
         $cf = new SL5_preg_contentFinder("(1_3)_2_3_(_a)o");
         $cf->setBeginEnd_RegEx('(', ')');
         $this->assertEquals("1_3", $cf->getContent());
@@ -237,31 +235,25 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
      * Prev and Next using getContent_ByID
      * todo: discuss
      */
-     function test_getContent_Prev_Next_3() {
-        $cf = new SL5_preg_contentFinder("{1_4}_2_3_{_b}o");
+    function test_getContent_Prev_Next_3() {
+        $source1 = "{1_4}_2_3_{_b}o";
+        $expected = "1_4";
+        $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx('{', '}');
-        $this->assertEquals("1_4", $cf->getContent());
+        $this->assertEquals($expected, $cf->getContent());
         $this->assertEquals(false, $cf->getContent_Prev());
         $this->assertEquals(false, $cf->getContent_Next());
     }
-    /**
-     * Prev and Next using getContent_ByID
-     */
-//     function test_getContent_4() {
-//        $cf = new SL5_preg_contentFinder("o{2_{1_5}_2}_3}{_c}o");
-//        $cf->setBeginEnd_RegEx('{', '}');
-//        $this->assertEquals(false, $cf->getContent_Prev());
-//        $this->assertEquals("{_c}", $cf->getContent_Next());
-//    }
 
-     function test_128() {
+    function test_128() {
+        $source1 = "(1((2)1)8)";
         $expected = "(1((2)1)8)";
-        $cf = new SL5_preg_contentFinder($expected);
+        $cf = new SL5_preg_contentFinder($source1);
         $actual = '(' . $cf->getContent($b = '(', $e = ')') . ')';
         $this->assertEquals($expected, $actual);
     }
 
-     function test_123_abc() {
+    function test_123_abc() {
         # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
         # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
         $content1 = '123#abc';
@@ -277,7 +269,7 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $expectedContent);
     }
 
-     function test_2_1() {
+    function test_2_1() {
         $expected = "((2)1)";
         $cf = new SL5_preg_contentFinder($expected);
         $actual = '(' . @$cf->getContent($b = '(', $e = ')') . ')';

@@ -6,6 +6,240 @@ following examples are automatically extracted from the UnitTest source. For imp
 
 Example source conversion :
 
+<A>.</A><B>..</B><C>...</C>
+
+==>
+
+Aa: . Bb: .. Cc: ... 
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
+{1_4}_2_3_{_b}o
+
+==>
+
+1_4
+
+______________________
+
+
+
+
+Example source conversion :
+
 
 class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 15-06-19_15-32
@@ -41,19 +275,6 @@ Example source conversion :
 ==>
 
 #
-
-______________________
-
-
-
-
-Example source conversion :
-
-getIt();
-
-==>
-
-getIt();
 
 ______________________
 
@@ -166,11 +387,11 @@ ______________________
 
 Example source conversion :
 
-:a{A}â
+: jO_2_maN nO_9_uP
 
 ==>
 
-:a[A]â
+: JO_2_man NO_9_up
 
 ______________________
 

@@ -15,6 +15,87 @@ include_once "_callbackShortExample.php";
 class Callback_Test extends PHPUnit_Framework_TestCase {
 //     $collectString = '';
 
+    function test_tag_to_UPPER_lower() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ': jO_2_maN nO_9_uP';
+        $expected = $LINE__ . ': JO_2_man NO_9_up';
+        $old_beginEnd = ['[a-zA-Z]+_', '_[a-zA-Z]+'];
+
+        $cf = new SL5_preg_contentFinder($source1, $old_beginEnd);
+        $cf->setSearchMode('dontTouchThis');
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1)   {
+              if($cut['middle'] === false) return $cut;
+
+              $posList0 = $foundPos_list;
+
+              $new_open_default  = strtoupper(substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']));
+              $new_close_default = strtolower( substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
+
+              # put everything ! into middle and begin not into behind!
+              $cut['middle'] = $new_open_default . $cut['middle'] . $new_close_default . $cut['behind'];
+
+              return $cut;
+          });
+
+        $this->assertEquals($expected, $actual);
+
+    }
+
+    function test_simple_a_A_â__o_O_ô() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':a{1}a b{2}b';
+        $expected = $LINE__ . ':a{1}A b{2}B';
+
+        $old_open = '\w{';
+        $old_close = '}\w';
+
+        $new_open_default = '[';
+        $new_close_default = ']';
+        $charSpace = "";
+        $newline = "\r\n";
+        $newline = "";
+        $indentSize = 2;
+
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf->setSearchMode('dontTouchThis');
+
+
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+
+            return $indentStr;
+        };
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1)  use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              if($cut['middle'] === false) return $cut;
+
+              $n = $newline;
+              $indentStr0 = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
+              $indentStr1 = $getIndentStr($deepCount, $charSpace, $indentSize);
+
+//              $foundPos_list, $source1
+
+              $posList0 = $foundPos_list;
+              $new_open_default  = substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']);
+              $new_close_default = strtoupper( substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
+
+
+
+              $cut['middle'] = $n . $indentStr0 . $new_open_default . $n . $indentStr1 . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr1 . "$1", $cut['middle']) . $n
+                . $indentStr0 . $new_close_default . $cut['behind'];
+
+              return $cut;
+          });
+
+        $this->assertEquals($expected, $actual);
+
+    }
+
 
     function test_parse_expected_actual() {
 //        $file_content_original = file_get_contents(__FILE__);
@@ -61,6 +142,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
                   $m = &$cut['middle'];
                   #         $source1 = $LINE__ . ':{k}';
 
+
                   $reg_expected = ['\$expected\s*=[^\'"]*("|\')', '("|\')'];
                   $reg_source = ['\$source1\s*=[^\'"]*("|\')', '("|\')'];
 
@@ -88,7 +170,6 @@ ______________________
                       file_put_contents($fileName, "\n\n" . $msg . "\n\n", FILE_APPEND | LOCK_EX);
                   }
 
-
               }
               else {
 //                  $cut['before'] = "\n";
@@ -103,107 +184,6 @@ ______________________
     }
 
 
-    function test_simple_a_A_â() {
-        $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':a{A}â';
-        $expected = $LINE__ . ':a[A]â';
-        $old_open = '{';
-        $old_close = '}';
-
-        $new_open_default = '[';
-        $new_close_default = ']';
-        $charSpace = "";
-        $newline = "\r\n";
-        $newline = "";
-        $indentSize = 2;
-
-        $source1 = $source1;
-
-
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setBeginEnd_RegEx($old_open, $old_close);
-
-        $getIndentStr = function ($indent, $char, $indentSize) {
-            $multiplier = $indentSize * $indent;
-            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-
-            return $indentStr;
-        };
-
-        $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
-              if($cut['middle'] === false) return $cut;
-
-              $n = $newline;
-              $indentStr0 = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $indentStr1 = $getIndentStr($deepCount, $charSpace, $indentSize);
-
-              $cut['middle'] = $n . $indentStr0 . $new_open_default . $n . $indentStr1 . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr1 . "$1", $cut['middle']) . $n
-                . $indentStr0 . $new_close_default . $cut['behind'];
-
-              return $cut;
-          });
-
-        $this->assertEquals($expected, $actual);
-
-    }
-    function test_simple_aAâ() {
-        $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':a{A}â';
-        $expected = $LINE__ . ':aAâ';
-        $old_open = '{';
-        $old_close = '}';
-
-        $new_open_default = '';
-        $new_close_default = '';
-        $charSpace = "";
-        $newline = "\r\n";
-        $newline = "";
-        $indentSize = 2;
-
-        $source1 = $source1;
-
-
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setBeginEnd_RegEx($old_open, $old_close);
-
-        $getIndentStr = function ($indent, $char, $indentSize) {
-            $multiplier = $indentSize * $indent;
-            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-
-            return $indentStr;
-        };
-
-        $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
-              $n = $newline;
-//              $n .= $deepCount.'|';
-              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
-              if($cut['middle'] === false) return $cut;
-              $n = $newline;
-              $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
-              $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
-              $cut['middle'] .= $n;
-
-              if($cut['middle'] === false || $cut['behind'] === false) {
-//                  return $cut['behind'];
-                  return false;
-              }
-              $n = $newline;
-              $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
-
-              return $cut; # todo: $cut['behind'] dont need newline at the beginning
-          });
-
-//      {{o}}
-//        $actual = $cBefore . $content . $cBehind;
-
-        $this->assertEquals($expected, $actual);
-
-    }
     function test_a_b_B_callback() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':a{b{B}}';

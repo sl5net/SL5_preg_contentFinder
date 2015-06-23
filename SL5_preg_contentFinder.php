@@ -74,12 +74,12 @@ class SL5_preg_contentFinder {
 
     private static $posArray_arrayKeys = array('begin_begin', 'begin_end', 'end_begin', 'end_end', 'matches');
 
-    private $findPos_list_current_ID = null;
+    private $foundPos_list_current_ID = null;
 
     public
     static $lastObject = null;
 
-    private $findPos_list;
+    private $foundPos_list;
     private $uniqueSignExtreme = null;
 
     /**
@@ -98,8 +98,6 @@ class SL5_preg_contentFinder {
      * @return bool false if !is_numeric($pos_of_next_search)
      */
     public function setPosOfNextSearch($pos_of_next_search) {
-        return false;
-
 
         if(!is_numeric($pos_of_next_search)) {
             bad(__FUNCTION__ . __LINE__ . ' : !is_numeric($pos_of_next_search)' . $pos_of_next_search);
@@ -112,7 +110,6 @@ class SL5_preg_contentFinder {
     }
 
     private function getPosOfNextSearch() {
-        return false;
         $pos_of_next_search = $this->pos_of_next_search;
         if(!is_numeric($pos_of_next_search)) {
             $pos_of_next_search = 0;
@@ -127,8 +124,7 @@ class SL5_preg_contentFinder {
      * @return bool always returns true - no meaning
      */
     public function setBeginEnd_RegEx($RegEx_begin = null, $RegEx_end = null) {
-        if(is_array($RegEx_begin))
-        {
+        if(is_array($RegEx_begin)) {
             $RegEx_end = $RegEx_begin[1]; // dont change this two lines!
             $RegEx_begin = $RegEx_begin[0]; // dont change this two lines!
         }
@@ -316,6 +312,7 @@ class SL5_preg_contentFinder {
       &$callsCount,
       $deepCount = -1
     ) {
+        $bugIt = false;
 //        $callsCount++;
         $deepCount++; # starts with $deepCount = 0
         if($content['middle'] == false || is_null($content['middle'])) {
@@ -333,6 +330,8 @@ class SL5_preg_contentFinder {
           'middle' => $C->getContent(),
           'behind' => $C->getContent_Behind()];
 
+        if($bugIt)$_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
+
 
         $terminate_seaching_inside_cut_because_nothing_found = $cut['middle'] === false;
 
@@ -346,19 +345,24 @@ class SL5_preg_contentFinder {
 
 
         # search in $cut['middle'], create $r_cut_middle
-        if(true && !$terminate_seaching_inside_cut_because_nothing_found) {
+        if(!$terminate_seaching_inside_cut_because_nothing_found) {
             $cut['middle'] = $this->getContent_user_func_recursivePRIV(
               ['middle' => $cut['middle']],
               $func, $deepCount, $callsCount);
-            $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount);
-//            $cut = call_user_func($func['content'], $cut, $deepCount + 1, $callsCount);
-//            $cut = call_user_func($func['close'], $cut, $deepCount + 1, $callsCount);
+            if($bugIt)$_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
+            $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
+            if($bugIt)$_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
+
         }
-        if($terminate_seaching_inside_cut_because_nothing_found) {
+        else {
             $cut['middle'] = $content['middle'];
         }
 
+        if($bugIt)$_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
+
         $r1_cut = $cut['before'] . $cut['middle'];// . $cut['behind'] ;
+
+        if($bugIt)$_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
 
         # search in $content['behind'], create $r_behind
         $r3_behind = (isset($content['behind']) && $content['behind'] !== false) ? $this->getContent_user_func_recursivePRIV(
@@ -368,7 +372,7 @@ class SL5_preg_contentFinder {
         $content['before'] = (isset($content['before'])) ? $content['before'] : '';
 //        $return = $content['before'] . $r1_cut . $r2_cut_behind;
 
-        $return = $content['before'] . $r1_cut ; //. $r3_behind ; // . '' . $r2_cut_behind;
+        $return = $content['before'] . $r1_cut; //. $r3_behind ; // . '' . $r2_cut_behind;
 
 //        $return = (isset($content['before'])) ? $content['before'] : '' . '' . $r_cut . '' . $r_cut_behind . $r_behind; # last working version
 
@@ -473,7 +477,7 @@ class SL5_preg_contentFinder {
         $RegEx_end_CACHE = $RegEx_end;
         $findPosID = &$this->CACHE_beginEndPos_2_findPosKey[$RegEx_begin_CACHE][$RegEx_end_CACHE][$pos_of_next_search];
         if(isset($findPosID)) {
-            $return = &$this->findPos_list[$findPosID];
+            $return = &$this->foundPos_list[$findPosID];
 
             return $return;
         }
@@ -606,13 +610,13 @@ class SL5_preg_contentFinder {
             'breakPoint';
         }
 
-        $key_findPos_list = $this->update_key_findPos_list($findPos, $matchesReturn);
+        $key_foundPos_list = $this->update_key_foundPos_list($findPos, $matchesReturn);
 
         $this->setCACHE_beginEndPos(
           $RegEx_begin_CACHE,
           $RegEx_end_CACHE,
           $pos_of_next_search_backup,
-          $key_findPos_list
+          $key_foundPos_list
         );
 
         if($bugIt || true) {
@@ -633,8 +637,8 @@ class SL5_preg_contentFinder {
 
         }
 //    $findPos['matches'] = $matchesReturn;
-        $this->findPos_list[$findPosID]['matches'] = $matchesReturn;
-        $return = &$this->findPos_list[$findPosID];
+        $this->foundPos_list[$findPosID]['matches'] = $matchesReturn;
+        $return = &$this->foundPos_list[$findPosID];
         $dummy = 1;
 
         return $return;
@@ -670,11 +674,11 @@ class SL5_preg_contentFinder {
             debug_print_backtrace();
             die(__FUNCTION__ . __LINE__ . ": \$id=is_nan($id)");
         }
-        if(!isset($t->findPos_list[$id])) {
+        if(!isset($t->foundPos_list[$id])) {
             return false;
         }
 
-        $C = $t->findPos_list[$id];
+        $C = $t->foundPos_list[$id];
 
         $backup = $t->doOverwriteSetup_OF_pos_of_next_search;
         $t->doOverwriteSetup_OF_pos_of_next_search = false;
@@ -692,7 +696,7 @@ class SL5_preg_contentFinder {
      * @return string string before current ID. false if id not exist
      */
     public function getContent_Prev() {
-        $id = $this->findPos_list_current_ID;
+        $id = $this->foundPos_list_current_ID;
         if(is_nan($id)) {
             $return = false;
 
@@ -707,7 +711,7 @@ class SL5_preg_contentFinder {
      * @return string string behind current ID. false if id not exist
      */
     public function getContent_Next() {
-        $id = $this->findPos_list_current_ID;
+        $id = $this->foundPos_list_current_ID;
         if(is_nan($id)) {
             $return = false;
 
@@ -722,7 +726,7 @@ class SL5_preg_contentFinder {
      * @return current ID .
      */
     public function getID() {
-        return $this->findPos_list_current_ID;
+        return $this->foundPos_list_current_ID;
     }
 
     /**
@@ -839,8 +843,8 @@ I think this is the beep sound, if i am not mistaken.
      * @param $id
      */
     public function setID($id) {
-        if(!isset($this->findPos_list_current_ID)) {
-            $this->findPos_list_current_ID = $id;
+        if(!isset($this->foundPos_list_current_ID)) {
+            $this->foundPos_list_current_ID = $id;
         }
     }
 
@@ -848,7 +852,7 @@ I think this is the beep sound, if i am not mistaken.
      * @return string
      */
     public function getContent_BetweenNext2Current() {
-        $current_ID = $this->findPos_list_current_ID;
+        $current_ID = $this->foundPos_list_current_ID;
         $next_ID = $current_ID + 1;
 
         return $this->getContent_BetweenIDs($current_ID, $next_ID);
@@ -858,19 +862,19 @@ I think this is the beep sound, if i am not mistaken.
      * @return string or false if is is_nan
      */
     public function getContent_BetweenPrev2Current() {
-        $current_ID = $this->findPos_list_current_ID;
+        $current_ID = $this->foundPos_list_current_ID;
         if(is_nan($current_ID)) {
             $return = false;
 
             return $return;
         }
-        $prev_ID = $this->findPos_list_current_ID - 1;
+        $prev_ID = $this->foundPos_list_current_ID - 1;
 
         $doInclusive = false;
 
 
         if($prev_ID < 0) {
-            $p = $this->findPos_list[$current_ID];
+            $p = $this->foundPos_list[$current_ID];
             if(!$doInclusive) {
                 return substr($this->content, 0, $p['begin_begin']);
             }
@@ -878,11 +882,11 @@ I think this is the beep sound, if i am not mistaken.
             return substr($this->content, 0, $p['end_end']);
         }
 
-        $findPos_list = &$this->findPos_list;
-        if(!isset($findPos_list[$prev_ID])) {
-            $prev_end_end = $findPos_list[$prev_ID]['end_end'];
+        $foundPos_list = &$this->foundPos_list;
+        if(!isset($foundPos_list[$prev_ID])) {
+            $prev_end_end = $foundPos_list[$prev_ID]['end_end'];
 
-            $current_begin = $findPos_list[$current_ID]['begin_begin'];;
+            $current_begin = $foundPos_list[$current_ID]['begin_begin'];;
 //        $CACHE = & $this->CACHE;
             $c = substr($this->content, $prev_end_end, $current_begin - $prev_end_end);
 
@@ -904,8 +908,8 @@ I think this is the beep sound, if i am not mistaken.
 
         $t = &$this;
 
-        $id_1_CH = &$t->findPos_list[$id1];
-        $id_2_CH = &$t->findPos_list[$id2];
+        $id_1_CH = &$t->foundPos_list[$id1];
+        $id_2_CH = &$t->foundPos_list[$id2];
         if(!@isset($id_1_CH) || !@isset($id_2_CH)) {
             debug_print_backtrace();
             die(__FUNCTION__ . __LINE__ . ": !isset(...) $id1, $id2");
@@ -926,7 +930,7 @@ I think this is the beep sound, if i am not mistaken.
         return $c;
     }
 
-    private function setCACHE_beginEndPos($begin, $end, $pos_of_next_search, $key_findPos_list) {
+    private function setCACHE_beginEndPos($begin, $end, $pos_of_next_search, $key_foundPos_list) {
         $t = &$this;
         if(true) {
             #;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -941,8 +945,8 @@ I think this is the beep sound, if i am not mistaken.
                 debug_print_backtrace();
                 die(__FUNCTION__ . '>' . __LINE__);
             }
-            if(!is_numeric($key_findPos_list)) {
-                echo(__LINE__ . ': ' . "!is_numeric($key_findPos_list)");
+            if(!is_numeric($key_foundPos_list)) {
+                echo(__LINE__ . ': ' . "!is_numeric($key_foundPos_list)");
                 debug_print_backtrace();
                 die(__FUNCTION__ . '>' . __LINE__);
             }
@@ -951,8 +955,8 @@ I think this is the beep sound, if i am not mistaken.
         if(is_null($pos_of_next_search)) {
             $pos_of_next_search = 0;
         }
-        $t->CACHE_beginEndPos_2_findPosKey[$begin][$end][$pos_of_next_search] = $key_findPos_list;
-        $t->setID($key_findPos_list);
+        $t->CACHE_beginEndPos_2_findPosKey[$begin][$end][$pos_of_next_search] = $key_foundPos_list;
+        $t->setID($key_foundPos_list);
 
         return true;
     }
@@ -1340,7 +1344,7 @@ ho  <!--{03}-->3<!--{/03}-->
       $bugIt = false
     ) {
         if(false && !is_null($this->content)
-          && !is_null($this->findPos_list)
+          && !is_null($this->foundPos_list)
         ) {
             return $this->content;
         }
@@ -1629,18 +1633,18 @@ ho  <!--{03}-->3<!--{/03}-->
         return true;
     }
 
-    private function update_key_findPos_list(&$findPos, &$matchesReturn) {
-        $count = count($this->findPos_list);
-        $key_findPos_list = (is_numeric($count)) ? $count : 0;
-        $this->findPos_list[$key_findPos_list] = $findPos;
-        if($this->findPos_list_current_ID === $key_findPos_list) {
-            die(__FUNCTION__ . __LINE__ . ': $this->findPos_list_current_ID == $key_findPos_list = ' . $key_findPos_list);
+    private function update_key_foundPos_list(&$findPos, &$matchesReturn) {
+        $count = count($this->foundPos_list);
+        $key_foundPos_list = (is_numeric($count)) ? $count : 0;
+        $this->foundPos_list[$key_foundPos_list] = $findPos;
+        if($this->foundPos_list_current_ID === $key_foundPos_list) {
+            die(__FUNCTION__ . __LINE__ . ': $this->foundPos_list_current_ID == $key_foundPos_list = ' . $key_foundPos_list);
         }
 
-        $this->findPos_list[$key_findPos_list]['matches'] = $matchesReturn;
-        $this->setID($key_findPos_list);
+        $this->foundPos_list[$key_foundPos_list]['matches'] = $matchesReturn;
+        $this->setID($key_foundPos_list);
 
-        return $key_findPos_list;
+        return $key_foundPos_list;
     }
 
     private function setRegEx(&$RegEx_old, &$RegEx_new) {
