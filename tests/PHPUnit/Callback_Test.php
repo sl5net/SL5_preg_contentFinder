@@ -25,13 +25,11 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         $cf->setSearchMode('dontTouchThis');
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1)   {
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) {
               if($cut['middle'] === false) return $cut;
 
-              $posList0 = $foundPos_list;
-
-              $new_open_default  = strtoupper(substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']));
-              $new_close_default = strtolower( substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
+              $new_open_default = strtoupper(substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']));
+              $new_close_default = strtolower(substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
 
               # put everything ! into middle and begin not into behind!
               $cut['middle'] = $new_open_default . $cut['middle'] . $new_close_default . $cut['behind'];
@@ -71,7 +69,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1)  use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount, $callsCount, $foundPos_list, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
 
               $n = $newline;
@@ -81,9 +79,8 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
 //              $foundPos_list, $source1
 
               $posList0 = $foundPos_list;
-              $new_open_default  = substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']);
-              $new_close_default = strtoupper( substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
-
+              $new_open_default = substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']);
+              $new_close_default = strtoupper(substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']));
 
 
               $cut['middle'] = $n . $indentStr0 . $new_open_default . $n . $indentStr1 . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr1 . "$1", $cut['middle']) . $n
@@ -137,10 +134,14 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
 
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount) use ($fileName) {
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($fileName) {
               if(strpos($cut['middle'], '$expected') !== false) {
+                  if($cut['middle'] === false) return $cut;
                   $m = &$cut['middle'];
-                  #         $source1 = $LINE__ . ':{k}';
+
+                  $functionName = preg_replace(
+                    '/\s*FUNCTION\s+TEST_([\w_\w]+)\(\s*\).*/is',
+                    "$1", substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']));
 
 
                   $reg_expected = ['\$expected\s*=[^\'"]*("|\')', '("|\')'];
@@ -156,8 +157,8 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
                   $p->setBeginEnd_RegEx($reg_source);
                   $sourceStr = $p->getContent();
 
-                  if(trim($sourceStr) && strpos($sourceStr, '$cfEmpty_IfEmptyResult') === false) {
-                      $msg = "Example source conversion :
+                  if($functionName && trim($sourceStr) && strpos($sourceStr, '$cfEmpty_IfEmptyResult') === false) {
+                      $msg = "Example source conversion '$functionName':
 
 $sourceStr
 

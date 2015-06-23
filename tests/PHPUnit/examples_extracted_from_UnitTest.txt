@@ -4,7 +4,7 @@ following examples are automatically extracted from the UnitTest source. For imp
 
 
 
-Example source conversion :
+Example source conversion 'AABBCC':
 
 <A>.</A><B>..</B><C>...</C>
 
@@ -17,7 +17,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContent_Prev_Next_3':
 
 {1_4}_2_3_{_b}o
 
@@ -30,7 +30,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContent_Prev_Next':
 
 {1_4}_2_3_{_b}o
 
@@ -43,7 +43,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContent_2':
 
 {1_4}_2_3_{_b}o
 
@@ -56,7 +56,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContent_ByID_3':
 
 {1_4}_2_3_{_b}o
 
@@ -69,7 +69,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContent_setID':
 
 {1_4}_2_3_{_b}o
 
@@ -82,7 +82,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContent_ByID_1':
 
 {1_4}_2_3_{_b}o
 
@@ -95,7 +95,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContentBehind':
 
 {1_4}_2_3_{_b}o
 
@@ -108,7 +108,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContentBefore':
 
 {1_4}_2_3_{_b}o
 
@@ -121,7 +121,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContentBefore_delimiterWords':
 
 {1_4}_2_3_{_b}o
 
@@ -134,7 +134,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'content_getBorders_behind':
 
 {1_4}_2_3_{_b}o
 
@@ -147,7 +147,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'content_getBorders_before':
 
 {1_4}_2_3_{_b}o
 
@@ -160,7 +160,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'CACHE_current_begin_end_false':
 
 {1_4}_2_3_{_b}o
 
@@ -173,7 +173,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'CACHE_current':
 
 {1_4}_2_3_{_b}o
 
@@ -186,7 +186,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'getContentNext':
 
 {1_4}_2_3_{_b}o
 
@@ -199,7 +199,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'nl2br_Echo':
 
 {1_4}_2_3_{_b}o
 
@@ -212,7 +212,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'echo_content_little_excerpt':
 
 {1_4}_2_3_{_b}o
 
@@ -225,7 +225,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'false_versus_empty':
 
 {1_4}_2_3_{_b}o
 
@@ -238,7 +238,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion '123_abc_v5':
 
 
 class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
@@ -253,7 +253,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion '123_abc_v3':
 
 {
         hiHo
@@ -268,7 +268,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion '123_g':
 
 123#g
 
@@ -281,7 +281,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'callback_with_closures':
 
 _if(X1){$X1;if(X2){$X2;}}
 
@@ -298,7 +298,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'recursion_simplyReproduction':
 
 _if(X1){$X1;if(X2){$X2;}}
 
@@ -311,7 +311,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'recursive_01':
 
 :{k}
 
@@ -324,7 +324,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'reformat_compressed_AutoHotKey':
 
 :{{o}}
 
@@ -337,7 +337,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion '15_':
 
 :
 if(a1){$A1;}if(a2){$A2;}
@@ -351,7 +351,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'simple3':
 
 :
 a{b{B}}
@@ -372,7 +372,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'a_b_B_callback':
 
 :a{b{B}}
 
@@ -385,7 +385,7 @@ ______________________
 
 
 
-Example source conversion :
+Example source conversion 'tag_to_UPPER_lower':
 
 : jO_2_maN nO_9_uP
 
