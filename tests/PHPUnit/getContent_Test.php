@@ -90,6 +90,21 @@ class GetContent_Test extends PHPUnit_Framework_TestCase {
         $this->assertEquals(false, $cf->getContent_Next());
         $this->assertEquals(3, $cf->getContent());
     }
+    function test_wrongSource_NIX_getContent() {
+        $source1 = '{NIX';
+        $expected = 'NIX';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx('{', '}');
+        $this->assertEquals($expected, $cf->getContent());
+    }
+
+    function test_wrongSource_NIXNIX_getContent() {
+        $source1 = "{NIX{}";
+        $expected = 'NIX{';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx('{', '}');
+        $this->assertEquals($expected, $cf->getContent());
+    }
 
     function test_getUniqueSignExtreme() {
         $cf = new SL5_preg_contentFinder(123456);

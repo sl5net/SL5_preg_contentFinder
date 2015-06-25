@@ -32,7 +32,6 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
             $pos_of_next_search = $borders['end_end'];
         }
         $this->assertEquals($expected, $actual);
-
     }
 
 

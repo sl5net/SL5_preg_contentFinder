@@ -41,6 +41,8 @@ $indentSize = 2;
 
 now simply start conversion. BTW optional you could use regular expressions and much more. or you could use your own callback function. enjoy :) 
 
+try regular expressions online. for example here: https://regex101.com/
+
 ______________________
 
 Example source conversion :
