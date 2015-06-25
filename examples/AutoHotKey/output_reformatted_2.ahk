@@ -43,7 +43,7 @@ if 1 = /insert
       Press OK to edit the toolbar properties file.
       )
       IfMsgBox, Yes
-      scite.OpenFile(LocalSciTEPath "\UserToolbar.properties")
+         scite.OpenFile(LocalSciTEPath "\UserToolbar.properties")
       ExitApp
    }
    
@@ -66,7 +66,7 @@ if 1 = /addScriptlet
    ExitApp ; Maybe the user has cancelled the action.
    MsgBox, 68, %progName%, Scriptlet added sucessfully. Do you want to open the scriptlet manager?
    IfMsgBox, Yes
-   Reload ; no parameters are passed to script
+      Reload ; no parameters are passed to script
    ExitApp
 }
 
@@ -95,7 +95,11 @@ GuiGetPos(ctrl, guiId := "")
    guiId := guiId ? (guiId ":") : ""
    GuiControlGet, ov, %guiId%Pos, %ctrl%
    return { 
+      x: ovx, y: ovy, w: ovw, h: ovh }
+      
+         
       x: ovx, y: ovy, w: ovw, h: ovh 
+      }
       
          
       }
@@ -140,7 +144,7 @@ GuiGetPos(ctrl, guiId := "")
    return
    MsgBox, 52, %progName%, Are you sure you want to delete '%selected%'?
    IfMsgBox, No
-   return
+      return
    FileDelete, %sdir%\%selected%.scriptlet
    fname2create =
    gosub CompleteUpdate

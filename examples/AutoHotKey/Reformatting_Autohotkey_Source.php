@@ -33,16 +33,21 @@ function reformat_AutoHotKey($file_content) {
     $indentSize = 3;
 
     $file_content = trim(preg_replace('/^\s+/smi', '', $file_content));
-    $cf = new SL5_preg_contentFinder($file_content);
-    $cf->setBeginEnd_RegEx($old_open, $old_close);
-    $cf->setSearchMode('dontTouchThis');
 
     $getIndentStr = function ($indent, $char, $indentSize) {
         $multiplier = $indentSize * $indent;
         $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
-
         return $indentStr;
     };
+
+    $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+    $pattern = '([\r\n](If|#if)[a-z]+[ ]*,[ ]*[^\n\r{]+)[ ]*[\r\n]+[ ]*(\w)';
+    $file_content = preg_replace('/'.$pattern.'/is', "$1" . $newline . $indentStr . "$3" , $file_content);
+
+    $cf = new SL5_preg_contentFinder($file_content);
+    $cf->setBeginEnd_RegEx($old_open, $old_close);
+    $cf->setSearchMode('dontTouchThis');
+
 
     /*
      *             $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
@@ -59,10 +64,11 @@ function reformat_AutoHotKey($file_content) {
 //          $charSpace = '.';
           $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-          $start = '' . substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']) . '';
+          if(!isset($posList0['begin_end']))$posList0['begin_end']=strlen($source1);
+              $start = '' . substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']) . '';
           $end = '' . substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']) . '';
 
-          $cut['middle'] = $start . $n . $indentStr
+          $cut['middle'] = '' . $start . $n . $indentStr
             . trim(preg_replace('/\n/', "\n" . $indentStr, $cut['middle']));
 //          $charSpace = '.';
           $indentStr = $getIndentStr(0, $charSpace, $indentSize);
