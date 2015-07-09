@@ -9,6 +9,122 @@ include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
 //     $collectString = '';
 
+
+    function test_reformat_AutoHotKey() {
+        $source1 = '#IfWinActive ahk_class SciTEWindow
+; Refactoring Engine
+fun()
+{
+
+   Last_A_This:=""
+   if(false)
+      Too(Last_A_This)
+   s := Com("{D7-2B-4E-B8-B54}")
+   if !os
+   {
+
+      ExitApp
+   }
+   ; comment :) { { {
+   ExitApp
+}
+fun2(do){
+
+   dohaa
+}
+funZ(do){
+   doZZ
+}';
+        $expected = '#IfWinActive ahk_class SciTEWindow
+; Refactoring Engine
+fun()
+{
+
+   Last_A_This:=""
+   if(false)
+      Too(Last_A_This)
+   s := Com("{D7-2B-4E-B8-B54}")
+   if !os
+   {
+
+      ExitApp
+   }
+   ; comment :) { { {
+   ExitApp
+}
+fun2(do){
+
+   dohaa
+}
+funZ(do){
+   doZZ
+}';
+        $old_open = '^([^{;\n]*)\{[\s\n]';
+        $old_close = '^([^};\n\r]*)\}[\s\n\r]';
+
+        $new_open_default = '{ ';
+        $new_close_default = '}';
+        $charSpace = " ";
+        $newline = "\r\n";
+        $indentSize = 3;
+
+        $source1 = trim(preg_replace('/^\s+/smi', '', $source1));
+
+        $getIndentStr = function ($indent, $char, $indentSize) {
+            $multiplier = $indentSize * $indent;
+            $indentStr = str_repeat($char, (($multiplier < 0) ? 0 : $multiplier));
+
+            return $indentStr;
+        };
+
+        $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+//    $pattern = '([\r\n](If|#if)[a-z]+[ ]*[ ]*[^\n\r{]+)[ ]*[\r\n]+[ ]*(\w)';
+        $pattern = '([\r\n](If|#if)([a-z]+[ ]*,|\()[ ]*[^\n\r{]+)[ ]*[\r\n]+[ ]*(\w)';
+        $source1 = preg_replace('/' . $pattern . '/is', "$1" . $newline . $indentStr . "$4", $source1);
+
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old_open, $old_close);
+        $cf->setSearchMode('dontTouchThis');
+
+
+        /*
+         *             $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
+
+         */
+
+        $actual = $cf->getContent_user_func_recursive(
+
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+              $n = $newline;
+              if($cut['middle'] === false) return $cut;
+//          if($cut['middle'] === false || $cut['behind'] === false) {
+//              return false;
+//          }
+//          $charSpace = '.';
+              $indentStr = $getIndentStr(1, $charSpace, $indentSize);
+
+              if(!isset($posList0['begin_end'])) $posList0['begin_end'] = strlen($source1);
+              $start = '' . substr($source1, $posList0['begin_begin'], $posList0['begin_end'] - $posList0['begin_begin']) . '';
+              $end = '' . substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']) . '';
+
+              $cut['middle'] = '' . rtrim($start) . $n . $n . $indentStr
+                . trim(preg_replace('/\n/', "\n" . $indentStr, $cut['middle']));
+//          $charSpace = '.';
+              $indentStr = $getIndentStr(0, $charSpace, $indentSize);
+              $cut['middle'] .= $n . $indentStr . $end . $cut['behind'];
+
+              return $cut;
+          });
+
+        $opcodes = FineDiff::getDiffOpcodes($actual, $expected);
+        $to_text = FineDiff::renderToTextFromOpcodes($expected, $opcodes);
+        echo $to_text;
+        if(class_exists('PHPUnit_Framework_TestCase'))
+            $this->assertEquals($expected, $actual);
+
+    }
+
+
     function test_wrongSource_NIXNIX_callback() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{NIX{}';
@@ -64,7 +180,7 @@ include_once '_callbackShortExample.php';
 //      {{o}}
 //        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -72,7 +188,7 @@ include_once '_callbackShortExample.php';
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{NoX';
         $expected = $LINE__ . ':NoX';
-         $old = ['{', '}'];
+        $old = ['{', '}'];
         $new_open_default = '{';
         $new_close_default = '}';
 
@@ -120,9 +236,8 @@ include_once '_callbackShortExample.php';
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
     }
-
 
 
     function test_a_b_B_callback() {
@@ -184,7 +299,7 @@ include_once '_callbackShortExample.php';
 //      {{o}}
 //        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -254,7 +369,7 @@ include_once '_callbackShortExample.php';
 
 //      {{o}}
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -331,7 +446,7 @@ a
 //      {{o}}
 //        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
     function test_simple() {
@@ -413,7 +528,7 @@ a
 //      {{o}}
 //        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -497,7 +612,7 @@ if(a1)
 //      {{o}}
 //        $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -565,7 +680,7 @@ if(a1)
 
 //      {{o}}
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -636,7 +751,7 @@ if(a1)
 //      {{o}}
 //    $actual = $cBefore . $content . $cBehind;
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -702,7 +817,7 @@ if(a1)
 
 //      {{o}}
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -767,7 +882,7 @@ if(a1)
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
     }
 
     function test_shortest_new_open_recursive() {
@@ -831,7 +946,7 @@ if(a1)
 
 //      {{o}}
 
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 
     }
 
@@ -844,7 +959,7 @@ if(a1)
         list($c, $bf, $bh) = recursion_simplyReproduction($expected);
         $actual = $bf . $c . $bh;
         $cf->setBeginEnd_RegEx('{', '}');
-        $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
     }
 
 
@@ -915,8 +1030,10 @@ if(a1)
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
           });
 
-        $this->assertEquals($expected,
-          $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) {
+            $this->assertEquals($expected,
+              $actual);
+        }
     }
 
 
@@ -932,8 +1049,8 @@ if(a1)
         $cf->setBeginEnd_RegEx('{', '}');
         list($c, $bf, $bh) = self::recursion_add($source1, "{\r\n   ", ";\r\n}");
         $actual = $bf . $c . $bh;
-        $this->assertEquals($expected, $actual);
-        $this->assertEquals(strlen($expected), strlen($actual));
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(strlen($expected), strlen($actual));
     }
 
 
