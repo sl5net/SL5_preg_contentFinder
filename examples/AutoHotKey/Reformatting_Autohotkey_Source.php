@@ -1,3 +1,4 @@
+test 15-07-09_18-36
 little example with funny result :)
 output_reformatted.ahk is generated from very compressed file input_compressed.ahk
 <?php
