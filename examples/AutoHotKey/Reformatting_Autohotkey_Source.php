@@ -1,9 +1,10 @@
-little example with funny result :)
-output_reformatted.ahk is generated from very compressed file input_compressed.ahk
+little autohotkey example
 <?php
 include_once("../../SL5_preg_contentFinder.php");
 
-$isIncluded = (pathinfo(__FILE__)['basename'] . pathinfo($_SERVER['SCRIPT_NAME'])['basename']);
+$pathinfo__FILE__ = pathinfo(__FILE__);
+$pathinfo_Script_Name = pathinfo($_SERVER['SCRIPT_NAME']);
+$isIncluded = ($pathinfo__FILE__['basename'] . $pathinfo_Script_Name['basename']);
 
 # http://php.net/manual/de/features.commandline.php
 //parse_str(implode('&', array_slice($argv, 1)), $_GET);
@@ -52,7 +53,8 @@ if(!$isIncluded) {
     }
 }
 if(!$isIncluded) {
-    $timeStamp = (new DateTime())->format('s'); // Y-m-d_H-s
+    $format = new DateTime();
+    $timeStamp = $format->format('s'); // Y-m-d_H-s
     file_put_contents($fileAddress . '.backup' . $timeStamp . '.ahk', $file_content);
     $actual_content = reformat_AutoHotKey($file_content, $arguments);
     file_put_contents($fileAddress, $actual_content);

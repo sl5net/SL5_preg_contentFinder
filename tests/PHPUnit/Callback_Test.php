@@ -76,7 +76,7 @@ isFileOpendInSciteUnsaved(filename){
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $actual = reformat_AutoHotKey($source1, $arguments = '');
         # equalize newline style
-        $expected = preg_replace('/\r/', "", $expected);
+//        $expected = preg_replace('/\r/', "", $expected);
         $expected = str_replace(' ','.',$expected);
         $actual = str_replace(' ','.',$actual);
         $actual = preg_replace('/\r/', "", $actual);
