@@ -67,10 +67,10 @@ isFileOpendInSciteUnsaved(filename){
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $actual = reformat_AutoHotKey($source1, $arguments = '');
         # equalize newline style
-//        $expected = preg_replace('/\r/', "", $expected);
+        $expected = preg_replace('/\r/', "", $expected);
         $expected = str_replace(' ','.',$expected);
         $actual = str_replace(' ','.',$actual);
-//        $actual = preg_replace('/\r/', "", $actual);
+        $actual = preg_replace('/\r/', "", $actual);
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 //        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
     }
@@ -79,8 +79,7 @@ isFileOpendInSciteUnsaved(filename){
         $source1 = $LINE__ . ':{^_^}{No_';
         $expected = $LINE__ . ':[^_^][No_Oops';
         $old = ['{', '}'];
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes = ['[', ']'];
 
         $charSpace = "";
         $newline = "";
@@ -95,17 +94,17 @@ isFileOpendInSciteUnsaved(filename){
             return $indentStr;
         };
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
 
 //              $end = substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']);
-              if(!$posList0['end_begin']) $new_close_default = 'Oops';
+              if(!$posList0['end_begin']) $newQuotes[1] = 'Oops';
 
 
               $n = $newline;
@@ -116,7 +115,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -126,7 +125,7 @@ isFileOpendInSciteUnsaved(filename){
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -139,8 +138,7 @@ isFileOpendInSciteUnsaved(filename){
         $source1 = $LINE__ . ':{NoX';
         $expected = $LINE__ . ':[NoX]';
         $old = ['{', '}'];
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes = ['[' , ']'];
 
         $charSpace = "";
         $newline = "";
@@ -155,11 +153,11 @@ isFileOpendInSciteUnsaved(filename){
             return $indentStr;
         };
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -171,7 +169,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -181,7 +179,7 @@ isFileOpendInSciteUnsaved(filename){
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -194,7 +192,7 @@ isFileOpendInSciteUnsaved(filename){
         $source1 = $LINE__ . ':{NIX{}';
         $expected = $LINE__ . ':[NIX{]';
         $old = ['{', '}'];
-        $new = ['[', ']'];
+        $newQuotes = ['[', ']'];
 
         $charSpace = "";
         $newline = "";
@@ -208,14 +206,12 @@ isFileOpendInSciteUnsaved(filename){
 
             return $indentStr;
         };
-        $new_open_default = $new[0];
-        $new_close_default = $new[1];
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -227,7 +223,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -244,7 +240,7 @@ isFileOpendInSciteUnsaved(filename){
 
               $cut['middle'] .= (is_null($posList0['end_begin']))
                 ? $indentStr . $cut['behind']
-                : $indentStr . $new_close_default . $cut['behind'];
+                : $indentStr . $newQuotes[1] . $cut['behind'];
 
 
               // return $cut;
@@ -264,7 +260,7 @@ isFileOpendInSciteUnsaved(filename){
         $source1 = $LINE__ . ':{NIX{}';
         $expected = $LINE__ . ':NIX{';
         $old = ['{', '}'];
-        $new = ['', ''];
+        $newQuotes = ['', ''];
 
         $charSpace = "";
         $newline = "";
@@ -278,14 +274,12 @@ isFileOpendInSciteUnsaved(filename){
 
             return $indentStr;
         };
-        $new_open_default = $new[0];
-        $new_close_default = $new[1];
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -297,7 +291,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -314,7 +308,7 @@ isFileOpendInSciteUnsaved(filename){
 
               $cut['middle'] .= (is_null($posList0['end_begin']))
                 ? $indentStr . $cut['behind']
-                : $indentStr . $new_close_default . $cut['behind'];
+                : $indentStr . $newQuotes[1] . $cut['behind'];
 
 
               // return $cut;
@@ -333,8 +327,7 @@ isFileOpendInSciteUnsaved(filename){
         $source1 = $LINE__ . ':NoX';
         $expected = $LINE__ . ':NoX';
         $old = ['{', '}'];
-        $new_open_default = '{';
-        $new_close_default = '}';
+        $newQuotes = ['{', '}'];
 
         $charSpace = "";
         $newline = "";
@@ -349,11 +342,11 @@ isFileOpendInSciteUnsaved(filename){
             return $indentStr;
         };
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -365,7 +358,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -375,7 +368,7 @@ isFileOpendInSciteUnsaved(filename){
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -403,14 +396,13 @@ isFileOpendInSciteUnsaved(filename){
 
             return $indentStr;
         };
-        $new_open_default = '{';
-        $new_close_default = '}';
+        $newQuotes = ['{','}'];
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -422,7 +414,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -438,7 +430,7 @@ isFileOpendInSciteUnsaved(filename){
               $end = '' . ltrim(substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin'])) . '';
 
 
-              $cut['middle'] .= (is_null($posList0['end_begin'])) ? $indentStr . $cut['behind'] : $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= (is_null($posList0['end_begin'])) ? $indentStr . $cut['behind'] : $indentStr . $newQuotes[1] . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -457,8 +449,7 @@ isFileOpendInSciteUnsaved(filename){
         $expected = $LINE__ . ':a<b<B>>';
         $old = ['{', '}'];
 
-        $new_open_default = '<';
-        $new_close_default = '>';
+        $newQuotes = ['<','>'];
         $charSpace = "";
         $newline = "\r\n";
         $newline = "";
@@ -475,11 +466,11 @@ isFileOpendInSciteUnsaved(filename){
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //              $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -491,7 +482,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -501,7 +492,7 @@ isFileOpendInSciteUnsaved(filename){
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -527,8 +518,7 @@ isFileOpendInSciteUnsaved(filename){
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes= ['[',']'];
         $charSpace = ".";
         $newline = "_";
         $indentSize = 1;
@@ -544,12 +534,12 @@ isFileOpendInSciteUnsaved(filename){
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
               $charSpace = "'";
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 //              return $cut  ;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -561,7 +551,7 @@ isFileOpendInSciteUnsaved(filename){
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) {
 //                  return $cut['behind'];
 //                  return false;
@@ -571,8 +561,8 @@ isFileOpendInSciteUnsaved(filename){
               $charSpace = '`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-//              $cut['behind'] .= $indentStr . $new_close_default . $n;
-              $cut['middle'] .= $indentStr . $new_close_default . $n . $cut['behind'];
+//              $cut['behind'] .= $indentStr . $newQuotes[1] . $n;
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -591,8 +581,7 @@ isFileOpendInSciteUnsaved(filename){
 a{b{B}}';
         $old_open = '{';
         $old_close = '}';
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes = ['[',']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -621,11 +610,11 @@ a
 //      $closeFunc = null
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
               $n .= $deepCount . '|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
 
               // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
@@ -638,7 +627,7 @@ a
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -648,7 +637,7 @@ a
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -668,8 +657,7 @@ a{A}b{B}';
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes = ['[',']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -702,12 +690,12 @@ a
 //      $contentFunc = null,
 //      $closeFunc = null
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
               $n .= $deepCount . '|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -719,7 +707,7 @@ a
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -729,9 +717,9 @@ a
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-//              $cut['behind'] .= $indentStr . $new_close_default . $n;
-//              $cut['behind'] = $indentStr . $new_close_default . $n . $cut['behind'];
-              $cut['middle'] .= $indentStr . $new_close_default . $n . $cut['behind'];
+//              $cut['behind'] .= $indentStr . $newQuotes[1] . $n;
+//              $cut['behind'] = $indentStr . $newQuotes[1] . $n . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -752,8 +740,7 @@ if(a1){$A1;}if(a2){$A2;}';
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes = ['[',']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -787,12 +774,12 @@ if(a1)
 //      $closeFunc = null
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
               $n .= $deepCount . '|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $n . $indentStr . $new_open_default;
+              $cut['before'] .= $n . $indentStr . $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -804,7 +791,7 @@ if(a1)
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -814,8 +801,8 @@ if(a1)
 //              $charSpace ='´';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-//              $cut['behind'] .= $indentStr . $new_close_default . $n;
-              $cut['middle'] .= $indentStr . $new_close_default . $n . $cut['behind'];
+//              $cut['behind'] .= $indentStr . $newQuotes[1] . $n;
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n . $cut['behind'];
 
               // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -839,9 +826,8 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = $old_open;
-        $new_close_default = '#';
-//        $new_close_default = $old_close; // this line is reason for endless loop
+        $newQuotes = [$old_open,'#'];
+//        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = "";
         $newline = "";
         $indentSize = 1;
@@ -857,12 +843,12 @@ if(a1)
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -874,7 +860,7 @@ if(a1)
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -884,7 +870,7 @@ if(a1)
 //          $charSpace ='`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $n;
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n;
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -908,9 +894,8 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = $old_open;
-        $new_close_default = '>';
-//        $new_close_default = $old_close; // this line is reason for endless loop
+        $newQuotes = [$old_open, '>'];
+//        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = " ";
         $newline = "n";
 //        $newline = "aölsdkfjösaldkjfsöalfdkj"; // see closure functions
@@ -927,13 +912,13 @@ if(a1)
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -945,7 +930,7 @@ if(a1)
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -955,7 +940,7 @@ if(a1)
 //          $charSpace ='`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $cut['behind'];
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -975,9 +960,8 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = '{';
-        $new_close_default = '}';
-//        $new_close_default = $old_close; // this line is reason for endless loop
+        $newQuotes =[ '{' , '}' ];
+//        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = "";
         $newline = "";
         $indentSize = 1;
@@ -993,13 +977,13 @@ if(a1)
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -1011,7 +995,7 @@ if(a1)
               $cut['middle'] .= $n;
 
               // return $cut;
-              // , function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // , function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -1021,7 +1005,7 @@ if(a1)
 //          $charSpace ='`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $n;
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n;
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -1047,8 +1031,7 @@ if(a1)
         $newline = "\n";
         $newline = "";
         $indentSize = 1;
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes =[ '[' , ']' ];
 
         $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
@@ -1061,13 +1044,13 @@ if(a1)
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -1079,7 +1062,7 @@ if(a1)
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -1089,7 +1072,7 @@ if(a1)
 //          $charSpace ='`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $n;
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n;
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -1104,9 +1087,8 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $new_open_default = '#';
-        $new_close_default = '}';
-//        $new_close_default = $old_close; // this line is reason for endless loop
+        $newQuotes =[ '#' , '}' ];
+//        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = "";
         $newline = "";
         $indentSize = 1;
@@ -1122,13 +1104,13 @@ if(a1)
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -1140,7 +1122,7 @@ if(a1)
               $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -1150,7 +1132,7 @@ if(a1)
 //          $charSpace ='`';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
 
-              $cut['middle'] .= $indentStr . $new_close_default . $n;
+              $cut['middle'] .= $indentStr . $newQuotes[1] . $n;
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning
@@ -1190,8 +1172,7 @@ if(a1)
 ]';
         $old_open = '{';
         $old_close = '}';
-        $new_open_default = '[';
-        $new_close_default = ']';
+        $newQuotes =[ '[' , ']' ];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -1207,13 +1188,13 @@ if(a1)
         };
 
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
+          function ($cut, $deepCount) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
 //          $n .= $deepCount.'|';
 //          $charSpace = "'";
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
-              $cut['before'] .= $new_open_default;
+              $cut['before'] .= $newQuotes[0];
 // return $cut;
               // }, function ($cut, $deepCount) use ($charSpace, $newline, $indentSize, $getIndentStr) {
               if($cut['middle'] === false) return $cut;
@@ -1226,7 +1207,7 @@ if(a1)
 //          $cut['middle'] .= $n;
 
               // return $cut;
-              // }, function ($cut, $deepCount) use ($new_close_default, $newline, $charSpace, $indentSize, $getIndentStr) {
+              // }, function ($cut, $deepCount) use ($newQuotes[1], $newline, $charSpace, $indentSize, $getIndentStr) {
               if($cut['middle'] === false || $cut['behind'] === false) {
 //                  return $cut['behind'];
                   return false;
@@ -1236,7 +1217,7 @@ if(a1)
 //          $charSpace ='-';
 //          $indentStr = $getIndentStr(0, $charSpace, $indentSize);
 
-              $cut['middle'] .= $n . $new_close_default;
+              $cut['middle'] .= $n . $newQuotes[1];
 
 // return $cut;
               return $cut; # todo: $cut['behind'] dont need newline at the beginning

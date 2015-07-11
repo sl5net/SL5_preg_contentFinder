@@ -1,4 +1,3 @@
-little autohotkey example
 <?php
 include_once("../../SL5_preg_contentFinder.php");
 
@@ -8,6 +7,7 @@ $isIncluded = ($pathinfo__FILE__['basename'] . $pathinfo_Script_Name['basename']
 
 # http://php.net/manual/de/features.commandline.php
 //parse_str(implode('&', array_slice($argv, 1)), $_GET);
+if(!$isIncluded) echo 'little autohotkey example';
 if(!$isIncluded && !file_exists('SL5_phpGeneratedRunOnChanged.tmpl.ahk')) {
     die('! SL5_phpGeneratedRunOnChanged.tmpl.ahk');
 }
