@@ -102,7 +102,7 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
     $file_content = preg_replace('/^\s*\}\s*else(\s+if\s*\([^\n\r]+\)\s*)?\s*\{+/smi', "} \nelse $1 {", $file_content); // dirty BugFix .. need temporary newline that script later works correct
 
     $file_content = preg_replace(
-      '/(\s*\bif\s*\([^\n\r)]+\)\s*)[\n\r]+([^{\s])/smi', "$1\n" . $indentStr . "$2", $file_content); // dirty BugFix
+      '/(\s*\bif\s*\([^\n\r)]+\)\s*)[\n\r]+([^{\s])/smi', "$1\n" . $newline . $indentStr . "$2", $file_content); // dirty BugFix
 
     $file_content = preg_replace(
       '/(\s*\belse\s*)[\n\r]+([^{\s])/smi', "$1\n" . $indentStr . "$2", $file_content); // dirty BugFix

@@ -10,34 +10,69 @@ include_once '_callbackShortExample.php';
     function test_prettify_autohotkey() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':
+this is ugly source
+
 isFileOpendInSciteUnsaved(filename){
-SetTitleMatchMode,2
+    SetTitleMatchMode,2
 doSaveFirst := false ; initialisation
-IfWinNotExist,%filename% - SciTE4AutoHotkey
-{
+   IfWinNotExist,%filename% - SciTE4AutoHotkey{
 doSaveFirst := true
 IfWinNotExist,%filename% * SciTE4AutoHotkey
 MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+ if(false){
+      Too(Last_A_This)
+   s := Com("{D7-2B-4E-B8-B54}")
+   if !os
+ExitApp
+   else if(really){
+MsgBox, yes really :)
+     } else
+   ExitApp
+
+
+   ; comment :) { { hi } {
+
+
+   }
 }
 return doSaveFirst
 }
 ';
-        $expected = $LINE__ . ':
-isFileOpendInSciteUnsaved(filename){
-   SetTitleMatchMode,2
-   doSaveFirst := false ; initialisation
-   IfWinNotExist,%filename% - SciTE4AutoHotkey
-   {
-      doSaveFirst := true
-      IfWinNotExist,%filename% * SciTE4AutoHotkey
-         MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
-   }
-   return doSaveFirst
-}';
+        $expected = $LINE__ . ":\n"
+.'this.is.ugly.source
 
+isFileOpendInSciteUnsaved(filename){
+...SetTitleMatchMode,2
+...doSaveFirst.:=.false.;.initialisation
+...IfWinNotExist,%filename%.-.SciTE4AutoHotkey{
+......doSaveFirst.:=.true
+......IfWinNotExist,%filename%.*.SciTE4AutoHotkey
+.........MsgBox,oops...NotExist.%filename%.*.SciTE4AutoHotkey
+......if(false){
+.........Too(Last_A_This)
+.........s.:=.Com("{D7-2B-4E-B8-B54}")
+.........if.!os
+.........ExitApp
+.........else.if(really){
+............MsgBox,.yes.really.:)
+.........}.else
+............ExitApp
+.........
+.........
+.........;.comment.:).{.{.hi.}.{
+......}
+...}
+...return.doSaveFirst
+}';
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $actual = reformat_AutoHotKey($source1, $arguments = '');
+        # equalize newline style
+        $expected = preg_replace('/\r/', "", $expected);
+        $expected = str_replace(' ','.',$expected);
+        $actual = str_replace(' ','.',$actual);
+        $actual = preg_replace('/\r/', "", $actual);
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+//        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
     }
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
