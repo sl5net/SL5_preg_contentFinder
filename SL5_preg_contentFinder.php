@@ -349,7 +349,6 @@ class SL5_preg_contentFinder {
         if(is_null($C->foundPos_list[0]['end_begin'])) {
             # there is no beginning like {NIX
             if(!isset($content['before'])) $content['before'] = '';
-
 //            if(!$terminate_seaching_inside_cut_because_nothing_found) {
 //                return $content['before'] . $content['middle'];
 //            }
@@ -362,10 +361,26 @@ class SL5_preg_contentFinder {
             $expected = 'NIX{'; # 19
 
             if(true || $deepCount == 1) {
-                return $content['before'] . $content['middle'];
+//                $deepCount==0 && $callsCount == 0 &&
+
+                $cut = call_user_func($func['open'], $cut, 0, $callsCount, $C->foundPos_list[0], $C->content);
+
+                $returnA = $cut['before'] . $cut['middle'] . $cut['behind'];
+                $returnB = $content['before'] . $content['middle'];
+                if($content['before'] == "" && $cut['before'] != "" && $cut['middle'] !== false && $cut['behind'] == "") {
+//                    $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
+                    $return = $returnA;
+                }
+            else {
+                    $return = $returnB;
+
+
+                return $return;
             }
             else {
-                return $content['before'] . $cut['middle'];
+                $return = $content['before'] . $cut['middle'];
+
+                return $return;
             }
 //            }
         }
@@ -374,6 +389,7 @@ class SL5_preg_contentFinder {
         # search in $cut['middle'], create $r_cut_middle
         if(!$terminate_seaching_inside_cut_because_nothing_found) {
 
+            $cut_middle_backup = $cut['middle'];
             $cut['middle'] = $this->getContent_user_func_recursivePRIV(
               ['middle' => $cut['middle']],
               $func, $deepCount, $callsCount);
