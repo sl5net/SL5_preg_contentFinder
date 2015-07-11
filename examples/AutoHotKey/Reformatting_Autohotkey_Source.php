@@ -2,8 +2,8 @@
 include_once("../../SL5_preg_contentFinder.php");
 
 $pathinfo__FILE__ = pathinfo(__FILE__);
-$pathinfo_Script_Name = pathinfo($_SERVER['SCRIPT_NAME']);
-$isIncluded = ($pathinfo__FILE__['basename'] . $pathinfo_Script_Name['basename']);
+$pathinfo_Script_Name = (isset($_SERVER['SCRIPT_NAME'])) ? pathinfo($_SERVER['SCRIPT_NAME']) : '' ;
+$isIncluded = ( $pathinfo_Script_Name && @$pathinfo__FILE__['basename'] == @$pathinfo_Script_Name['basename']);
 
 # http://php.net/manual/de/features.commandline.php
 //parse_str(implode('&', array_slice($argv, 1)), $_GET);

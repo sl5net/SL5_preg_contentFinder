@@ -297,9 +297,10 @@ class SL5_preg_contentFinder {
 //        $content = ['before' => $before, 'middle' => $this->content, 'behind' => $behind];
         $content = array('before' => $before, 'middle' => $this->content, 'behind' => $behind); // old style
 
+        $callsCount = 0;
         $return = $this->getContent_user_func_recursivePRIV(
           $content,
-          $functions, $callsCount = 0);
+          $functions, $callsCount );
 
         return $return;
     }
