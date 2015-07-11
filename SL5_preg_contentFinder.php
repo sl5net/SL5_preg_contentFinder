@@ -1702,7 +1702,7 @@ ho  <!--{03}-->3<!--{/03}-->
 
 }
 
-function get_func_argValues_of_Method($className, $funcName) {
+function deprecated_____get_func_argValues_of_Method($className, $funcName) {
     # // TODO unused function
     $f = new ReflectionMethod($className, $funcName);
     $result = array();

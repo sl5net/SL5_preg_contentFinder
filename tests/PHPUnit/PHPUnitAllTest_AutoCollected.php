@@ -7,6 +7,38 @@
 include_once $f;
 include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
+    function test_prettify_autohotkey() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':
+isFileOpendInSciteUnsaved(filename){
+SetTitleMatchMode,2
+doSaveFirst := false ; initialisation
+IfWinNotExist,%filename% - SciTE4AutoHotkey
+{
+doSaveFirst := true
+IfWinNotExist,%filename% * SciTE4AutoHotkey
+MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+}
+return doSaveFirst
+}
+';
+        $expected = $LINE__ . ':
+isFileOpendInSciteUnsaved(filename){
+   SetTitleMatchMode,2
+   doSaveFirst := false ; initialisation
+   IfWinNotExist,%filename% - SciTE4AutoHotkey
+   {
+      doSaveFirst := true
+      IfWinNotExist,%filename% * SciTE4AutoHotkey
+         MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+   }
+   return doSaveFirst
+}';
+
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $actual = reformat_AutoHotKey($source1, $arguments = '');
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{^_^}{No_';

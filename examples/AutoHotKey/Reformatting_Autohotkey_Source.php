@@ -1,13 +1,17 @@
 little example with funny result :)
 output_reformatted.ahk is generated from very compressed file input_compressed.ahk
 <?php
-require("../../SL5_preg_contentFinder.php");
+include_once("../../SL5_preg_contentFinder.php");
+
+$isIncluded = (pathinfo(__FILE__)['basename'] . pathinfo($_SERVER['SCRIPT_NAME'])['basename']);
+
 # http://php.net/manual/de/features.commandline.php
 //parse_str(implode('&', array_slice($argv, 1)), $_GET);
-if(!file_exists('SL5_phpGeneratedRunOnChanged.tmpl.ahk')) {
+if(!$isIncluded && !file_exists('SL5_phpGeneratedRunOnChanged.tmpl.ahk')) {
     die('! SL5_phpGeneratedRunOnChanged.tmpl.ahk');
 }
-if(!isset($argv[1])) {
+
+if(!$isIncluded && !isset($argv[1])) {
     $file = 'test.ahk';
     $i = 0;
 
@@ -34,22 +38,25 @@ if(isset($argv)) {
     $fileAddress = (isset($arguments['source1'])) ? $arguments['source1'] : '';
 //    $fileAddress = (isset($arguments['source1'])) ? $arguments['source1'] : '';
 }
+if(!$isIncluded) {
+    if(!isset($fileAddress) || !$fileAddress || empty($fileAddress)) {
 
-if(!isset($fileAddress) || !$fileAddress || empty($fileAddress)) {
+        $fileAddress = 'input_compressed_2.ahk';
+        $file_content = file_get_contents($fileAddress);
+        $fileAddress = 'output_reformatted_2.ahk';
+        $arguments = null;
+    }
+    else {
+        $file_content = file_get_contents($fileAddress);
 
-    $fileAddress = 'input_compressed_2.ahk';
-    $file_content = file_get_contents($fileAddress);
-    $fileAddress = 'output_reformatted_2.ahk';
-    $arguments = null;
+    }
 }
-else {
-    $file_content = file_get_contents($fileAddress);
-
+if(!$isIncluded) {
+    $timeStamp = (new DateTime())->format('s'); // Y-m-d_H-s
+    file_put_contents($fileAddress . '.backup' . $timeStamp . '.ahk', $file_content);
+    $actual_content = reformat_AutoHotKey($file_content, $arguments);
+    file_put_contents($fileAddress, $actual_content);
 }
-$timeStamp = (new DateTime())->format('s'); // Y-m-d_H-s
-file_put_contents($fileAddress . '.backup' . $timeStamp . '.ahk', $file_content);
-$actual_content = reformat_AutoHotKey($file_content, $arguments);
-file_put_contents($fileAddress, $actual_content);
 
 function reformat_AutoHotKey($file_content, $arguments = null) {
     if(!isset($file_content)) die('15-06-25_15-07 $f_input');
