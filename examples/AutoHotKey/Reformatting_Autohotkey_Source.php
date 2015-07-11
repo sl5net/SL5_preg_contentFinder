@@ -4,21 +4,29 @@ output_reformatted.ahk is generated from very compressed file input_compressed.a
 require("../../SL5_preg_contentFinder.php");
 # http://php.net/manual/de/features.commandline.php
 //parse_str(implode('&', array_slice($argv, 1)), $_GET);
-if(! file_exists('SL5_phpGeneratedRunOnChanged.tmpl.ahk'))
+if(!file_exists('SL5_phpGeneratedRunOnChanged.tmpl.ahk')) {
     die('! SL5_phpGeneratedRunOnChanged.tmpl.ahk');
+}
 if(!isset($argv[1])) {
     $file = 'test.ahk';
     $i = 0;
 
-    while(!file_exists($file) && $i++ < 6) $file = '..\\' . $file;
-    echo nl2br("\n$file=" . $file);
+    while(!file_exists($file) && $i++ < 6) {
+        $file = '..\\' . $file;
+    }
+    $realpath = realpath($file);
+    if(!$realpath) {
+        die(__LINE__ . ':( NOT EXISTS ' . nl2br("\n\$file=" . $realpath . " = $file\n"));
+    }
+    else {
+        echo __LINE__ . ':' . nl2br("\n\$file=" . $realpath . " = $file\n");
+    }
     $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" --renameSymbol="Mod" --renameSymbol_To="zzzzzzz"';
     $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" renameSymbol="zzzzzzz" renameSymbol_To="rrrrrrrrr"';
     $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" --A_ThisLabel="Alt & Down"';
 
     $argv[1] = 'E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\php\php-cgi.exe E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\www\SL5_preg_contentFinder\examples\AutoHotKey\Reformatting_Autohotkey_Source.php --source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\keys_SL5_AHK_Refactor_engine.ahk" --A_ThisLabel="Alt & Up"
 ';
-
 
 }
 if(isset($argv)) {
@@ -73,9 +81,7 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
     $newline = "\r\n";
     $indentSize = 3;
 
-//    $dirtyBugFix = ' a{b}c';
     $file_content = trim(preg_replace('/^[ ]+/smi', '', $file_content));
-//    $file_content .= $dirtyBugFix;
 
     $getIndentStr = function ($indent, $char, $indentSize) {
         $multiplier = $indentSize * $indent;
@@ -167,7 +173,7 @@ Suspend,off
 ';
                       $contents = preg_replace('/<body>.*<\/body>/ism', "<body>\n" . $ahkContent . "\n;</body>", $contents);
 //                      $fileAddressSaved = realpath('../../../../../' . $fileAddress . '.ahk');
-                      $fileAddressSaved = '../../../../../' . preg_replace('/\..*$/','',$fileAddress) . '.ahk';
+                      $fileAddressSaved = '../../../../../' . preg_replace('/\..*$/', '', $fileAddress) . '.ahk';
                       echo nl2br("\n$fileAddressSaved=" . $fileAddressSaved);
                       file_put_contents($fileAddressSaved, $contents);
 
@@ -195,7 +201,6 @@ Suspend,off
           return $cut;
       });
 
-//    $actual = substr($actual, 0, -strlen($dirtyBugFix));
     $actual = preg_replace('/(\})[\s\n\r]*(else(\s+if\s*\([^\n\r]+\)\s*)?\s*\{+)/smi', "$1$2", $actual); // dirty BugFix
 # ([^\n\r]+\)
 
@@ -203,21 +208,21 @@ Suspend,off
     $pattern = '/^(\w+:)(\h*\n)(?:.*\n)*?(return)/m';
     $label = '^\w[\w\d_]*:';
     $pattern = '/' . "($label)(\h*\R)((?:.*\n)*?)(return\b)" . '/im';
-    preg_match_all($pattern, $actual, $matches,PREG_OFFSET_CAPTURE);
+    preg_match_all($pattern, $actual, $matches, PREG_OFFSET_CAPTURE);
     $labelsAr = $matches[1];
 //    $contentAr = preg_replace('/\n/ism', "\n" . $indentStr, $matches[3]);
     $contentAr = $matches[3];
-    $returnAr =  $matches[4];
+    $returnAr = $matches[4];
     $actualNew = '';
-    for($k = count($labelsAr) ; $k-- ; $k >=0 ) {
+    for($k = count($labelsAr); $k--; $k >= 0) {
         $new = $labelsAr[$k][0]
           . "\n" . $indentStr
-          . rtrim( preg_replace('/\n/ism', "\n"
-            . $indentStr, $contentAr[$k][0]) )
-          . "\n" . ltrim($returnAr[$k][0]) ;
-        $actual = substr($actual,0,$labelsAr[$k][1])
+          . rtrim(preg_replace('/\n/ism', "\n"
+            . $indentStr, $contentAr[$k][0]))
+          . "\n" . ltrim($returnAr[$k][0]);
+        $actual = substr($actual, 0, $labelsAr[$k][1])
           . $new
-          . substr($actual,$returnAr[$k][1] + strlen($returnAr[$k][0]) ) ;
+          . substr($actual, $returnAr[$k][1] + strlen($returnAr[$k][0]));
     }
 
     return $actual;

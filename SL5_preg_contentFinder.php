@@ -371,9 +371,9 @@ class SL5_preg_contentFinder {
 //                    $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
                     $return = $returnA;
                 }
-            else {
+                else {
                     $return = $returnB;
-
+                }
 
                 return $return;
             }
