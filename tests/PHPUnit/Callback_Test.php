@@ -406,7 +406,7 @@ funZ(do){
         $cf->setBeginEnd_RegEx($old_open, $old_close);
         $cf->setSearchMode('dontTouchThis');
 
-
+ 
         /*
          *             $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
 
@@ -415,7 +415,7 @@ funZ(do){
         $actual = $cf->getContent_user_func_recursive(
 
           function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($new_open_default, $new_close_default, $charSpace, $newline, $indentSize, $getIndentStr) {
-              $n = $newlinetree
+              $n = $newline;
               if($cut['middle'] === false) return $cut;
 //          if($cut['middle'] === false || $cut['behind'] === false) {
 //              return false;

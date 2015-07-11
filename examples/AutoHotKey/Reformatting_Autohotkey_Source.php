@@ -1,14 +1,25 @@
-test 15-07-09_18-36
 little example with funny result :)
 output_reformatted.ahk is generated from very compressed file input_compressed.ahk
 <?php
 require("../../SL5_preg_contentFinder.php");
 # http://php.net/manual/de/features.commandline.php
 //parse_str(implode('&', array_slice($argv, 1)), $_GET);
+if(! file_exists('SL5_phpGeneratedRunOnChanged.tmpl.ahk'))
+    die('! SL5_phpGeneratedRunOnChanged.tmpl.ahk');
 if(!isset($argv[1])) {
-    $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\test.ahk" --renameSymbol="Mod" --renameSymbol_To="zzzzzzz"';
-    $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\test.ahk" renameSymbol="zzzzzzz" renameSymbol_To="rrrrrrrrr"';
-    $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\test.ahk" --A_ThisLabel="Alt & Down"';
+    $file = 'test.ahk';
+    $i = 0;
+
+    while(!file_exists($file) && $i++ < 6) $file = '..\\' . $file;
+    echo nl2br("\n$file=" . $file);
+    $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" --renameSymbol="Mod" --renameSymbol_To="zzzzzzz"';
+    $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" renameSymbol="zzzzzzz" renameSymbol_To="rrrrrrrrr"';
+    $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" --A_ThisLabel="Alt & Down"';
+
+    $argv[1] = 'E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\php\php-cgi.exe E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\www\SL5_preg_contentFinder\examples\AutoHotKey\Reformatting_Autohotkey_Source.php --source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\keys_SL5_AHK_Refactor_engine.ahk" --A_ThisLabel="Alt & Up"
+';
+
+
 }
 if(isset($argv)) {
     $arguments = arguments($argv);
@@ -118,9 +129,10 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
           if(@$arguments['A_ThisLabel'] == "Alt & Up" || @$arguments['A_ThisLabel'] == "Alt & Down"
             || !@empty($arguments['renameSymbol']) && !empty($arguments['renameSymbol_To'])
           ) {
-              $markerXXXXstring = "xxxxxxxx" . "xxxxxxxx ";
+              $markerXXXXstring = "xxxxxxxx" . "xxxxxxxx";
+//              $markerXXXXstring = "xxxxxxxxxxxxxxxx";
               $strposMarker = strpos($cut['middle'], $markerXXXXstring);
-              if($strposMarker > 0) {
+              if($strposMarker !== false) {
 
                   if(@$arguments['A_ThisLabel'] == "Alt & Up" || @$arguments['A_ThisLabel'] == "Alt & Down") {
                       if(@$arguments['A_ThisLabel'] == "Alt & Down") {
@@ -136,7 +148,7 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
 
 //                      $fileAddress = realpath('../../SL5_phpGeneratedRunOnChanged.ahk');
 //                      $fileAddress = realpath('p.txt');
-                      $fileAddress = 'SL5_phpGeneratedRunOnChanged.ahk';
+                      $fileAddress = 'SL5_phpGeneratedRunOnChanged.tmpl.ahk';
                       $pathinfo = pathinfo($fileAddress);
                       if(!file_exists($fileAddress)) {
                           die("!file_exists($fileAddress) 15-07-06_14-26");
@@ -155,8 +167,8 @@ Suspend,off
 ';
                       $contents = preg_replace('/<body>.*<\/body>/ism', "<body>\n" . $ahkContent . "\n;</body>", $contents);
 //                      $fileAddressSaved = realpath('../../../../../' . $fileAddress . '.ahk');
-                      $fileAddressSaved = '../../../../../' . $fileAddress . '.ahk';
-                      echo $fileAddressSaved;
+                      $fileAddressSaved = '../../../../../' . preg_replace('/\..*$/','',$fileAddress) . '.ahk';
+                      echo nl2br("\n$fileAddressSaved=" . $fileAddressSaved);
                       file_put_contents($fileAddressSaved, $contents);
 
                   }
@@ -187,13 +199,8 @@ Suspend,off
     $actual = preg_replace('/(\})[\s\n\r]*(else(\s+if\s*\([^\n\r]+\)\s*)?\s*\{+)/smi', "$1$2", $actual); // dirty BugFix
 # ([^\n\r]+\)
 
-    /*
-     * some you may not know, but interesting:
-     *
-        \R           # any kind of newline sequences
-        \N           # except newline
-        m            # multiline option
-     */
+//    $pattern = '/^(\w+:)(\R(?:\N*\R)*?)(return)$/mis';
+    $pattern = '/^(\w+:)(\h*\n)(?:.*\n)*?(return)/m';
     $label = '^\w[\w\d_]*:';
     $pattern = '/' . "($label)(\h*\R)((?:.*\n)*?)(return\b)" . '/im';
     preg_match_all($pattern, $actual, $matches,PREG_OFFSET_CAPTURE);
@@ -201,6 +208,7 @@ Suspend,off
 //    $contentAr = preg_replace('/\n/ism', "\n" . $indentStr, $matches[3]);
     $contentAr = $matches[3];
     $returnAr =  $matches[4];
+    $actualNew = '';
     for($k = count($labelsAr) ; $k-- ; $k >=0 ) {
         $new = $labelsAr[$k][0]
           . "\n" . $indentStr
