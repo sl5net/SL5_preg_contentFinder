@@ -9,8 +9,7 @@ include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
     function test_prettify_autohotkey_Label() {
         $LINE__ = __LINE__;
-        $source1 = $LINE__ . ":\n".'
-; this is label indent test
+        $source1 = $LINE__ . ":\n".'; this is label indent test
 
 MyLabel1:
 Send,{AltUp}
@@ -23,10 +22,21 @@ Label_3:
 Send,{AltUp}
 Send,:)
 return
+
+MyLabel5:
+Send,{Space}
+Suspend,off
+return
+
+^::
+Send,{Space}
+Suspend,off
+return
+
+
 ';
         $expected = $LINE__ . ":\n"
-          . '
-;.this.is.label.indent.test
+          . ';.this.is.label.indent.test
 
 MyLabel1:
 ...Send,{AltUp}
@@ -38,6 +48,16 @@ return
 Label_3:
 ...Send,{AltUp}
 ...Send,:)
+return
+
+MyLabel5:
+...Send,{Space}
+...Suspend,off
+return
+
+^::
+...Send,{Space}
+...Suspend,off
 return';
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $actual = reformat_AutoHotKey($source1, $arguments = '');
@@ -62,7 +82,7 @@ IfWinNotExist,%filename% * SciTE4AutoHotkey
 MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
  if(false){
       Too(Last_A_This)
-      if (next )
+      if ( next )
          Check = 1
       else if (nils == "tsup")
       Check = 42
@@ -70,6 +90,7 @@ MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
       Check = 3
 
    s := Com("{D7-2B-4E-B8-B54}")
+
    ; comment :) { { hi } {
    }
 }
@@ -88,13 +109,15 @@ isFileOpendInSciteUnsaved(filename){
 .........MsgBox,oops...NotExist.%filename%.*.SciTE4AutoHotkey
 ......if(false){
 .........Too(Last_A_This)
-.........if.(next.)
+.........if.(.next.)
 ............Check.=.1
 .........else.if.(nils.==."tsup")
 ............Check.=.42
 .........else
 ............Check.=.3
+.........
 .........s.:=.Com("{D7-2B-4E-B8-B54}")
+.........
 .........;.comment.:).{.{.hi.}.{
 ......}
 ...}
