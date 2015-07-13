@@ -7,10 +7,51 @@
 include_once $f;
 include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
-    function test_prettify_autohotkey() {
+    function test_prettify_autohotkey_Label() {
         $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':
-this is ugly source
+        $source1 = $LINE__ . ":\n".'
+; this is label indent test
+
+MyLabel1:
+Send,{AltUp}
+return
+MyLabel2:
+Send,{AltUp}
+Send,:(
+return
+Label_3:
+Send,{AltUp}
+Send,:)
+return
+';
+        $expected = $LINE__ . ":\n"
+          . '
+;.this.is.label.indent.test
+
+MyLabel1:
+...Send,{AltUp}
+return
+MyLabel2:
+...Send,{AltUp}
+...Send,:(
+return
+Label_3:
+...Send,{AltUp}
+...Send,:)
+return';
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $actual = reformat_AutoHotKey($source1, $arguments = '');
+        # equalize newline style
+        $expected = preg_replace('/\r/', "", $expected);
+        $expected = str_replace(' ', '.', $expected);
+        $actual = str_replace(' ', '.', $actual);
+        $actual = preg_replace('/\r/', "", $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+//        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
+    }
+    function test_prettify_autohotkey5() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":\n".'this is ugly example source
 
 isFileOpendInSciteUnsaved(filename){
     SetTitleMatchMode,2
@@ -21,25 +62,22 @@ IfWinNotExist,%filename% * SciTE4AutoHotkey
 MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
  if(false){
       Too(Last_A_This)
+      if (next )
+         Check = 1
+      else if (nils == "tsup")
+      Check = 42
+      else
+      Check = 3
+
    s := Com("{D7-2B-4E-B8-B54}")
-   if !os
-ExitApp
-   else if(really){
-MsgBox, yes really :)
-     } else
-   ExitApp
-
-
    ; comment :) { { hi } {
-
-
    }
 }
 return doSaveFirst
 }
-';
+        ';
         $expected = $LINE__ . ":\n"
-.'this.is.ugly.source
+          . 'this.is.ugly.example.source
 
 isFileOpendInSciteUnsaved(filename){
 ...SetTitleMatchMode,2
@@ -50,15 +88,13 @@ isFileOpendInSciteUnsaved(filename){
 .........MsgBox,oops...NotExist.%filename%.*.SciTE4AutoHotkey
 ......if(false){
 .........Too(Last_A_This)
+.........if.(next.)
+............Check.=.1
+.........else.if.(nils.==."tsup")
+............Check.=.42
+.........else
+............Check.=.3
 .........s.:=.Com("{D7-2B-4E-B8-B54}")
-.........if.!os
-.........ExitApp
-.........else.if(really){
-............MsgBox,.yes.really.:)
-.........}.else
-............ExitApp
-.........
-.........
 .........;.comment.:).{.{.hi.}.{
 ......}
 ...}
@@ -68,12 +104,13 @@ isFileOpendInSciteUnsaved(filename){
         $actual = reformat_AutoHotKey($source1, $arguments = '');
         # equalize newline style
         $expected = preg_replace('/\r/', "", $expected);
-        $expected = str_replace(' ','.',$expected);
-        $actual = str_replace(' ','.',$actual);
+        $expected = str_replace(' ', '.', $expected);
+        $actual = str_replace(' ', '.', $actual);
         $actual = preg_replace('/\r/', "", $actual);
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 //        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
     }
+
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{^_^}{No_';
@@ -138,7 +175,7 @@ isFileOpendInSciteUnsaved(filename){
         $source1 = $LINE__ . ':{NoX';
         $expected = $LINE__ . ':[NoX]';
         $old = ['{', '}'];
-        $newQuotes = ['[' , ']'];
+        $newQuotes = ['[', ']'];
 
         $charSpace = "";
         $newline = "";
@@ -396,7 +433,7 @@ isFileOpendInSciteUnsaved(filename){
 
             return $indentStr;
         };
-        $newQuotes = ['{','}'];
+        $newQuotes = ['{', '}'];
         $actual = $cf->getContent_user_func_recursive(
           function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes, $charSpace, $newline, $indentSize, $getIndentStr) {
               $n = $newline;
@@ -449,7 +486,7 @@ isFileOpendInSciteUnsaved(filename){
         $expected = $LINE__ . ':a<b<B>>';
         $old = ['{', '}'];
 
-        $newQuotes = ['<','>'];
+        $newQuotes = ['<', '>'];
         $charSpace = "";
         $newline = "\r\n";
         $newline = "";
@@ -518,7 +555,7 @@ isFileOpendInSciteUnsaved(filename){
         $old_open = '{';
         $old_close = '}';
 
-        $newQuotes= ['[',']'];
+        $newQuotes = ['[', ']'];
         $charSpace = ".";
         $newline = "_";
         $indentSize = 1;
@@ -581,7 +618,7 @@ isFileOpendInSciteUnsaved(filename){
 a{b{B}}';
         $old_open = '{';
         $old_close = '}';
-        $newQuotes = ['[',']'];
+        $newQuotes = ['[', ']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -657,7 +694,7 @@ a{A}b{B}';
         $old_open = '{';
         $old_close = '}';
 
-        $newQuotes = ['[',']'];
+        $newQuotes = ['[', ']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -740,7 +777,7 @@ if(a1){$A1;}if(a2){$A2;}';
         $old_open = '{';
         $old_close = '}';
 
-        $newQuotes = ['[',']'];
+        $newQuotes = ['[', ']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;
@@ -826,7 +863,7 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $newQuotes = [$old_open,'#'];
+        $newQuotes = [$old_open, '#'];
 //        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = "";
         $newline = "";
@@ -960,7 +997,7 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $newQuotes =[ '{' , '}' ];
+        $newQuotes = ['{', '}'];
 //        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = "";
         $newline = "";
@@ -1031,7 +1068,7 @@ if(a1)
         $newline = "\n";
         $newline = "";
         $indentSize = 1;
-        $newQuotes =[ '[' , ']' ];
+        $newQuotes = ['[', ']'];
 
         $cf = new SL5_preg_contentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
@@ -1087,7 +1124,7 @@ if(a1)
         $old_open = '{';
         $old_close = '}';
 
-        $newQuotes =[ '#' , '}' ];
+        $newQuotes = ['#', '}'];
 //        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = "";
         $newline = "";
@@ -1172,7 +1209,7 @@ if(a1)
 ]';
         $old_open = '{';
         $old_close = '}';
-        $newQuotes =[ '[' , ']' ];
+        $newQuotes = ['[', ']'];
         $charSpace = ".";
         $newline = "\r\n";
         $indentSize = 2;

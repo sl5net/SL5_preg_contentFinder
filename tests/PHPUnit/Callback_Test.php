@@ -16,10 +16,51 @@ include '../../lib/finediff.php';
 
 
 class Callback_Test extends PHPUnit_Framework_TestCase {
-    function test_prettify_autohotkey() {
+    function test_prettify_autohotkey_Label() {
         $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':
-this is ugly source
+        $source1 = $LINE__ . ":\n".'
+; this is label indent test
+
+MyLabel1:
+Send,{AltUp}
+return
+MyLabel2:
+Send,{AltUp}
+Send,:(
+return
+Label_3:
+Send,{AltUp}
+Send,:)
+return
+';
+        $expected = $LINE__ . ":\n"
+          . '
+;.this.is.label.indent.test
+
+MyLabel1:
+...Send,{AltUp}
+return
+MyLabel2:
+...Send,{AltUp}
+...Send,:(
+return
+Label_3:
+...Send,{AltUp}
+...Send,:)
+return';
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $actual = reformat_AutoHotKey($source1, $arguments = '');
+        # equalize newline style
+        $expected = preg_replace('/\r/', "", $expected);
+        $expected = str_replace(' ', '.', $expected);
+        $actual = str_replace(' ', '.', $actual);
+        $actual = preg_replace('/\r/', "", $actual);
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+//        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
+    }
+    function test_prettify_autohotkey5() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":\n".'this is ugly example source
 
 isFileOpendInSciteUnsaved(filename){
     SetTitleMatchMode,2
@@ -30,25 +71,22 @@ IfWinNotExist,%filename% * SciTE4AutoHotkey
 MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
  if(false){
       Too(Last_A_This)
+      if (next )
+         Check = 1
+      else if (nils == "tsup")
+      Check = 42
+      else
+      Check = 3
+
    s := Com("{D7-2B-4E-B8-B54}")
-   if !os
-ExitApp
-   else if(really){
-MsgBox, yes really :)
-     } else
-   ExitApp
-
-
    ; comment :) { { hi } {
-
-
    }
 }
 return doSaveFirst
 }
-';
+        ';
         $expected = $LINE__ . ":\n"
-          . 'this.is.ugly.source
+          . 'this.is.ugly.example.source
 
 isFileOpendInSciteUnsaved(filename){
 ...SetTitleMatchMode,2
@@ -59,15 +97,13 @@ isFileOpendInSciteUnsaved(filename){
 .........MsgBox,oops...NotExist.%filename%.*.SciTE4AutoHotkey
 ......if(false){
 .........Too(Last_A_This)
+.........if.(next.)
+............Check.=.1
+.........else.if.(nils.==."tsup")
+............Check.=.42
+.........else
+............Check.=.3
 .........s.:=.Com("{D7-2B-4E-B8-B54}")
-.........if.!os
-.........ExitApp
-.........else.if(really){
-............MsgBox,.yes.really.:)
-.........}.else
-............ExitApp
-.........
-.........
 .........;.comment.:).{.{.hi.}.{
 ......}
 ...}
@@ -83,6 +119,7 @@ isFileOpendInSciteUnsaved(filename){
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 //        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
     }
+
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{^_^}{No_';
