@@ -84,12 +84,12 @@ class SL5_preg_contentFinder {
 
     /**
      * @param $content string e.g. source of your file
-     * @param null $regEx_begin
+     * @param null $regEx_begin_mixed (could be a array
      * @param null $regEx_end
      */
-    function __construct($content, $regEx_begin = null, $regEx_end = null) {
+    function __construct($content, $regEx_begin_mixed = null, $regEx_end = null) {
         $this->content = $content;
-        $this->setBeginEnd_RegEx($regEx_begin, $regEx_end);
+        $this->setBeginEnd_RegEx($regEx_begin_mixed, $regEx_end);
         self::$lastObject = $this;
     }
 
