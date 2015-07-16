@@ -65,6 +65,37 @@ if(!$isIncluded && isset($fileAddress) && file_exists($fileAddress)) {
 
 function reformat_AutoHotKey($file_content, $arguments = null) {
     if(!isset($file_content)) die('15-06-25_15-07 $f_input');
+    if(@empty($arguments['indentStyle'])){
+        /*
+https://en.wikipedia.org/wiki/Indent_style
+https://de.wikipedia.org/wiki/Einr%C3%BCckungsstil#1TBS_.2F_K.26R_.2F_Kernel_.2F_Linux_.2F_UNIX_.2F_.E2.80.9EWest_Coast.E2.80.9C_.2F_Stroustrup_.2F_Java_.2F_Sun
+        Java-Style
+int f(int x, int y, int z) {
+     if (x < foo(y, z)) {
+         qux = bar[4] + 5;
+     } else {
+         return ++x + bar();
+     }
+ }
+        SL5net-Style
+int f(int x, int y, int z) {
+     if (x < foo(y, z)) {
+         qux = bar[4] + 5;
+     } else {
+         return ++x + bar();
+}    }
+        Allman-Style
+     if (x < foo(y, z))
+     {
+         qux = bar[4] + 5;
+     }
+     else
+     {
+         return ++x + bar();
+     }
+         */
+        $arguments['indentStyle'] = 'free';
+    }
     if(!@empty($arguments['renameSymbol'])) {
         $fArgs = '\([^)]*\)';
         $old_open = '(' . $fArgs . '\s*[^{;\n]*)\{[\s\n]';
@@ -94,7 +125,7 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
     $newline = (isset($arguments['newline'])) ? $arguments['newline'] : "\r\n";
     $indentSize = (isset($arguments['indentSize'])) ? $arguments['indentSize'] : 3;
 
-    
+
 
     $file_content = trim(preg_replace('/^\h+/ism', '', $file_content));
     # horizontal whitespace character class \h. http://stackoverflow.com/questions/3469080/match-whitespace-but-not-newlines-perl
@@ -113,7 +144,10 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
 
 //    $file_content = preg_replace('/(\s*\bif\s*\([^\n\r)]+\)\s*)[\n\r]+([^{\s])/smi', "$1\n" . $newline . $indentStr . "$2", $file_content); // dirty BugFix
     $file_content = preg_replace_callback('/(\s*\bif\s*\([^\n\r)]+\)\s*)[\n\r]+([^{\s])/smi',
-      function ($m) use ($newline, $indentStr) {
+      function ($m) use ($newline, $indentStr,$arguments) {
+          if(!isset($arguments['indentStyle'] ))
+              die(':( $arguments[\'indentStyle\']' ); # $arguments['indentStyle'] = 'free'
+
           /* if ( next )
               Check
           */
@@ -236,7 +270,7 @@ Suspend,off
 //          return $cut;
 
 //          $cut['middle'] = preg_replace("/\r/", "\n" . $indentStr , $cut['middle']); // <Remember this is without \r means buggy for that
-          $cut['middle'] = implode("\n" . $indentStr, preg_split("/(\r\n|\n|\r)/m", $cut['middle']));
+          $cut['middle'] = implode($newline . $indentStr, preg_split("/(\r\n|\n|\r)/m", $cut['middle']));
 
 //          return $cut;
 
