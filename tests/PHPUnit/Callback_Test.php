@@ -9,13 +9,27 @@ while(!file_exists($f)) {
 }
 include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
 include_once $f;
-include_once "_callbackShortExample.php";
-
-
-include '../../lib/finediff.php';
-
-
+//include_once "_callbackShortExample.php";
+//include '../../lib/finediff.php';
 class Callback_Test extends PHPUnit_Framework_TestCase {
+    function test_prettify_autohotkey_Tab_indent() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":\n".'MyLabel1:
+Send,{AltUp}
+return
+';
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $charSpace = "\t"; # \t its a tab
+        $newline = "\r\n";
+        $indentSize = 1;
+        $expected = $LINE__ . ":\n". 'MyLabel1:'.$newline.$charSpace.'Send,{AltUp}'.$newline.'return';
+
+        $arguments = array('charSpace' => $charSpace, 'newline' => $newline,'indentSize'=>$indentSize);
+        $actual = reformat_AutoHotKey($source1, $arguments );
+        # equalize newline style
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+//        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
+    }
     function test_prettify_autohotkey_Label() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":\n".'; this is label indent test
@@ -142,7 +156,6 @@ isFileOpendInSciteUnsaved(filename){
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
 //        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals(trim($expected), trim($actual));
     }
-
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{^_^}{No_';
@@ -191,7 +204,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
               $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
@@ -201,7 +214,6 @@ isFileOpendInSciteUnsaved(filename){
           });
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
     }
-
     function test_wrongSource_NoX_callback() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ':{NoX';
@@ -245,7 +257,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
               $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
@@ -299,7 +311,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
 
@@ -367,7 +379,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
 
@@ -434,7 +446,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
               $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
@@ -490,7 +502,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
 
@@ -558,7 +570,7 @@ isFileOpendInSciteUnsaved(filename){
               }
               $n = $newline;
 //              $n .= $deepCount.';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
               $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
@@ -583,7 +595,7 @@ isFileOpendInSciteUnsaved(filename){
 
         $source1 = $LINE__ . ':a{b{c{o}c}b}a';
 
-        $expected = $LINE__ . ':a[_´b[_´´c[_´´´o_´´`]_´´c_´`]_´b_`]_a';
+        $expected = $LINE__ . ':a[_ï¿½b[_ï¿½ï¿½c[_ï¿½ï¿½ï¿½o_ï¿½ï¿½`]_ï¿½ï¿½c_ï¿½`]_ï¿½b_`]_a';
         $old_open = '{';
         $old_close = '}';
 
@@ -614,7 +626,7 @@ isFileOpendInSciteUnsaved(filename){
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-              $charSpace = '´';
+              $charSpace = 'ï¿½';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
               $cut['middle'] .= $n;
@@ -703,7 +715,7 @@ a
               }
               $n = $newline;
               $n .= $deepCount . ';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
               $cut['middle'] .= $indentStr . $newQuotes[1] . $cut['behind'];
@@ -783,7 +795,7 @@ a
               }
               $n = $newline;
               $n .= $deepCount . ';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
 //              $cut['behind'] .= $indentStr . $newQuotes[1] . $n;
@@ -867,7 +879,7 @@ if(a1)
               }
               $n = $newline;
               $n .= $deepCount . ';';
-//              $charSpace ='´';
+//              $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount - 1, $charSpace, $indentSize);
 
 //              $cut['behind'] .= $indentStr . $newQuotes[1] . $n;
@@ -923,7 +935,7 @@ if(a1)
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-//          $charSpace ='´';
+//          $charSpace ='ï¿½';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
               $cut['middle'] .= $n;
@@ -967,7 +979,7 @@ if(a1)
 //        $newQuotes[1] = $old_close; // this line is reason for endless loop
         $charSpace = " ";
         $newline = "n";
-//        $newline = "aölsdkfjösaldkjfsöalfdkj"; // see closure functions
+//        $newline = "aï¿½lsdkfjï¿½saldkjfsï¿½alfdkj"; // see closure functions
         $indentSize = 1;
 
         $cf = new SL5_preg_contentFinder($source1);
@@ -993,7 +1005,7 @@ if(a1)
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-//          $charSpace ='´';
+//          $charSpace ='ï¿½';
               $indentStr = $getIndentStr($deepCount, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
               $cut['middle'] .= $n;
@@ -1058,7 +1070,7 @@ if(a1)
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-//          $charSpace ='´';
+//          $charSpace ='ï¿½';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
               $cut['middle'] .= $n;
@@ -1125,7 +1137,7 @@ if(a1)
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-//          $charSpace ='´';
+//          $charSpace ='ï¿½';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
               $cut['middle'] .= $n;
@@ -1185,7 +1197,7 @@ if(a1)
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-//          $charSpace ='´';
+//          $charSpace ='ï¿½';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n])/', $n . $indentStr . "$1", $cut['middle']);
               $cut['middle'] .= $n;
@@ -1269,7 +1281,7 @@ if(a1)
               if($cut['middle'] === false) return $cut;
               $n = $newline;
 //          $n .= $deepCount.':';
-//          $charSpace ='´';
+//          $charSpace ='ï¿½';
               $indentStr = $getIndentStr(1, $charSpace, $indentSize);
               $cut['middle'] = $n . $indentStr . preg_replace('/' . preg_quote($n) . '[ ]*([^\s\n]+)/', $n . $indentStr . "$1", $cut['middle']);
 
