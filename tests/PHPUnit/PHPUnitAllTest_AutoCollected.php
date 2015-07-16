@@ -7,6 +7,61 @@
 include_once $f;
 include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
+    function test_prettify_indentStyle_SL5net() {
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":" .
+          '
+if(1) {
+1a
+if(2)
+{
+2a
+if(3)
+{
+3a
+}
+else{
+Send,3b{Right 3}
+Send,3c{Right 4}
+}
+}
+return 5
+}
+'
+        ;
+        $expected = $LINE__ . ":" .
+          '
+if(1) {
+   1a
+   if(2)
+   {
+      2a
+      if(3)
+      {
+         3a
+      }else  {
+         Send,3b{Right 3}
+         Send,3c{Right 4}
+      }}
+   return 5
+}';
+        $charSpace = " ";
+        $newline = "\r\n";
+        $indentSize = 3;
+        $arguments = array('charSpace' => $charSpace,
+                           'newline' => $newline,
+                           'indentSize' => $indentSize,
+                           'indentStyle' => 'SL5net_small');
+        $actual = reformat_AutoHotKey($source1, $arguments);
+        if(trim($expected) != trim($actual))
+        {
+            $a=1;
+        }
+        if(class_exists('PHPUnit_Framework_TestCase'))
+            $this->assertEquals(trim($expected), trim($actual));
+    }
+
     function test_prettify_autohotkey_Label() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":\n" . '; this is label indent test
@@ -74,7 +129,7 @@ return';
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $LINE__ = __LINE__;
         $newline = "\r\n";
-        $source1 = $LINE__ . ":".$newline . 'MyLabel1:
+        $source1 = $LINE__ . ":" . $newline . 'MyLabel1:
 Send,{AltUp}
 return
 ';
@@ -86,9 +141,9 @@ return
 //            $source1= preg_replace("/\n/","\r\n",$source1);
         $indentSize = 1;
         $expected = $LINE__ . ":\r\n" . 'MyLabel1:' . $newline . $charSpace . 'Send,{AltUp}' . $newline . 'return';
-        if($newline=="\r\n"){
-            $source1= str_replace(array("\r\n","/\n/"),"\r\n",$source1);
-            $expected= str_replace(array("\r\n","/\n/"),"\r\n",$expected);
+        if($newline == "\r\n") {
+            $source1 = str_replace(array("\r\n", "/\n/"), "\r\n", $source1);
+            $expected = str_replace(array("\r\n", "/\n/"), "\r\n", $expected);
         }
 
         $arguments = array('charSpace' => $charSpace, 'newline' => $newline, 'indentSize' => $indentSize);
