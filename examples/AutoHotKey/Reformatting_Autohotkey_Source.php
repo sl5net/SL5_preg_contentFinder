@@ -94,6 +94,8 @@ function reformat_AutoHotKey($file_content, $arguments = null) {
     $newline = (isset($arguments['newline'])) ? $arguments['newline'] : "\r\n";
     $indentSize = (isset($arguments['indentSize'])) ? $arguments['indentSize'] : 3;
 
+    
+
     $file_content = trim(preg_replace('/^\h+/ism', '', $file_content));
     # horizontal whitespace character class \h. http://stackoverflow.com/questions/3469080/match-whitespace-but-not-newlines-perl
     # Match whitespace but not newlines
