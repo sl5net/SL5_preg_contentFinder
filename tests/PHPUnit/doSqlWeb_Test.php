@@ -1,3 +1,4 @@
+
 <?php
 //@include_once("../SL5_preg_contentFinder.php");
 //
@@ -23,6 +24,7 @@ class DoSqlWeb_Test extends PHPUnit_Framework_TestCase {
          * http://sourceforge.net/projects/dosqlweb/files/dosqlweb/1.0/DOPE-PHP_Version_070415.zip/download
          * $html = preg_replace("/\[".$selection_alias."\s+(\d+)\]/sx" , "[$selection_alias \\1]" , $html);
  create-cache-file.inc.php  -  200.747 Bytes  -  Fr, 13.04.07 um 22:23  -           */
+        # todo doSqlWeb test not complete written now.
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":\n" .
           '[SELECT 5+5 as calculation#alias]mitte[alias calculation]';
