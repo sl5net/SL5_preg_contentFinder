@@ -9,9 +9,172 @@ while(!file_exists($f)) {
 }
 include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
 include_once $f;
-//include_once "_callbackShortExample.php";
+//include_once "_callbackSh!!ortExample.php";
 //include '../../lib/finediff.php';
 class Callback_Test extends PHPUnit_Framework_TestCase {
+    function test_doSqlWeb_definition() {
+        return false;
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":"
+          .'before1[select * from table1#mySelect1]behind1'
+          .'before2[select * from table2#mySelect2]behind2';
+        $expected = $LINE__ . ":" .'';
+
+        $old = ['[select\s+[^\]]+#\w+', ']'];
+        $newQuotes = ['{', '}'];
+
+        $charSpace = "";
+        $newline = "";
+        $indentSize = 0;
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+
+        $cf->setBeginEnd_RegEx($old);
+
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut) use ($newQuotes) {
+              $cut['before'] = '>'.$cut['before'].'<';
+              if($cut['middle'] === false) return $cut;
+              $cut['middle'] = $newQuotes[0] . $cut['middle'] . $newQuotes[1] . $cut['behind'];
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+
+    function test_AHK_prettify_return_problem_SL5smal_style() {
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":" .
+          'this is ugly example source
+
+ if(doIt)
+{
+if(doIt)
+{
+      if ( next )
+         Check
+               else
+      Check = 5
+      if ( next )
+{
+         Send,5b{Right 5}
+}
+}
+}
+
+MyLabel:
+Send,{AltUp}
+return
+
+^s::
+Send,save
+return
+
+isFileOpendInSciteUnsaved(filename){
+    SetTitleMatchMode,2
+doSaveFirst := false ; initialisation
+   IfWinNotExist,%filename% - SciTE4AutoHotkey{
+doSaveFirst := true
+IfWinNotExist,%filename% * SciTE4AutoHotkey
+MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+ if(false){
+      Too(Last_A_This)
+      if (next )
+         Check = 1
+      else if (nils == "tsup")
+      Check = 42
+      else
+      Check = 3
+
+   s := Com("{D7-2B-4E-B8-B54}")
+   if !os
+ExitApp
+   else if(really){
+MsgBox, yes really :)
+     }
+     else
+   ExitApp
+
+
+   ; comment :) { { hi } {
+
+
+   }
+}
+return doSaveFirst
+}
+
+';
+        $expected = $LINE__ . ":" .
+          'this is ugly example source
+
+if(doIt)
+{
+   if(doIt)
+   {
+      if ( next )
+         Check
+      else
+         Check = 5
+      if ( next )
+      {
+         Send,5b{Right 5}
+      }}}
+
+MyLabel:
+   Send,{AltUp}
+return
+
+^s::
+   Send,save
+return
+
+isFileOpendInSciteUnsaved(filename){
+   SetTitleMatchMode,2
+   doSaveFirst := false ; initialisation
+   IfWinNotExist,%filename% - SciTE4AutoHotkey{
+      doSaveFirst := true
+      IfWinNotExist,%filename% * SciTE4AutoHotkey
+         MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+      if(false){
+         Too(Last_A_This)
+         if (next )
+            Check = 1
+         else if (nils == "tsup")
+            Check = 42
+         else
+            Check = 3
+         
+         s := Com("{D7-2B-4E-B8-B54}")
+         if !os
+         ExitApp
+         else if(really){
+            MsgBox, yes really :)
+         }
+         else
+            ExitApp
+         
+         
+         ; comment :) { { hi } {
+      }}
+   return doSaveFirst
+}';
+        $charSpace = " ";
+        $newline = "\r\n";
+        $indentSize = 3;
+        $arguments = array('charSpace' => $charSpace,
+                           'newline' => $newline,
+                           'indentSize' => $indentSize,
+                           'indentStyle' => 'SL5net_small');
+        $actual = reformat_AutoHotKey($source1, $arguments);
+        if(trim($expected) != trim($actual)) {
+            $a = 1;
+        }
+        if(class_exists('PHPUnit_Framework_TestCase')) {
+            $this->assertEquals(trim($expected), trim($actual));
+        }
+    }
+
     function test_prettify_indentStyle_SL5net() {
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $LINE__ = __LINE__;
@@ -33,8 +196,7 @@ Send,3c{Right 4}
 }
 return 5
 }
-'
-        ;
+';
         $expected = $LINE__ . ":" .
           '
 if(1) {
@@ -59,12 +221,12 @@ if(1) {
                            'indentSize' => $indentSize,
                            'indentStyle' => 'SL5net_small');
         $actual = reformat_AutoHotKey($source1, $arguments);
-        if(trim($expected) != trim($actual))
-        {
-            $a=1;
+        if(trim($expected) != trim($actual)) {
+            $a = 1;
         }
-        if(class_exists('PHPUnit_Framework_TestCase'))
+        if(class_exists('PHPUnit_Framework_TestCase')) {
             $this->assertEquals(trim($expected), trim($actual));
+        }
     }
 
     function test_prettify_autohotkey_Label() {
