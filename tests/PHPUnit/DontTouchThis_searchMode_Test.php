@@ -18,7 +18,7 @@ include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. 
 include_once $f;
 class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 
-     function test_Grabbing_HTML_Tag() {
+    function test_Grabbing_HTML_Tag() {
         return false;
 //        $source1 = file_get_contents(__FILE__);
         $expected = 'hiHo';
@@ -34,20 +34,30 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $break = 'b';
     }
 
-     function test_123_g() {
+    function test_123_g() {
         $source1 = '123#g';
         $cf = new SL5_preg_contentFinder($source1);
-        $sourceCF = @$cf->getContent(
+        $actual_getContent = @$cf->getContent(
           $begin = '\d+',
           $end = '\w+',
           $p = null,
           $t = null,
           $searchMode = 'dontTouchThis'
         );
+        $cf2 = new SL5_preg_contentFinder($source1);
+        $cf2->setSearchMode('dontTouchThis');
+        $cf2->setBeginEnd_RegEx('\d+', '\w+');
+        $actual_getContent_user_func_recursive = $cf2->getContent_user_func_recursive(
+          function ($cut) {
+              $cut['middle'] = '2.' . $cut['middle'];
+              return $cut;
+          });
+
         $expected = '#';
-        $this->assertEquals($sourceCF, $expected);
+        $this->assertEquals($actual_getContent, $expected);
+        $this->assertEquals($actual_getContent_user_func_recursive, '2.' . $expected);
     }
-     function test_123_z() {
+    function test_123_z() {
         $source1 = '123#z';
         $expected = '#';
         $cf = new SL5_preg_contentFinder($source1);
@@ -56,7 +66,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $sourceCF = $cf->getContent();
         $this->assertEquals($sourceCF, $expected);
     }
-     function test_123_abc_v3() {
+    function test_123_abc_v3() {
         $source1 = '{
         hiHo
         }';
@@ -67,7 +77,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         $sourceCF = $cf->getContent();
         $this->assertEquals($sourceCF, $expected);
     }
-     function test_123_abc_v4() {
+    function test_123_abc_v4() {
         $source1 = '
 class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 15-06-19_15-32';
@@ -80,7 +90,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 //        $this->assertEquals(0,$levenshtein);
         $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
     }
-     function test_123_abc_v5() {
+    function test_123_abc_v5() {
         $source1 = '
 class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 15-06-19_15-32';
