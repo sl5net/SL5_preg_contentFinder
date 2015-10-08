@@ -302,6 +302,9 @@ class SL5_preg_contentFinder {
           $content,
           $functions, $callsCount);
 
+//        $borders = $this->getBorders();
+//        $p = $c->getBorders($b1 = '(', $b2 = ')', $b_pos);
+//        $end_end = $this->foundPos_list[0]['end_end'];
         return $return;
     }
     /**
@@ -318,12 +321,13 @@ class SL5_preg_contentFinder {
       &$callsCount,
       $deepCount = -1
     ) {
+
         $bugIt = true;
 //        $callsCount++;
         $deepCount++; # starts with $deepCount = 0
-        if($content['middle'] == false || is_null($content['middle'])) {
+        if(emptyArrayValueLen0($content,'middle') ) {
             # create $r_content
-            $r_content = (isset($content['before'])) ? $content['before'] : '' . $content['middle'] . (isset($content['behind'])) ? $content['behind'] : '';
+            $r_content = (!emptyArrayValueLen0($content,'before')) ? $content['before'] : '' . $content['middle'] . (!emptyArrayValueLen0($content,'behind')) ? $content['behind'] : '';
 
             return $r_content;
         }
@@ -371,7 +375,7 @@ class SL5_preg_contentFinder {
 
                 $cut = call_user_func($func['open'], $cut, 0, $callsCount, $C->foundPos_list[0], $C->content);
 
-                if($content['before'] == "" && $cut['before'] != "" && $cut['middle'] !== false && $cut['behind'] == "") {
+                if($content['before'] == "" && $cut['before'] != "" && $cut['middle'] !== false && $cut['behind'] === "") {
 //                    $cut = call_user_func($func['open'], $cut, $deepCount + 1, $callsCount, $C->foundPos_list[0], $C->content);
                     $returnA = $cut['before'] . $cut['middle'] . $cut['behind'];
                     $return = &$returnA;
@@ -415,7 +419,7 @@ class SL5_preg_contentFinder {
         if($bugIt) $_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
 
         # search in $content['behind'], create $r_behind
-        $r3_behind = (isset($content['behind']) && $content['behind'] !== false) ? $this->getContent_user_func_recursivePRIV(
+        $r3_behind = (!emptyArrayValueLen0($content,'behind')) ? $this->getContent_user_func_recursivePRIV(
           array('middle' => @$content['behind']),
           $func, $deepCount, $callsCount) : '';
 
@@ -1248,6 +1252,7 @@ ho  <!--{03}-->3<!--{/03}-->
             die(__LINE__ . ': ' . " ERROR: \n$sourceCF => \n$result");
         }
 
+
         # recursion example 2
         $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
         $cut = SL5_preg_contentFinderTest1::recursion_example2($sourceCF);
@@ -1707,7 +1712,12 @@ ho  <!--{03}-->3<!--{/03}-->
 
         return true;
     }
+}
+function emptyArrayValueLen0($arr, $keyName) {
+    # empty Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat.
+    if(!isset($arr) || !isset($arr[$keyName]) || $arr[$keyName] === '') return true;
 
+    return false;
 }
 
 function get_func_argValues_of_Method($className, $funcName) {
@@ -1800,6 +1810,7 @@ function count_null($arr, $dieIfIsNull = true) {
     if(!is_array($arr)) {
         return is_null($arr);
     }
+
     foreach($arr as $n => $v) {
         if(is_null($v)) {
             if($dieIfIsNull !== true) {
