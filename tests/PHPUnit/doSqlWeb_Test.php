@@ -26,9 +26,9 @@ class DoSqlWeb_Test extends PHPUnit_Framework_TestCase {
  create-cache-file.inc.php  -  200.747 Bytes  -  Fr, 13.04.07 um 22:23  -           */
         # todo doSqlWeb test not complete written now.
         $LINE__ = __LINE__;
-        $source1 = $LINE__ . ":\n" .
+        $source1 = $LINE__ . ":" .
           '[SELECT 5+5 as calculation#alias]mitte[alias calculation]';
-        $expected = $LINE__ . ":\n"
+        $expected = $LINE__ . ":"
           . '';
         $old = ['[', ']'];
         $newQuotes = ['[', ']'];

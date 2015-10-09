@@ -81,7 +81,6 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
 function emptyLenNot0($input) {
     # empty Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. 
     $strTemp = $input;
-    $strTemp = trim($strTemp);
 
     if(isset($strTemp) && $strTemp !== '') //Also tried this "if(strlen($strTemp) > 0)"
     {

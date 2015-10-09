@@ -344,7 +344,10 @@ class SL5_preg_contentFinder {
         if($bugIt) $_cutInfoStr = $cut['before'] . $cut['middle'] . $cut['behind'];
 
 
+
+
         $terminate_seaching_inside_cut_because_nothing_found = $cut['middle'] === false;
+//        $terminate_seaching_inside_cut_because_nothing_found = emptyArrayValueLen0($cut,'middle');
 
 
         # search in $cut['behind'], create $r_cut_behind
@@ -364,11 +367,11 @@ class SL5_preg_contentFinder {
 //            }
 //            else {
 
-            $source1 = '{NOX'; # 79
-            $expected = 'NoX'; # 79
-
-            $source1 = '{NIX{}'; # 19
-            $expected = 'NIX{'; # 19
+//            $source1 = '{NOX'; # 79
+//            $expected = 'NoX'; # 79
+//
+//            $source1 = '{NIX{}'; # 19
+//            $expected = 'NIX{'; # 19
 
             if(true || $deepCount == 1) {
 //                $deepCount==0 && $callsCount == 0 &&

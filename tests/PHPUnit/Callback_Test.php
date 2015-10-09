@@ -1,4 +1,5 @@
 <?php
+
 //@include_once("../SL5_preg_contentFinder.php");
 //
 //require("../SL5_preg_contentFinder.php");
@@ -12,36 +13,112 @@ include_once $f;
 //include_once "_callbackSh!!ortExample.php";
 //include '../../lib/finediff.php';
 class Callback_Test extends PHPUnit_Framework_TestCase {
-    function test_doSqlWeb_definition() {
-        return false;
+    function test_doSqlWeb_def() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":" 
+          . ' [select * from table1#mySelect1]'
+          . ' [select * from table2#mySelect2]'
+          . ' ';
+        $old = ['\[select\s+[^]]+#\w+', '\]'];
+        $newQuotes = ['[', ']'];
+        $expected = $LINE__ . ":" . ' [mySelect1:select * from table1#mySelect1] [mySelect2:select * from table2#mySelect2] ';
+ 
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
+//              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+
+              $begin = substr($source1, $posList0['begin_begin'] + 1, $posList0['begin_end'] - $posList0['begin_begin'] - 1);
+              
+            $end = substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']);
+              
+              $definition = substr($source1, $posList0['begin_begin'] + 1 , $posList0['end_end'] - $posList0['begin_begin'] - 2);
+              
+
+
+              if(preg_match("/(.*)#(\w+).*?/", $definition, $matches)) {
+                  $sql = $matches[1];
+                  $aliasName = $matches[2];
+                  unset($matches);
+              }
+              $cut['middle'] = $aliasName . ':' . $begin . $cut['middle'] ;
+              $cut['before'] .= $newQuotes[0];
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+    function test_doSqlWeb_def_prototyp_1() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":"
-          .'before1[select * from table1#mySelect1]behind1'
-          .'before2[select * from table2#mySelect2]behind2';
-        $expected = $LINE__ . ":" .'';
+          . ' <s bu#1> <s hu#2> '
+          . ' <s ui#3> <s uf#4> ';
+        $old = ['<\w+\s+', '>'];
+        $newQuotes = ['[', ']'];
+        $expected = str_replace(array('<', '>'), $newQuotes, $source1);
+        $expected = $LINE__ . ":" . ' [1:s bu#1] [2:s hu#2]  [3:s ui#3] [4:s uf#4] ';
 
-        $old = ['[select\s+[^\]]+#\w+', ']'];
-        $newQuotes = ['{', '}'];
-
-        $charSpace = "";
-        $newline = "";
-        $indentSize = 0;
         $cf = new SL5_preg_contentFinder($source1);
-        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
-
+        $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx($old);
-
         $actual = $cf->getContent_user_func_recursive(
-          function ($cut) use ($newQuotes) {
-              $cut['before'] = '>'.$cut['before'].'<';
-              if($cut['middle'] === false) return $cut;
-              $cut['middle'] = $newQuotes[0] . $cut['middle'] . $newQuotes[1] . $cut['behind'];
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
+//              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+
+              $begin = substr($source1, $posList0['begin_begin'] + 1, $posList0['begin_end'] - $posList0['begin_begin'] - 1);
+              
+            $end = substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']);
+              
+              $definition = substr($source1, $posList0['begin_begin'] + 1 , $posList0['end_end'] - $posList0['begin_begin'] - 2);
+              
+
+
+              if(preg_match("/(.*)#(\w+).*?/", $definition, $matches)) {
+                  $sql = $matches[1];
+                  $aliasName = $matches[2];
+                  unset($matches);
+              }
+              $cut['middle'] = $aliasName . ':' . $begin . $cut['middle'] ;
+              $cut['before'] .= $newQuotes[0];
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+    function test_tag_attribute() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":"
+          . ' <a bu> <b hu> '
+          . ' <c ui> <d uf> ';
+        $old = ['<', '>'];
+        $newQuotes = ['[', ']'];
+        $expected = str_replace($old, $newQuotes, $source1);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
+//              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+              $cut['before'] .= $newQuotes[0];
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+
               return $cut;
           });
         if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
     }
 
     function test_AHK_prettify_return_problem_SL5smal_style() {
+        # if you have problems with this test it may helps reading this: https://youtrack.jetbrains.com/issue/WI-29216 , https://youtrack.jetbrains.com/issue/WI-11032
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":" .
@@ -395,8 +472,8 @@ isFileOpendInSciteUnsaved(filename){
     }
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':{^_^}{No_';
-        $expected = $LINE__ . ':[^_^][No_Oops';
+        $source1 = $LINE__ . ':{^_^}{\_/}{No_';
+        $expected = $LINE__ . ':[^_^][\_/][No_Oops';
         $old = ['{', '}'];
         $newQuotes = ['[', ']'];
 
@@ -1602,8 +1679,16 @@ if(a1)
         $return = array($content, $before, $behind); // core element.
         return $return;
     }
-
-
 }
 
-?>
+function emptyLenNot0($input) {
+    # empty Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. 
+    $strTemp = $input;
+    if(isset($strTemp) && $strTemp !== '') //Also tried this "if(strlen($strTemp) > 0)"
+    {
+        return true;
+    }
+
+    return false;
+}
+
