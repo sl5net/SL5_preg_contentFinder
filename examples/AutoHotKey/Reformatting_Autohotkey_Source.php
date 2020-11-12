@@ -1,4 +1,25 @@
 <?php
+/*
+This script expects named arguments (some optional):
+// name1="value1" name2="value2"
+// or
+// name1=value1
+$fileAddress $arguments['source1'] : '';
+$arguments['indentStyle'] = 'free';
+$arguments['renameSymbol'])) {
+$charSpace $arguments['charSpace']))
+$newline = $arguments['newline'])) ? $arguments['newline'] : "\r\n";
+$indentSize = (isset($arguments['indentSize'])) ? $arguments['indentSize'] : 3;
+if(strpos($arguments['indentStyle'],'SL5net_small+_NotRecommended') !== false )
+if(strpos($arguments['indentStyle'], 'SL5net_small') !== false) {
+$arguments['indentStyle'] = 'SL5net_small';
+$arguments['indentStyle'] == 'SL5net_small_v0.2') ? true : false;
+$arguments['indentStyle'] = 'free'
+$arguments['renameSymbol'])
+
+*/
+
+
 include_once("../../SL5_preg_contentFinder.php");
 $bugIt=true;
 $bugIt=false;
@@ -27,7 +48,7 @@ if(!$isIncluded && !isset($argv[1])) {
     }
     $realpath = realpath($file);
     if(!$realpath) {
-//        echo("\n".__LINE__ . ':( NOT EXISTS ' . nl2br("\n\$file=" . $realpath . " = $file\n"));
+        die("\n".__LINE__ . ':( NOT EXISTS ' . nl2br("\n\$file=" . $realpath . " = $file\n"));
     }
     else {
 //        echo __LINE__ . ':' . nl2br("\n\$file=" . $realpath . " = $file\n");
@@ -44,7 +65,10 @@ if(!$isIncluded && !isset($argv[1])) {
 if(isset($argv)) {
     if($bugIt)echo __LINE__.':  :-) ';
 
-    $arguments = arguments($argv);
+    $arguments = arguments($argv); // PHPDoc    Note: The first argument $argv[0] is always the name that was used to run the script.
+    // name1="value1" name2="value2"
+    // or
+    // name1=value1
     $fileAddress = (isset($arguments['source1'])) ? $arguments['source1'] : '';
 //    $fileAddress = (isset($arguments['source1'])) ? $arguments['source1'] : '';
 }
@@ -419,6 +443,9 @@ Suspend,off
 //test::
 //sdfsdf
 //return
+// name1="value1" name2="value2"
+// or
+// name1=value1
 function arguments($argv) {
     $_ARG = array();
     foreach($argv as $arg) {

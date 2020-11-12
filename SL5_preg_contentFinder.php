@@ -46,7 +46,8 @@ if($bugIt) {
 }
 
 if(basename($_SERVER["PHP_SELF"]) == basename(__FILE__)) {
-    include_once("test/SL5_preg_contentFinderTest1.php");
+//     include_once("test/SL5_preg_contentFinderTest1.php");
+    include_once("/home/administrator/GolandProjects/php2go-translator/SL5_preg_contentFinder/tests/test2/SL5_preg_contentFinderTest1.php");
     SL5_preg_contentFinder::selfTest_collection();
 }
 class SL5_preg_contentFinder {
