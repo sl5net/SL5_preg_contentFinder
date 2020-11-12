@@ -109,7 +109,7 @@ if(isset($argv)) {
 }
     if($bugIt)echo __LINE__.':  :-) ';
 
-if(!$isIncluded && isset($fileAddress) && file_exists($fileAddress)) {
+if(isset($fileAddress) && file_exists($fileAddress)) {
     if($bugIt)echo "its isIncluded";
     if(!isset($fileAddress) || !$fileAddress || empty($fileAddress)) {
 
@@ -129,16 +129,16 @@ if($bugIt)echo ' :-) $isIncluded='.$isIncluded . " ";
 if($bugIt)echo __LINE__.':  :-) ';
 if($bugIt)echo __LINE__.':  :-) $fileAddress=' . $fileAddress;
 
-if(!$isIncluded && isset($fileAddress) && file_exists($fileAddress)) {
+if(isset($fileAddress) && file_exists($fileAddress)) {
     $format = new DateTime();
     $timeStamp = $format->format('s'); // Y-m-d_H-s
-    if($bugIt)echo __LINE__.':  :-) ' . $file_content;
     file_put_contents($fileAddress . '.backup' . $timeStamp . '.ahk', $file_content);
 
-    if($bugIt)echo __LINE__.':  :-) ' . $file_content;
     if($bugIt)echo __LINE__.':  :-) ';
     $actual_content = reformat_AutoHotKey($file_content, $arguments);
+    if($bugIt)echo __LINE__.':  :-) ' . $file_content;
     file_put_contents($fileAddress, $actual_content); // Write data to a file
+    if($bugIt)echo __LINE__.':  :-) ' . $file_content;
     if($bugIt)echo __LINE__.':  :-) ';
 
 }
