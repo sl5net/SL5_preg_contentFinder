@@ -22,7 +22,8 @@ $arguments['renameSymbol'])
 */
 
 $bugIt=true;
-if($bugIt)echo __LINE__.':  :-) ';
+#$bugIt=false;
+if($bugIt)echo __LINE__.':  :-) ' . "\n";
 
 // $bugIt=false;
 
@@ -30,6 +31,30 @@ $pathinfo__FILE__ = pathinfo(__FILE__);
 $pathinfo_Script_Name = (isset($_SERVER['SCRIPT_NAME'])) ? pathinfo($_SERVER['SCRIPT_NAME']) : '';
 $isIncluded = ((isset($argv[0]) && !empty($argv[0]))
   && ($pathinfo_Script_Name && @$pathinfo__FILE__['basename'] == @$pathinfo_Script_Name['basename']));
+if($isIncluded){
+  echo __LINE__.':  :-) $isIncluded=' . $isIncluded . "\n";
+  $SCRIPT_NAMEpath = $pathinfo_Script_Name['dirname'] . '/' . $pathinfo_Script_Name['basename'];
+  if($argv[0] == $SCRIPT_NAMEpath)
+    $isIncluded = false;
+}
+
+if($bugIt){
+  echo __LINE__.':  :-) $isIncluded=' . $isIncluded . "\n";
+
+  echo __LINE__.':  :-) $pathinfo_Script_Name=' . "\n";
+  var_dump($pathinfo_Script_Name);
+
+
+  $isCli = (php_sapi_name() == "cli");
+  $temp = "
+isCli = $isCli
+$SCRIPT_NAMEpath = SCRIPT_NAMEpath
+${argv[0]} = argv[0]
+  ";
+  # die($temp);
+  echo $temp;
+}
+
 
 // die(var_export($pathinfo__FILE__, true));
 $pathDir = $pathinfo__FILE__['dirname'];
@@ -38,7 +63,7 @@ $pathDir = $pathinfo__FILE__['dirname'];
 
 if( !file_exists( $pathDir . "/../../SL5_preg_contentFinder.php")) {
 //     die($pathDir);
-    die($pathDir . ':( NOT EXIST: ../../SL5_preg_contentFinder.php\n\n');
+    die("\n".__LINE__ . $pathDir . ':( NOT EXIST: ../../SL5_preg_contentFinder.php\n\n' . PHP_EOL );
 }
 if($bugIt)echo __LINE__.':  :-) ';
 include_once($pathDir . "/../../SL5_preg_contentFinder.php");
@@ -72,7 +97,9 @@ if(!$isIncluded && !isset($argv[1])) {
     }
     $realpath = realpath($file);
     if(!$realpath) {
-        die("\n".__LINE__ . ':( NOT EXISTS ' . nl2br("\n\$file=" . $realpath . " = $file\n"));
+      echo "\r\n". PHP_EOL;
+      echo "\r\n". PHP_EOL;
+        die("\n".__LINE__ . ':( NOT EXISTS ' . nl2br("\n\$file=" . $realpath . " = $file" ) . "\n" . PHP_EOL);
     }
     else {
 //        echo __LINE__ . ':' . nl2br("\n\$file=" . $realpath . " = $file\n");
@@ -86,15 +113,19 @@ if(!$isIncluded && !isset($argv[1])) {
         unset($argv[1]);
     }
 }
-if($bugIt)echo __LINE__.':  :-) ';
+if($bugIt)echo __LINE__.':  :-) ' . "\n";
 
 if(isset($argv)) {
-    if($bugIt)echo __LINE__.':  :-) ';
+    if($bugIt)echo __LINE__.':  :-) ' . "\n";
 
     $arguments = arguments($argv); // PHPDoc    Note: The first argument $argv[0] is always the name that was used to run the script.
 
-    if($bugIt)var_dump($argv);
-    var_dump($arguments);
+    if($bugIt){
+      echo 'var_dump($argv): ' . "\n";
+      var_dump($argv);
+      echo 'var_dump($arguments): ' . "\n";
+      var_dump($arguments);
+  }
 
 
     // name1="value1" name2="value2"
@@ -102,9 +133,12 @@ if(isset($argv)) {
     // name1=value1
     $fileAddress = (isset($arguments['source1'])) ? $arguments['source1'] : '';
 //    $fileAddress = (isset($arguments['source1'])) ? $arguments['source1'] : '';
-     if( !file_exists($fileAddress)) {
-         die(':( NOT EXIST: ' . $fileAddress);
-     }
+if( !file_exists($fileAddress)) {
+  $fileAddress = $pathDir . '/' . $fileAddress;
+}
+if( !file_exists($fileAddress)) {
+    die(__LINE__ . ': :( arguments source1 NOT EXIST: fileAddress="' . $fileAddress . '", $pathDir=\'' . $pathDir .  "'\n" . PHP_EOL);
+}
 
 }
     if($bugIt)echo __LINE__.':  :-) ';
@@ -125,9 +159,9 @@ if(!$isIncluded && isset($fileAddress) && file_exists($fileAddress)) {
 
     }
 }
-if($bugIt)echo ' :-) $isIncluded='.$isIncluded . " ";
-if($bugIt)echo __LINE__.':  :-) ';
-if($bugIt)echo __LINE__.':  :-) $fileAddress=' . $fileAddress;
+if($bugIt)echo ' :-) $isIncluded='.$isIncluded . " " . "\n";
+if($bugIt)echo __LINE__.':  :-) ' . "\n";
+if($bugIt)echo __LINE__.':  :-) $fileAddress=' . $fileAddress . "\n";
 
 if(!$isIncluded && isset($fileAddress) && file_exists($fileAddress)) {
     $format = new DateTime();
@@ -139,7 +173,7 @@ if(!$isIncluded && isset($fileAddress) && file_exists($fileAddress)) {
     if($bugIt)echo __LINE__.':  :-) ';
     $actual_content = reformat_AutoHotKey($file_content, $arguments);
     file_put_contents($fileAddress, $actual_content); // Write data to a file
-    if($bugIt)echo __LINE__.':  :-) ';
+    if($bugIt)echo __LINE__.':  :-) reult written to fileAddress=\'' . $fileAddress . "'";
 
 }
 
@@ -396,7 +430,7 @@ Suspend,off
 
 //          return $cut;
 
-//          $cut['middle'] = preg_replace("/\r/", "\n" . $indentStr , $cut['middle']); // <Remember this is without \r means buggy for 
+//          $cut['middle'] = preg_replace("/\r/", "\n" . $indentStr , $cut['middle']); // <Remember this is without \r means buggy for
           if($conf['noNewlineAtEnd']) {
               $doNoNewlineAtEnd = preg_match("/\W[}\s]*\}\R*$/ms", $cut['middle'], $m);
               if($doNoNewlineAtEnd) {
