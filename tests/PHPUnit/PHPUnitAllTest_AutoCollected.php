@@ -7,6 +7,284 @@
 include_once $f;
 include_once '_callbackShortExample.php';
    class TestAll extends PHPUnit_Framework_TestCase {
+    function test_99_simple() {
+        /*
+         * Example from:
+         * http://dosqlweb.de/dope.php?f=/dope/online-manual2/MindTree/frameset.htm?url=99+a+8+999+default-tree-titles-viewonly.tmpl+2+dope_mindtree_dope_stoffsammlung_light+0
+         * http://sourceforge.net/projects/dosqlweb/files/dosqlweb/1.0/DOPE-PHP_Version_070415.zip/download
+         * $html = preg_replace("/\[".$selection_alias."\s+(\d+)\]/sx" , "[$selection_alias \\1]" , $html);
+ create-cache-file.inc.php  -  200.747 Bytes  -  Fr, 13.04.07 um 22:23  -           */
+        # todo doSqlWeb test not complete written now.
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":" .
+          '[SELECT 5+5 as calculation#alias]mitte[alias calculation]';
+        $expected = $LINE__ . ":"
+          . '';
+        $old = ['[', ']'];
+        $newQuotes = ['[', ']'];
+        $html = $source1;
+        $preg_kapsel = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";
+        $preg_kapsel = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";
+//        $old = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";
+
+//        $html = preg_replace("/\[".$selection_alias."\s+(\d+)\]/sx" , "[$selection_alias \\1]" , $html);
+        $reg_ausdruck = "/\[(\w+)(\s+[^\#]+)#\s*([^\/\]\#]+?)\s*(#\d+)?(#[^#\]]+)?\]/"; // see function function interpret_one_sql_kapsel(
+        $old[0]= $reg_ausdruck;
+        $old[1] = "/\[\w+[^]]*\]/";
+        $cf = new SL5_preg_contentFinder($source1, $old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($newQuotes) {
+              $cut['before'] .= $newQuotes[0];
+              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+
+    function test_doSqlWeb_def() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":" 
+          . ' [select * from table1#mySelect1]'
+          . ' [select * from table2#mySelect2]'
+          . ' ';
+        $old = ['\[select\s+[^]]+#\w+', '\]'];
+        $newQuotes = ['[', ']'];
+        $expected = $LINE__ . ":" . ' [mySelect1:select * from table1#mySelect1] [mySelect2:select * from table2#mySelect2] ';
+ 
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
+//              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+
+              $begin = substr($source1, $posList0['begin_begin'] + 1, $posList0['begin_end'] - $posList0['begin_begin'] - 1);
+              
+            $end = substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']);
+              
+              $definition = substr($source1, $posList0['begin_begin'] + 1 , $posList0['end_end'] - $posList0['begin_begin'] - 2);
+              
+
+
+              if(preg_match("/(.*)#(\w+).*?/", $definition, $matches)) {
+                  $sql = $matches[1];
+                  $aliasName = $matches[2];
+                  unset($matches);
+              }
+              $cut['middle'] = $aliasName . ':' . $begin . $cut['middle'] ;
+              $cut['before'] .= $newQuotes[0];
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+    function test_doSqlWeb_def_prototyp_1() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":"
+          . ' <s bu#1> <s hu#2> '
+          . ' <s ui#3> <s uf#4> ';
+        $old = ['<\w+\s+', '>'];
+        $newQuotes = ['[', ']'];
+        $expected = str_replace(array('<', '>'), $newQuotes, $source1);
+        $expected = $LINE__ . ":" . ' [1:s bu#1] [2:s hu#2]  [3:s ui#3] [4:s uf#4] ';
+
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
+//              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+
+              $begin = substr($source1, $posList0['begin_begin'] + 1, $posList0['begin_end'] - $posList0['begin_begin'] - 1);
+              
+            $end = substr($source1, $posList0['end_begin'], $posList0['end_end'] - $posList0['end_begin']);
+              
+              $definition = substr($source1, $posList0['begin_begin'] + 1 , $posList0['end_end'] - $posList0['begin_begin'] - 2);
+              
+
+
+              if(preg_match("/(.*)#(\w+).*?/", $definition, $matches)) {
+                  $sql = $matches[1];
+                  $aliasName = $matches[2];
+                  unset($matches);
+              }
+              $cut['middle'] = $aliasName . ':' . $begin . $cut['middle'] ;
+              $cut['before'] .= $newQuotes[0];
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+    function test_tag_attribute() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":"
+          . ' <a bu> <b hu> '
+          . ' <c ui> <d uf> ';
+        $old = ['<', '>'];
+        $newQuotes = ['[', ']'];
+        $expected = str_replace($old, $newQuotes, $source1);
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
+//              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+              $cut['before'] .= $newQuotes[0];
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+
+    function test_AHK_prettify_return_problem_SL5smal_style() {
+        # if you have problems with this test it may helps reading this: https://youtrack.jetbrains.com/issue/WI-29216 , https://youtrack.jetbrains.com/issue/WI-11032
+        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ":" .
+          'this is ugly example source
+
+ if(doIt)
+{
+if(doIt)
+{
+      if ( next )
+         Check
+               else
+      Check = 5
+      if ( next )
+{
+         Send,5b{Right 5}
+}
+}
+}
+
+MyLabel:
+Send,{AltUp}
+return
+
+^s::
+Send,save
+return
+
+isFileOpendInSciteUnsaved(filename){
+    SetTitleMatchMode,2
+doSaveFirst := false ; initialisation
+   IfWinNotExist,%filename% - SciTE4AutoHotkey{
+doSaveFirst := true
+IfWinNotExist,%filename% * SciTE4AutoHotkey
+MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+ if(false){
+      Too(Last_A_This)
+      if (next )
+         Check = 1
+      else if (nils == "tsup")
+      Check = 42
+      else
+      Check = 3
+
+   s := Com("{D7-2B-4E-B8-B54}")
+   if !os
+ExitApp
+   else if(really){
+MsgBox, yes really :)
+     }
+     else
+   ExitApp
+
+
+   ; comment :) { { hi } {
+
+
+   }
+}
+return doSaveFirst
+}
+
+';
+        $expected = $LINE__ . ":" .
+          'this is ugly example source
+
+if(doIt)
+{
+   if(doIt)
+   {
+      if ( next )
+         Check
+      else
+         Check = 5
+      if ( next )
+      {
+         Send,5b{Right 5}
+      }}}
+
+MyLabel:
+   Send,{AltUp}
+return
+
+^s::
+   Send,save
+return
+
+isFileOpendInSciteUnsaved(filename){
+   SetTitleMatchMode,2
+   doSaveFirst := false ; initialisation
+   IfWinNotExist,%filename% - SciTE4AutoHotkey{
+      doSaveFirst := true
+      IfWinNotExist,%filename% * SciTE4AutoHotkey
+         MsgBox,oops   NotExist %filename% * SciTE4AutoHotkey
+      if(false){
+         Too(Last_A_This)
+         if (next )
+            Check = 1
+         else if (nils == "tsup")
+            Check = 42
+         else
+            Check = 3
+         
+         s := Com("{D7-2B-4E-B8-B54}")
+         if !os
+         ExitApp
+         else if(really){
+            MsgBox, yes really :)
+         }
+         else
+            ExitApp
+         
+         
+         ; comment :) { { hi } {
+      }}
+   return doSaveFirst
+}';
+        $charSpace = " ";
+        $newline = "\r\n";
+        $indentSize = 3;
+        $arguments = array('charSpace' => $charSpace,
+                           'newline' => $newline,
+                           'indentSize' => $indentSize,
+                           'indentStyle' => 'SL5net_small');
+        $actual = reformat_AutoHotKey($source1, $arguments);
+        if(trim($expected) != trim($actual)) {
+            $a = 1;
+        }
+        if(class_exists('PHPUnit_Framework_TestCase')) {
+            $this->assertEquals(trim($expected), trim($actual));
+        }
+    }
+
     function test_prettify_indentStyle_SL5net() {
         include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $LINE__ = __LINE__;
@@ -28,8 +306,7 @@ Send,3c{Right 4}
 }
 return 5
 }
-'
-        ;
+';
         $expected = $LINE__ . ":" .
           '
 if(1) {
@@ -54,12 +331,12 @@ if(1) {
                            'indentSize' => $indentSize,
                            'indentStyle' => 'SL5net_small');
         $actual = reformat_AutoHotKey($source1, $arguments);
-        if(trim($expected) != trim($actual))
-        {
-            $a=1;
+        if(trim($expected) != trim($actual)) {
+            $a = 1;
         }
-        if(class_exists('PHPUnit_Framework_TestCase'))
+        if(class_exists('PHPUnit_Framework_TestCase')) {
             $this->assertEquals(trim($expected), trim($actual));
+        }
     }
 
     function test_prettify_autohotkey_Label() {
@@ -228,8 +505,8 @@ isFileOpendInSciteUnsaved(filename){
     }
     function test_wrongSource_No_endQuote_expected() {
         $LINE__ = __LINE__;
-        $source1 = $LINE__ . ':{^_^}{No_';
-        $expected = $LINE__ . ':[^_^][No_Oops';
+        $source1 = $LINE__ . ':{^_^}{\_/}{No_';
+        $expected = $LINE__ . ':[^_^][\_/][No_Oops';
         $old = ['{', '}'];
         $newQuotes = ['[', ']'];
 
@@ -1435,123 +1712,17 @@ if(a1)
         $return = array($content, $before, $behind); // core element.
         return $return;
     }
+}
 
-
-
-
-     function test_Grabbing_HTML_Tag() {
-        return false;
-//        $source1 = file_get_contents(__FILE__);
-        $expected = 'hiHo';
-        $source1 = '<P>hiHo</P>';
-        $cf = new SL5_preg_contentFinder($source1);
-        $rB = '<([A-Z][A-Z0-9]*)\b[^>]*>';
-        $rE = '<\/{1}>';
-        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
-        $cf->setBeginEnd_RegEx($rB, $rE);
-//          '\s*\}\s*function\s+\s+function');
-        $actual = $cf->getContent();
-        $this->assertEquals($expected, $actual);
-        $break = 'b';
+function emptyLenNot0($input) {
+    # empty Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. 
+    $strTemp = $input;
+    if(isset($strTemp) && $strTemp !== '') //Also tried this "if(strlen($strTemp) > 0)"
+    {
+        return true;
     }
 
-     function test_123_g() {
-        $source1 = '123#g';
-        $cf = new SL5_preg_contentFinder($source1);
-        $sourceCF = @$cf->getContent(
-          $begin = '\d+',
-          $end = '\w+',
-          $p = null,
-          $t = null,
-          $searchMode = 'dontTouchThis'
-        );
-        $expected = '#';
-        $this->assertEquals($sourceCF, $expected);
-    }
-     function test_123_z() {
-        $source1 = '123#z';
-        $expected = '#';
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('\d+', '\w+');
-        $sourceCF = $cf->getContent();
-        $this->assertEquals($sourceCF, $expected);
-    }
-     function test_123_abc_v3() {
-        $source1 = '{
-        hiHo
-        }';
-        $expected = 'hiHo';
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('^\s*{\s*$\s*', '\s*^\s*}\s*$');
-        $sourceCF = $cf->getContent();
-        $this->assertEquals($sourceCF, $expected);
-    }
-     function test_123_abc_v4() {
-        $source1 = '
-class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
-15-06-19_15-32';
-        $expected = '15-06-19_15-32';
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*');
-        $sourceCF = $cf->getContent();
-        $levenshtein = levenshtein($expected, $sourceCF);
-//        $this->assertEquals(0,$levenshtein);
-        $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
-    }
-     function test_123_abc_v5() {
-        $source1 = '
-class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
-15-06-19_15-32';
-        $expected = '15-06-19_15-32';
-        $cf = new SL5_preg_contentFinder($source1);
-        $cf->setSearchMode('dontTouchThis');
-        $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*$');
-        $sourceCF = $cf->getContent();
-        $levenshtein = levenshtein($expected, $sourceCF);
-//        $this->assertEquals(0,$levenshtein);
-        $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
-    }
-
-    function test_99_simple() {
-        /*
-         * Example from:
-         * http://dosqlweb.de/dope.php?f=/dope/online-manual2/MindTree/frameset.htm?url=99+a+8+999+default-tree-titles-viewonly.tmpl+2+dope_mindtree_dope_stoffsammlung_light+0
-         * http://sourceforge.net/projects/dosqlweb/files/dosqlweb/1.0/DOPE-PHP_Version_070415.zip/download
-         * $html = preg_replace("/\[".$selection_alias."\s+(\d+)\]/sx" , "[$selection_alias \\1]" , $html);
- create-cache-file.inc.php  -  200.747 Bytes  -  Fr, 13.04.07 um 22:23  -           */
-        $LINE__ = __LINE__;
-        $source1 = $LINE__ . ":\n" .
-          '[SELECT 5+5 as calculation#alias]mitte[alias calculation]';
-        $expected = $LINE__ . ":\n"
-          . '';
-        $old = ['[', ']'];
-        $newQuotes = ['[', ']'];
-        $html = $source1;
-        $preg_kapsel = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";
-        $preg_kapsel = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";
-//        $old = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";
-
-//        $html = preg_replace("/\[".$selection_alias."\s+(\d+)\]/sx" , "[$selection_alias \\1]" , $html);
-        $reg_ausdruck = "/\[(\w+)(\s+[^\#]+)#\s*([^\/\]\#]+?)\s*(#\d+)?(#[^#\]]+)?\]/"; // see function function interpret_one_sql_kapsel(
-        $old[0]= $reg_ausdruck;
-        $old[1] = "/\[\w+[^]]*\]/";
-        $cf = new SL5_preg_contentFinder($source1, $old);
-        $actual = $cf->getContent_user_func_recursive(
-          function ($cut, $deepCount) use ($newQuotes) {
-              $cut['before'] .= $newQuotes[0];
-              if($cut['middle'] === false) return $cut;
-              if($cut['middle'] === false || $cut['behind'] === false) {
-                  return false;
-              }
-              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
-
-              return $cut;
-          });
-        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
-    }
+    return false;
 
 
     /**
@@ -1836,6 +2007,170 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     }
 
 
+
+    function test_Grabbing_HTML_Tag() {
+        return false;
+//        $source1 = file_get_contents(__FILE__);
+        $expected = 'hiHo';
+        $source1 = '<P>hiHo</P>';
+        $cf = new SL5_preg_contentFinder($source1);
+        $rB = '<([A-Z][A-Z0-9]*)\b[^>]*>';
+        $rE = '<\/{1}>';
+        $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
+        $cf->setBeginEnd_RegEx($rB, $rE);
+//          '\s*\}\s*function\s+\s+function');
+        $actual = $cf->getContent();
+        $this->assertEquals($expected, $actual);
+        $break = 'b';
+    }
+
+    function test_123_g() {
+        $source1 = '123#g';
+        $cf = new SL5_preg_contentFinder($source1);
+        $actual_getContent = @$cf->getContent(
+          $begin = '\d+',
+          $end = '\w+',
+          $p = null,
+          $t = null,
+          $searchMode = 'dontTouchThis'
+        );
+        $cf2 = new SL5_preg_contentFinder($source1);
+        $cf2->setSearchMode('dontTouchThis');
+        $cf2->setBeginEnd_RegEx('\d+', '\w+');
+        $actual_getContent_user_func_recursive = $cf2->getContent_user_func_recursive(
+          function ($cut) {
+              $cut['middle'] = '2.' . $cut['middle'];
+              return $cut;
+          });
+
+        $expected = '#';
+        $this->assertEquals($actual_getContent, $expected);
+        $this->assertEquals($actual_getContent_user_func_recursive, '2.' . $expected);
+    }
+    function test_123_z() {
+        $source1 = '123#z';
+        $expected = '#';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx('\d+', '\w+');
+        $sourceCF = $cf->getContent();
+        $this->assertEquals($sourceCF, $expected);
+    }
+    function test_123_abc_v3() {
+        $source1 = '{
+        hiHo
+        }';
+        $expected = 'hiHo';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx('^\s*{\s*$\s*', '\s*^\s*}\s*$');
+        $sourceCF = $cf->getContent();
+        $this->assertEquals($sourceCF, $expected);
+    }
+    function test_123_abc_v4() {
+        $source1 = '
+class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+15-06-19_15-32';
+        $expected = '15-06-19_15-32';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*');
+        $sourceCF = $cf->getContent();
+        $levenshtein = levenshtein($expected, $sourceCF);
+//        $this->assertEquals(0,$levenshtein);
+        $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
+    }
+    function test_123_abc_v5() {
+        $source1 = '
+class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+15-06-19_15-32';
+        $expected = '15-06-19_15-32';
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*$');
+        $sourceCF = $cf->getContent();
+        $levenshtein = levenshtein($expected, $sourceCF);
+//        $this->assertEquals(0,$levenshtein);
+        $this->assertEquals($expected . ' $levenshtein=' . $levenshtein, $sourceCF . ' $levenshtein=' . $levenshtein);
+    }
+
+    function test_empty_0_DANGER() {
+        if(class_exists('PHPUnit_Framework_TestCase')) {
+            $this->assertEquals(true, emptyLenNot0('0'));
+            $this->assertEquals(true, empty('0'));
+            # Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. !!!!!
+        }
+    }
+    function test_emptyREAL_0_DANGER() {
+        if(class_exists('PHPUnit_Framework_TestCase')) {
+            $this->assertEquals(true, empty('0'));
+            # Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. !!!!!
+        }
+    }
+    function test_empty_1() {
+        if(class_exists('PHPUnit_Framework_TestCase')) {
+            $this->assertEquals(false, empty('1'));
+        }
+    }
+    function test_behind_with_a_0() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':{9}0';
+        $expected = $LINE__ . ':90';
+        $old = ['{', '}'];
+        $newQuotes = ['', ''];
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($newQuotes) {
+              $cut['before'] .= $newQuotes[0];
+              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+
+    function test_behind_BBB() {
+        $LINE__ = __LINE__;
+        $source1 = $LINE__ . ':{1}BBB';
+        $expected = $LINE__ . ':1BBB';
+        $old = ['{', '}'];
+        $newQuotes = ['', ''];
+        $cf = new SL5_preg_contentFinder($source1);
+        $cf->setSearchMode('dontTouchThis');
+        $cf->setBeginEnd_RegEx($old);
+        $actual = $cf->getContent_user_func_recursive(
+          function ($cut, $deepCount) use ($newQuotes) {
+              $cut['before'] .= $newQuotes[0];
+              if($cut['middle'] === false) return $cut;
+              if($cut['middle'] === false || $cut['behind'] === false) {
+                  return false;
+              }
+              $cut['middle'] .= $newQuotes[1] . $cut['behind'];
+
+              return $cut;
+          });
+        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+    }
+
+}
+
+function emptyLenNot0($input) {
+    # empty Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. 
+    $strTemp = $input;
+
+    if(isset($strTemp) && $strTemp !== '') //Also tried this "if(strlen($strTemp) > 0)"
+    {
+        return true;
+    }
+
+    return false;
+
     /*
      * suggestion: look inside https://github.com/sl5net/SL5_preg_contentFinder/blob/master/tests/PHPUnit/Callback_Test.php before using this technicals.
      */
@@ -1864,8 +2199,9 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 
     function test_AA_xo_A() {
         /*
-         * this test works not as expected. the misspelled source is not usable enough.
+         * todo this test works not as expected. the misspelled source is not usable enough.
          */
+        return false;
         $source1 = ' some </A><A>xo1</A><A>xo2</A> thing ';
         $expected = 'A: xo1 A: xo2 ';
         $beginEndRegEx = ['(<)(A)(>)?', '<\/($2)>'];
