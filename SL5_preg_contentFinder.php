@@ -328,7 +328,7 @@ class SL5_preg_contentFinder {
         $deepCount++; # starts with $deepCount = 0
         if(emptyArrayValueLen0($content,'middle') ) {
             # create $r_content
-            $r_content = (!emptyArrayValueLen0($content,'before')) ? $content['before'] : '' . $content['middle'] . (!emptyArrayValueLen0($content,'behind')) ? $content['behind'] : '';
+            $r_content = ((!emptyArrayValueLen0($content,'before')) ? $content['before'] : '' ) . $content['middle'] . ( (!emptyArrayValueLen0($content,'behind')) ? $content['behind'] : '' );
 
             return $r_content;
         }
