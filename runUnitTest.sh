@@ -3,7 +3,7 @@
 # Stelle sicher, dass das Skript im Projekt-Root ausgeführt wird oder passe $(pwd) an
 cd ~/projects/php/SL5_preg_contentFinder || exit # Stellt sicher, dass wir im richtigen Verzeichnis sind
 
-echo "Running ALL PHPUnit tests (PHP 7.4, recursive). Displaying only summaries of failures and errors."
+echo "Running ALL PHPUnit tests (PHP, recursive). Displaying only summaries of failures and errors."
 echo "=================================================================================================="
 
 # -maxdepth 1 ENTFERNT, um rekursiv zu suchen

@@ -1,7 +1,4 @@
-# Dockerfile für PHP 7.4 Umgebung
-
-# FROM php:7.4-cli
-FROM php:8.1-cli
+FROM php:8.3-cli
 
 # Setze die Zeitzone (optional, um Warnungen zu vermeiden)
 ENV TZ=UTC

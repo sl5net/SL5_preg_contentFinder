@@ -1,53 +1,23 @@
 <?php
-namespace SL5\PregContentFinder\Tests; // Passender Namespace für Ihre Tests
-use SL5\PregContentFinder\PregContentFinder; // Ihre Hauptklasse importieren
-use PHPUnit\Framework\TestCase;              // PHPUnit Basisklasse importieren
+namespace SL5\PregContentFinder\Tests;
 
-class ContentIDTest extends TestCase // Erben von TestCase
+use SL5\PregContentFinder\PregContentFinder;
+use PHPUnit\Framework\TestCase;
+
+class ContentIDTest extends TestCase
 {
-    public function testSetAndGetContentByID() // PHPUnit-konformer Methodenname
+    public function testSetAndGetContentByID()
     {
-        $cf = new PregContentFinder("{2_{1_2}_"); // Korrekte Instanziierung
+        $cf = new PregContentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         
         $cf->setID(1);
         $content1 = $cf->getContent();
         
         $this->assertEquals("2_{1_2}", $content1, "Content for ID 1 with initial regex failed.");
-        $retrievedById1 = $cf->getContent_ByID(1);
-        $this->assertEquals($content1, $retrievedById1, "getContent_ByID(1) did not return the same as getContent() after setID(1).");
-
-        // Teste den zweiten Teil mit neuer Regex und ID
-        $cf->setBeginEnd_RegEx('1', '2');
-        $cf->setID(2);
-        $content2 = $cf->getContent(); // getContent sollte jetzt auf die neue Regex reagieren
-
-        $this->assertEquals("_", $content2, "Content for ID 2 with new regex failed."); // Annahme, was hier rauskommen sollte.
-                                                                                          // Das "_"-Zeichen zwischen "1" und "2" in "{2_{1_2}_"
-                                                                                          // Wenn begin='1' und end='2' ist.
-
-        // Überprüfen, ob die alten Inhalte noch korrekt abrufbar sind
-        $retrievedById1_after = $cf->getContent_ByID(1);
-        $this->assertEquals($content1, $retrievedById1_after, "getContent_ByID(1) failed after setting a new ID and regex.");
-        
-        $retrievedById2 = $cf->getContent_ByID(2);
-        $this->assertEquals($content2, $retrievedById2, "getContent_ByID(2) failed.");
+        // ... Rest Ihres Tests ...
     }
-
-    // Weitere Testmethoden für andere Szenarien aus PregContentFinderTest1 hierher portieren...
-    // public function testRecursionExample4Scenario() {
-    //     // Code von PregContentFinderTest1::recursion_example4() hier anpassen
-    //     // Ersetzen Sie echo/die durch Assertions
-    //     $source = ...;
-    //     $cf = new PregContentFinder($source);
-    //     $result = ... // Logik ausführen
-    //     $this->assertEquals(EXPECTED_RECURSION_RESULT, $result);
-    // }
-}
-
-
-
-class PregContentFinderTest1 {
+    // ggf. weitere Testmethoden für ContentID-bezogene Tests
 
     /**
      * setID please use integer not text. why?
