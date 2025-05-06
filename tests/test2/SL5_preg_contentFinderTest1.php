@@ -1,13 +1,13 @@
 <?php
-
-class SL5_preg_contentFinderTest1 {
+use SL5\PregContentFinder\PregContentFinder;
+class PregContentFinderTest1 {
 
     /**
      * setID please use integer not text. why?
      * todo: needs discussed
      */
     public static function test_getContent_setID() {
-        $cf = new SL5_preg_contentFinder("{2_{1_2}_");
+        $cf = new PregContentFinder("{2_{1_2}_");
         $cf->setBeginEnd_RegEx('{', '}');
         $cf->setID(1);
         $content1 = $cf->getContent();
@@ -41,7 +41,7 @@ class SL5_preg_contentFinderTest1 {
             if (!$silentMode) {
                 echo $numbers . '<br><br>';
             }
-            $cf = new SL5_preg_contentFinder($source);
+            $cf = new PregContentFinder($source);
 
             for ($i = 0; $i < 2; $i++) {
                 # rebuild with search tool. find every number
@@ -148,7 +148,7 @@ class SL5_preg_contentFinderTest1 {
     public static function simple123example($silentMode = false) {
         if (true) {
             $content = '123';
-            $cf = new SL5_preg_contentFinder($content);
+            $cf = new PregContentFinder($content);
 
             $c = @$cf->getContent($b1 = 'q', $b2 = 'x');
             if (!$silentMode) {
@@ -195,7 +195,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         $pos_of_next_search = 0;
         $begin = '(<!--)?\[([^\]>]*\.o0)\](-->)?';
         $end = '<!--\[\/($2)\]-->';
-        $cf = new SL5_preg_contentFinder($source);
+        $cf = new PregContentFinder($source);
         $cf->setBeginEnd_RegEx($begin, $end);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $loopCount = 0;
@@ -267,7 +267,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
                 great(__LINE__ . ': $b1 = ' . $b1 . ' $end = ' . $b2);
             }
 
-            $cf = new SL5_preg_contentFinder($_source);
+            $cf = new PregContentFinder($_source);
 //            $cf->setBeginEnd_RegEx($begin, $end);
             $content1 = @$cf->getContent($b1, $b2);
             if ($content != $content1) {
@@ -333,7 +333,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
 
         echo '<pre>';
         echo '<font style="font-family: monospace">';
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         $delimiters = array('(', ')');
         $delimiters[1];
         if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
@@ -363,7 +363,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
       $behind = null
     ) {
         $isFirsRecursion = is_null($before);
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         if (is_null($newDelimiter)) {
             $newDelimiter =& $delimiters;
         }
@@ -430,7 +430,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
     ) {
         $silentMode = true;
         $isFirsRecursion = is_null($before);
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         $delimiters = array('(', ')');
         if (is_null($newDelimiter)) {
             $newDelimiter =& $delimiters;
@@ -537,7 +537,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
 
         echo '<pre>';
         echo '<font style="font-family: monospace">';
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         if ($cut = @$cf->getContent($b='(', $e=')')) {
             $before .= $cf->getContent_Before() . '(';
             $behindTemp = $cf->getContent_Behind() . $behind;
@@ -592,7 +592,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
 
         echo '<pre>';
         echo '<font style="font-family: monospace">';
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         $delimiters = array('(', ')');
         $delimiters[1];
         if ($cut = @$cf->getContent($delimiters[0], $delimiters[1])) {
@@ -638,7 +638,7 @@ ho  <!--[03.o0]-->3<!--[/03.o0]-->
         if (!$silentMode) {
             echo '<font style="font-family: monospace">';
         }
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         if ($cut = @$cf->getContent($b = '(', $e = ')')) {
 //            great(__LINE__ . ":\n \$cut= \n$contentDemo ==> " . $cut);
 //            @$cf->getContent($b,$e,0,$cut);

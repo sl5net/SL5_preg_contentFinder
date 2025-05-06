@@ -1,9 +1,9 @@
 <?php
-
-//@include_once("../SL5_preg_contentFinder.php");
+use SL5\PregContentFinder\PregContentFinder;
+//@include_once("../PregContentFinder.php");
 //
-//require("../SL5_preg_contentFinder.php");
-$f = 'SL5_preg_contentFinder.php';
+//require("../PregContentFinder.php");
+$f = 'PregContentFinder.php';
 while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
@@ -12,7 +12,7 @@ while(!file_exists($f)) {
 include_once $f;
 //include_once "_callbackSh!!ortExample.php";
 //include '../../lib/finediff.php';
-class Callback_Test extends PHPUnit_Framework_TestCase {
+class Callback_Test extends \PHPUnit\Framework\TestCase {
     function test_doSqlWeb_def() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":" 
@@ -23,7 +23,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         $newQuotes = ['[', ']'];
         $expected = $LINE__ . ":" . ' [mySelect1:select * from table1#mySelect1] [mySelect2:select * from table2#mySelect2] ';
  
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx($old);
         $actual = $cf->getContent_user_func_recursive(
@@ -63,7 +63,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         $expected = str_replace(array('<', '>'), $newQuotes, $source1);
         $expected = $LINE__ . ":" . ' [1:s bu#1] [2:s hu#2]  [3:s ui#3] [4:s uf#4] ';
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx($old);
         $actual = $cf->getContent_user_func_recursive(
@@ -101,7 +101,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         $old = ['<', '>'];
         $newQuotes = ['[', ']'];
         $expected = str_replace($old, $newQuotes, $source1);
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
         $actual = $cf->getContent_user_func_recursive(
           function ($cut, $deepCount, $callsCount, $posList0, $source1) use ($newQuotes) {
@@ -481,7 +481,7 @@ isFileOpendInSciteUnsaved(filename){
         $charSpace = "";
         $newline = "";
         $indentSize = 2;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -539,7 +539,7 @@ isFileOpendInSciteUnsaved(filename){
         $charSpace = "";
         $newline = "";
         $indentSize = 2;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -593,7 +593,7 @@ isFileOpendInSciteUnsaved(filename){
         $charSpace = "";
         $newline = "";
         $indentSize = 2;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -661,7 +661,7 @@ isFileOpendInSciteUnsaved(filename){
         $charSpace = "";
         $newline = "";
         $indentSize = 2;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -728,7 +728,7 @@ isFileOpendInSciteUnsaved(filename){
         $charSpace = "";
         $newline = "";
         $indentSize = 2;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -783,7 +783,7 @@ isFileOpendInSciteUnsaved(filename){
         $charSpace = "";
         $newline = "";
         $indentSize = 2;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -851,7 +851,7 @@ isFileOpendInSciteUnsaved(filename){
         $newline = "";
         $indentSize = 2;
         $source1 = $source1;
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -919,7 +919,7 @@ isFileOpendInSciteUnsaved(filename){
         $newline = "_";
         $indentSize = 1;
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -991,7 +991,7 @@ a
 2:..]
 1:]';
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1072,7 +1072,7 @@ a
 1:]
 1;';
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1155,7 +1155,7 @@ if(a1)
 1:]
 1;';
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1228,7 +1228,7 @@ if(a1)
         $newline = "";
         $indentSize = 1;
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1297,7 +1297,7 @@ if(a1)
 //        $newline = "a�lsdkfj�saldkjfs�alfdkj"; // see closure functions
         $indentSize = 1;
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1362,7 +1362,7 @@ if(a1)
         $newline = "";
         $indentSize = 1;
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1429,7 +1429,7 @@ if(a1)
         $indentSize = 1;
         $newQuotes = ['[', ']'];
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1489,7 +1489,7 @@ if(a1)
         $newline = "";
         $indentSize = 1;
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1545,7 +1545,7 @@ if(a1)
 //        # this recursion is deprecated and not implemented into the core class. so dont waste time ;)
 //        return false;
 //        $expected = 'A {11{22{3}{2}22}11}{1} B';
-//        $cf = new SL5_preg_contentFinder($expected);
+//        $cf = new PregContentFinder($expected);
 //        list($c, $bf, $bh) = recursion_simplyReproduction($expected);
 //        $actual = $bf . $c . $bh;
 //        $cf->setBeginEnd_RegEx('{', '}');
@@ -1554,7 +1554,7 @@ if(a1)
 
 
     /**
-     * using class SL5_preg_contentFinder
+     * using class PregContentFinder
      * and ->getContent_user_func_recursive.
      * in a case i don't like this style using closures to much. so you only need one function (advantage) from the outside. but looks more ugly from the inside. not best way for debugging later (inside). you need to compare, decide for your business.
      */
@@ -1573,7 +1573,7 @@ if(a1)
         $newline = "\r\n";
         $indentSize = 2;
 
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($old_open, $old_close);
 
         $getIndentStr = function ($indent, $char, $indentSize) {
@@ -1634,7 +1634,7 @@ if(a1)
 }else{
    win:=needle2;
 }";
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx('{', '}');
         list($c, $bf, $bh) = self::recursion_add($source1, "{\r\n   ", ";\r\n}");
         $actual = $bf . $c . $bh;
@@ -1651,7 +1651,7 @@ if(a1)
       $behind = null
     ) {
         $isFirstRecursion = is_null($before); # null is used as trigger for first round.
-        $cf = new SL5_preg_contentFinder($content);
+        $cf = new PregContentFinder($content);
         if($cut['middle'] = @$cf->getContent($b = '{', $e = '}')) {
             $before .= $cf->getContent_Before() . $addBefore;
             $behindTemp = $cf->getContent_Behind() . $behind;

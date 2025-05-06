@@ -1,4 +1,6 @@
 <?php
+namespace SL5\PregContentFinder;
+
 /*
   This SL5_ContentFinder class is part of the doSqlWeb project,
   a PHP Template Engine.
@@ -15,6 +17,7 @@
  
   For GNU General Public License see <http://www.gnu.org/licenses/>.
  */
+
 $bugIt = false;
 // Add appgati.
 if($bugIt) {
@@ -46,11 +49,11 @@ if($bugIt) {
 }
 
 if(basename($_SERVER["PHP_SELF"]) == basename(__FILE__)) {
-//     include_once("test/SL5_preg_contentFinderTest1.php");
-    include_once("/home/administrator/GolandProjects/php2go-translator/SL5_preg_contentFinder/tests/test2/SL5_preg_contentFinderTest1.php");
-    SL5_preg_contentFinder::selfTest_collection();
+//     include_once("test/PregContentFinderTest1.php");
+    include_once("/home/administrator/GolandProjects/php2go-translator/PregContentFinder/tests/test2/PregContentFinderTest1.php");
+    PregContentFinder::selfTest_collection();
 }
-class SL5_preg_contentFinder {
+    class PregContentFinder{
     private static $selfTest_defaults = array(); # please fill that first time
     private static $selfTest_called_from_init_defaults = false;
     private static $selfTest_collection_finished = false;
@@ -234,7 +237,7 @@ class SL5_preg_contentFinder {
             }
             # find every second third
             $rebuild = '';
-            $c = new SL5_preg_contentFinder($_source);
+            $c = new PregContentFinder($_source);
             if(!$silentMode) {
                 info(__LINE__ . ": \$contentDemo = <br>" . htmlspecialchars($_source));
             }
@@ -262,14 +265,14 @@ class SL5_preg_contentFinder {
             }
             echo '<br>';
 
-            SL5_preg_contentFinderTest1::before_behind_example($silentMode);
-            SL5_preg_contentFinderTest1::test_getContent_setID();
+            PregContentFinderTest1::before_behind_example($silentMode);
+            PregContentFinderTest1::test_getContent_setID();
         }
     }
 
 
     /**
-     * @return self|SL5_preg_contentFinder
+     * @return self|PregContentFinder
      */
     public function getLastObject() {
         $l = self::$lastObject;
@@ -334,7 +337,7 @@ class SL5_preg_contentFinder {
         }
 
         # search in $content['middle'], create $cut Array
-        $C = new SL5_preg_contentFinder($content['middle'], $this->regEx_begin, $this->regEx_end);
+        $C = new PregContentFinder($content['middle'], $this->regEx_begin, $this->regEx_end);
         $C->setSearchMode($this->getSearchMode());
         $cut = array(
           'before' => $C->getContent_Before(),
@@ -516,8 +519,8 @@ class SL5_preg_contentFinder {
         if($searchMode == 'lazyWhiteSpace') {
             $RegEx_begin_backup = $RegEx_begin;
             $RegEx_end_backup = $RegEx_end;
-            $RegEx_begin = SL5_preg_contentFinder::preg_quote_by_SL5($RegEx_begin);
-            $RegEx_end = SL5_preg_contentFinder::preg_quote_by_SL5($RegEx_end);
+            $RegEx_begin = PregContentFinder::preg_quote_by_SL5($RegEx_begin);
+            $RegEx_end = PregContentFinder::preg_quote_by_SL5($RegEx_end);
         }
         elseif(strrpos($searchMode, 'use_BackReference') !== false || strrpos(
             $searchMode,
@@ -1034,14 +1037,14 @@ I think this is the beep sound, if i am not mistaken.
         $silentMode = false; # only shows errors 13-10-23_13-39
 //    $silentMode = true; # only shows errors 13-10-23_13-39
 
-        list($source, $content1, $maxLoopCount, $pos_of_next_search, $begin, $end, $cf, $findPos, $sourceCF, $expectedContent) = SL5_preg_contentFinderTest1::selfTest_Tags_Parsing_Example(
+        list($source, $content1, $maxLoopCount, $pos_of_next_search, $begin, $end, $cf, $findPos, $sourceCF, $expectedContent) = PregContentFinderTest1::selfTest_Tags_Parsing_Example(
           $silentMode
         );
 
 
         if(true) {
             $sourceCF = "(2)";
-            $cf = new SL5_preg_contentFinder($sourceCF);
+            $cf = new PregContentFinder($sourceCF);
             if(!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
@@ -1057,7 +1060,7 @@ I think this is the beep sound, if i am not mistaken.
 
         if(true) {
             $sourceCF = "(1((2)1)8)";
-            $cf = new SL5_preg_contentFinder($sourceCF);
+            $cf = new PregContentFinder($sourceCF);
             if(!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
@@ -1084,7 +1087,7 @@ ho  <!--{03}-->3<!--{/03}-->
             $pos_of_next_search = 0;
             $begin = '(<!--)?{([^}>]*)}(-->)?';
             $end = '<!--{\/($2)}-->';
-            $cf = new SL5_preg_contentFinder($sourceCF);
+            $cf = new PregContentFinder($sourceCF);
             $cf->setBeginEnd_RegEx($begin, $end);
             $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
             while($maxLoopCount++ < 5) {
@@ -1112,14 +1115,14 @@ ho  <!--{03}-->3<!--{/03}-->
             }
         }
 
-        list($cf, $b, $e, $sourceCF) = SL5_preg_contentFinderTest1::simple123example($silentMode);
+        list($cf, $b, $e, $sourceCF) = PregContentFinderTest1::simple123example($silentMode);
 
-        if(true) list($cf, $b, $e, $sourceCF) = SL5_preg_contentFinderTest1::simple123example($silentMode);
+        if(true) list($cf, $b, $e, $sourceCF) = PregContentFinderTest1::simple123example($silentMode);
         if(true) {
             # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
             # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
             $content1 = '<!--123_abc-->dings1<!--dings2<!--';
-            $cf = new SL5_preg_contentFinder($content1);
+            $cf = new PregContentFinder($content1);
             $sourceCF = @$cf->getContent(
               $begin = '<!--[^>]*-->',
               $end = '<!--',
@@ -1140,7 +1143,7 @@ ho  <!--{03}-->3<!--{/03}-->
             # problem: Finally, even though the idea of nongreedy matching comes from Perl, the -U modifier is incompatible with Perl and is unique to PHP's Perl-compatible regular expressions.
             # http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm
             $content1 = '123#abc';
-            $cf = new SL5_preg_contentFinder($content1);
+            $cf = new PregContentFinder($content1);
             $sourceCF = @$cf->getContent(
               $begin = '\d+',
               $end = '\w+',
@@ -1163,7 +1166,7 @@ ho  <!--{03}-->3<!--{/03}-->
             if(!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
-            $cut = SL5_preg_contentFinderTest1::recursionExample5_search_also_in_rest_of_the_string(
+            $cut = PregContentFinderTest1::recursionExample5_search_also_in_rest_of_the_string(
               $sourceCF,
               array('[', ']')
             );
@@ -1183,7 +1186,7 @@ ho  <!--{03}-->3<!--{/03}-->
             if(!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
-            $cut = SL5_preg_contentFinderTest1::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
+            $cut = PregContentFinderTest1::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
             $result = $cut[1] . $cut[0] . $cut[2];
             if(!$silentMode) {
                 great(__LINE__ . ": \n$result (result)");
@@ -1198,7 +1201,7 @@ ho  <!--{03}-->3<!--{/03}-->
 
 
         $sourceCF = "((2)1)";
-        $cf = new SL5_preg_contentFinder($sourceCF);
+        $cf = new PregContentFinder($sourceCF);
         if(!$silentMode) {
             info(__LINE__ . ': ' . $sourceCF);
         } //
@@ -1212,7 +1215,7 @@ ho  <!--{03}-->3<!--{/03}-->
 
         if(true) {
             $sourceCF = "(1(1(2)1)8)";
-            $cf = new SL5_preg_contentFinder($sourceCF);
+            $cf = new PregContentFinder($sourceCF);
             if(!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
@@ -1225,13 +1228,13 @@ ho  <!--{03}-->3<!--{/03}-->
 
         if(true) {
             # recursion example 4
-            $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
+            $sourceCF = PregContentFinderTest1::getExampleContent(1);
             $sourceCF = ' A ' . $sourceCF . ' B ' . $sourceCF . ' C ';
             $sourceCF = preg_replace('/\d/', 'i', $sourceCF);
             if(!$silentMode) {
                 info(__LINE__ . ': ' . $sourceCF);
             }
-            $cut = SL5_preg_contentFinderTest1::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
+            $cut = PregContentFinderTest1::recursionExample4_search_also_in_rest_of_the_string($sourceCF);
             $result = $cut[1] . $cut[0] . $cut[2];
             $proof = ' A (11(22(3)(2)22)11)(1) B (11(22(3)(2)22)11)(1) C ';
             if(!$silentMode) {
@@ -1244,12 +1247,12 @@ ho  <!--{03}-->3<!--{/03}-->
 //        die('' . __LINE__);
 
         # recursion example 3
-        $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
+        $sourceCF = PregContentFinderTest1::getExampleContent(1);
         $sourceCF = preg_replace('/\d/', 'i', $sourceCF);
         if(!$silentMode) {
             info(__LINE__ . ':' . $sourceCF);
         }
-        $cut = SL5_preg_contentFinderTest1::recursionExample3_search_NOT_in_rest_of_the_string($sourceCF);
+        $cut = PregContentFinderTest1::recursionExample3_search_NOT_in_rest_of_the_string($sourceCF);
         $result = $cut[1] . $cut[0] . $cut[2];
 //       if(!$silentMode)great("$contentDemo\n?=\n$result");
         if(strpos($result, '(11(22(3)(2)22)11)(i)') === false) {
@@ -1258,8 +1261,8 @@ ho  <!--{03}-->3<!--{/03}-->
 
 
         # recursion example 2
-        $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
-        $cut = SL5_preg_contentFinderTest1::recursion_example2($sourceCF);
+        $sourceCF = PregContentFinderTest1::getExampleContent(1);
+        $cut = PregContentFinderTest1::recursion_example2($sourceCF);
         $result = $cut[1] . $cut[0] . $cut[2];
         if(!$silentMode) {
             great("$sourceCF\n?=\n$result");
@@ -1270,20 +1273,20 @@ ho  <!--{03}-->3<!--{/03}-->
 
         # recursion example
 
-        $sourceCF = SL5_preg_contentFinderTest1::getExampleContent(1);
+        $sourceCF = PregContentFinderTest1::getExampleContent(1);
 
         $silentMode = false;
         if(!$silentMode) {
             echo(__LINE__ . ': <u>recursion_example</u>:');
         }
-        $cut = SL5_preg_contentFinderTest1::recursion_example($sourceCF);
+        $cut = PregContentFinderTest1::recursion_example($sourceCF);
         if(false !== $cut) {
             die(__LINE__ . ': ' . " != $cut");
         }
 
         #;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         $sourceCF = 'contentChange special';
-        $cf = new SL5_preg_contentFinder($sourceCF);
+        $cf = new PregContentFinder($sourceCF);
         $noContent = @$cf->getContent($begin = 'bla', $end = 'noooo');
         if($noContent !== false) {
             die(__LINE__ . ': $noContent!==false');
@@ -1292,7 +1295,7 @@ ho  <!--{03}-->3<!--{/03}-->
         #;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # some tests 13-09-17_12-05
 # selfTest($begin = '[', $end = ']', $txt = '[123456789]', $expectedString = '123456789'
-        $t = new SL5_preg_contentFinder('');
+        $t = new PregContentFinder('');
         $t->selfTest('[1', ']', 0, 'asdf[12]fdsa', $expectedBehind = 'fdsa', '2');
 
         $t->selfTest(
@@ -1372,10 +1375,10 @@ ho  <!--{03}-->3<!--{/03}-->
         $t->selfTest('[1', '9]', 0, '[123456789]', $expectedBehind = '', '2345678', true);
 
 
-        $rebuild = SL5_preg_contentFinderTest1::recursion_example4($silentMode);
+        $rebuild = PregContentFinderTest1::recursion_example4($silentMode);
 
 
-        SL5_preg_contentFinderTest1::bordersBeetweenExample($cf, $silentMode, $rebuild, $source);
+        PregContentFinderTest1::bordersBeetweenExample($cf, $silentMode, $rebuild, $source);
 
 
         self::content_before_behind_example($silentMode);
@@ -1496,7 +1499,7 @@ ho  <!--{03}-->3<!--{/03}-->
         }
 
 //        var_export($argNames);
-        $cf = new SL5_preg_contentFinder($txt);
+        $cf = new PregContentFinder($txt);
 
         if(is_null($searchMode)) {
             $searchMode = $cf->getSearchMode();
@@ -1510,7 +1513,7 @@ ho  <!--{03}-->3<!--{/03}-->
         # what you need first time is an empty call of the function. you need to fill the default values.
         $func = func_get_args();
         $behind = self::$selfTest_defaults;
-        $t = new SL5_preg_contentFinder($txt);
+        $t = new PregContentFinder($txt);
         if(count(self::$selfTest_defaults) == 0) {
             $temp2 = self::$selfTest_called_from_init_defaults;
             if($temp2 === true) {
@@ -1529,7 +1532,7 @@ ho  <!--{03}-->3<!--{/03}-->
         foreach($func as $k => $arg) {
             if(is_null($arg)) {
                 $argNames = $t->get_func_argNames_of_Method(__CLASS__, __FUNCTION__);
-                ${$argNames[$k]} = SL5_preg_contentFinder::$selfTest_defaults[$k];
+                ${$argNames[$k]} = PregContentFinder::$selfTest_defaults[$k];
             }
         }
         #;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

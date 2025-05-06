@@ -1,29 +1,43 @@
-# Verwende ein offizielles PHP 5.6 CLI Image
-FROM php:5.6-cli
+# Dockerfile für PHP 7.4 Umgebung
 
-# PASSE QUELLEN FÜR ALTES DEBIAN (Stretch) AN
-# Ersetze die Standard-Quellen durch die Archiv-Quellen, da Stretch EOL ist.
-RUN sed -i \
-    -e 's/deb.debian.org/archive.debian.org/g' \
-    -e 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' \
-    -e '/stretch-updates/d' \
-    /etc/apt/sources.list
+# Basis-Image
+FROM php:7.4-cli
 
-# Installiere Werkzeuge: wget zum Herunterladen
-# Das apt-get update sollte jetzt funktionieren, da es auf das Archiv zeigt.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+# Setze die Zeitzone (optional, um Warnungen zu vermeiden)
+ENV TZ=UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Setze das Arbeitsverzeichnis im Container
+# Arbeitsverzeichnis (kann auch später gesetzt werden)
 WORKDIR /app
 
-# Kopiere den Projektcode in den Container (wird beim Bauen gemacht)
-COPY . /app
+# Systemabhängigkeiten installieren
+# Wichtig: Prüfen, ob Debian Buster (Basis von php:7.4-cli) noch Anpassungen für apt-Quellen braucht
+# Wahrscheinlich nicht mehr so kritisch wie bei Stretch (PHP 5.6), aber ggf. prüfen.
+# Für den Moment gehen wir davon aus, dass die Standardquellen funktionieren.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    zip \
+    unzip \
+    libzip-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Lade eine kompatible PHPUnit 3.7 PHAR-Datei herunter
-RUN wget https://phar.phpunit.de/phpunit-3.7.38.phar -O /usr/local/bin/phpunit && \
-    chmod +x /usr/local/bin/phpunit
+# PHP Extensions installieren (Beispiel für zip, falls benötigt)
+RUN docker-php-ext-install zip
+
+# Composer installieren
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+COPY composer.json composer.lock* ./
+
+# Abhängigkeiten installieren (inklusive dev-Abhängigkeiten für Tests)
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader -vvv
+
+# Den Rest des Codes kopieren
+COPY . .
+
+# Optional: Berechtigungen setzen, falls nötig
+# RUN chown -R www-data:www-data /app
 
 # Standardbefehl (optional)
-CMD ["php", "--version"]
+CMD ["php", "-v"]

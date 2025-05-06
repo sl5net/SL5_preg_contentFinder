@@ -1,9 +1,10 @@
 
 <?php
-//@include_once("../SL5_preg_contentFinder.php");
+use SL5\PregContentFinder\PregContentFinder;
+//@include_once("../PregContentFinder.php");
 //
-//require("../SL5_preg_contentFinder.php");
-$f = 'SL5_preg_contentFinder.php';
+//require("../PregContentFinder.php");
+$f = 'PregContentFinder.php';
 while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
@@ -16,7 +17,7 @@ include_once "_callbackShortExample.php";
 include '../../lib/finediff.php';
 
 
-class DoSqlWeb_Test extends PHPUnit_Framework_TestCase {
+class DoSqlWeb_Test extends \PHPUnit\Framework\TestCase {
     function test_99_simple() {
         /*
          * Example from:
@@ -40,7 +41,7 @@ class DoSqlWeb_Test extends PHPUnit_Framework_TestCase {
         $reg_ausdruck = "/\[(\w+)(\s+[^\#]+)#\s*([^\/\]\#]+?)\s*(#\d+)?(#[^#\]]+)?\]/"; // see function function interpret_one_sql_kapsel(
         $old[0]= $reg_ausdruck;
         $old[1] = "/\[\w+[^]]*\]/";
-        $cf = new SL5_preg_contentFinder($source1, $old);
+        $cf = new PregContentFinder($source1, $old);
         $actual = $cf->getContent_user_func_recursive(
           function ($cut, $deepCount) use ($newQuotes) {
               $cut['before'] .= $newQuotes[0];

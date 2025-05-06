@@ -1,8 +1,9 @@
 <?php
-//@include_once("../SL5_preg_contentFinder.php");
+use SL5\PregContentFinder\PregContentFinder;
+//@include_once("../PregContentFinder.php");
 //
-//require("../SL5_preg_contentFinder.php");
-$f = 'SL5_preg_contentFinder.php';
+//require("../PregContentFinder.php");
+$f = 'PregContentFinder.php';
 while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
@@ -11,7 +12,7 @@ while(!file_exists($f)) {
 include_once $f;
 //include_once "_callbackSh!!ortExample.php";
 //include '../../lib/finediff.php';
-class Callback_Test extends PHPUnit_Framework_TestCase {
+class Callback_Test extends \PHPUnit\Framework\TestCase {
     function test_empty_0_DANGER() {
         if(class_exists('PHPUnit_Framework_TestCase')) {
             $this->assertEquals(true, emptyLenNot0('0'));
@@ -36,7 +37,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         $expected = $LINE__ . ':90';
         $old = ['{', '}'];
         $newQuotes = ['', ''];
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx($old);
         $actual = $cf->getContent_user_func_recursive(
@@ -59,7 +60,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
         $expected = $LINE__ . ':1BBB';
         $old = ['{', '}'];
         $newQuotes = ['', ''];
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx($old);
         $actual = $cf->getContent_user_func_recursive(

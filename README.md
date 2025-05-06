@@ -1,4 +1,4 @@
-SL5_preg_contentFinder
+PregContentFinder
 ======================
 
 a PHP Template Engine class using Perl Compatible Regular Expressions (PCRE)

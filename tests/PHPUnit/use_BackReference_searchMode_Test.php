@@ -1,23 +1,24 @@
 <?php
-//@include_once("../SL5_preg_contentFinder.php");
+use SL5\PregContentFinder\PregContentFinder;
+//@include_once("../PregContentFinder.php");
 //
-$f = 'SL5_preg_contentFinder.php';
+$f = 'PregContentFinder.php';
 while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
 }
 // include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
 include_once $f;
-class BackReference_Test extends PHPUnit_Framework_TestCase {
+class BackReference_Test extends \PHPUnit\Framework\TestCase {
     /*
-     * suggestion: look inside https://github.com/sl5net/SL5_preg_contentFinder/blob/master/tests/PHPUnit/Callback_Test.php before using this technicals.
+     * suggestion: look inside https://github.com/sl5net/PregContentFinder/blob/master/tests/PHPUnit/Callback_Test.php before using this technicals.
      */
     function test_AABBCC() {
         $source1 = '<A>.</A><B>..</B><C>...</C>';
         $expected = 'Aa: . Bb: .. Cc: ... ';
         $beginEnd = ['(<)([^>]*)(>)?', '<\/($2)>'];
         $maxLoopCount = $pos_of_next_search = 0;
-        $cf = new SL5_preg_contentFinder($source1, $beginEnd);
+        $cf = new PregContentFinder($source1, $beginEnd);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $actual = '';
         while($maxLoopCount++ < 30) {
@@ -43,7 +44,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $source1 = ' some </A><A>xo1</A><A>xo2</A> thing ';
         $expected = 'A: xo1 A: xo2 ';
         $beginEndRegEx = ['(<)(A)(>)?', '<\/($2)>'];
-        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf = new PregContentFinder($source1, $beginEndRegEx);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $maxLoopCount = 1000;
         $actual = '';
@@ -66,7 +67,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $source1 = ' some <A>XO</A></A> thing ';
         $expected = 'A: XO ';
         $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
-        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf = new PregContentFinder($source1, $beginEndRegEx);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $maxLoopCount = 1000;
         $actual = '';
@@ -89,7 +90,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $source1 = ' some <A>1<B>2</B></A> thing ';
         $expected = 'A: 1<B>2</B> ';
         $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
-        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf = new PregContentFinder($source1, $beginEndRegEx);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $maxLoopCount = 1000;
         $actual = '';
@@ -108,7 +109,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $source1 = '<A>a<B>b</B></A>';
         $expected = 'Aa<B>b</B>';
         $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
-        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf = new PregContentFinder($source1, $beginEndRegEx);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $actual = '';
         $maxLoopCount = 1000;
@@ -129,7 +130,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $expected = 'AaBb';
         $actual = '';
         $beginEndRegEx = ['(<)([^>]*)(>)', '<\/($2)>'];
-        $cf = new SL5_preg_contentFinder($source1, $beginEndRegEx);
+        $cf = new PregContentFinder($source1, $beginEndRegEx);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $maxLoopCount = 1000;
         while($maxLoopCount-- > 0) {
@@ -150,7 +151,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $actual = '';
         $maxLoopCount = $pos_of_next_search = 0;
         $beginEnd = ['(<!--)?\[([^>]*)\](-->)?', '<!--\[\/($2)\]-->'];
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setBeginEnd_RegEx($beginEnd);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         while($maxLoopCount++ < 30) {
@@ -171,7 +172,7 @@ class BackReference_Test extends PHPUnit_Framework_TestCase {
         $expected = 'A: a B: b ';
         $beginEnd = ['(<)([^>]*)(>)?', '<\/($2)>'];
         $maxLoopCount = $pos_of_next_search = 0;
-        $cf = new SL5_preg_contentFinder($source1, $beginEnd);
+        $cf = new PregContentFinder($source1, $beginEnd);
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
         $actual = '';
         while($maxLoopCount++ < 30) {

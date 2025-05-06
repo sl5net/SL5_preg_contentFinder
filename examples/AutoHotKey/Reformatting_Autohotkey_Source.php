@@ -1,4 +1,5 @@
 <?php
+use SL5\PregContentFinder\PregContentFinder;
 /*
 This script expects named arguments (some optional):
 script.php --source1=./hello-world.go
@@ -61,12 +62,12 @@ $pathDir = $pathinfo__FILE__['dirname'];
 
 
 
-if( !file_exists( $pathDir . "/../../SL5_preg_contentFinder.php")) {
+if( !file_exists( $pathDir . "/../../PregContentFinder.php")) {
 //     die($pathDir);
-    die("\n".__LINE__ . $pathDir . ':( NOT EXIST: ../../SL5_preg_contentFinder.php\n\n' . PHP_EOL );
+    die("\n".__LINE__ . $pathDir . ':( NOT EXIST: ../../PregContentFinder.php\n\n' . PHP_EOL );
 }
 if($bugIt)echo __LINE__.':  :-) ';
-include_once($pathDir . "/../../SL5_preg_contentFinder.php");
+include_once($pathDir . "/../../PregContentFinder.php");
 $bugIt=true;
 if($bugIt)echo __LINE__.':  :-) ';
 
@@ -108,7 +109,7 @@ if(!$isIncluded && !isset($argv[1])) {
         $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" renameSymbol="zzzzzzz" renameSymbol_To="rrrrrrrrr"';
         $argv[1] = '--source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine_gitHub\\' . $file . '" --A_ThisLabel="Alt & Down"';
 
-        $argv[1] = 'E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\php\php-cgi.exe E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\www\SL5_preg_contentFinder\examples\AutoHotKey\Reformatting_Autohotkey_Source.php --source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\keys_SL5_AHK_Refactor_engine.ahk" --A_ThisLabel="Alt & Up"
+        $argv[1] = 'E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\php\php-cgi.exe E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\phpdesktop-msie-1.14-php-5.4.33\www\PregContentFinder\examples\AutoHotKey\Reformatting_Autohotkey_Source.php --source1="E:\fre\private\HtmlDevelop\AutoHotKey\SL5_AHK_Refactor_engine\keys_SL5_AHK_Refactor_engine.ahk" --A_ThisLabel="Alt & Up"
 ';
         unset($argv[1]);
     }
@@ -338,7 +339,7 @@ int f(int x, int y, int z) {
         $file_content = '' . preg_replace('/' . $pattern . '/is', "$1" . $newline . '' . $indentStr . "$4", $file_content);
     }
 
-    $cf = new SL5_preg_contentFinder($file_content);
+    $cf = new PregContentFinder($file_content);
     $cf->setBeginEnd_RegEx($old_open, $old_close);
     $cf->setSearchMode('dontTouchThis');
 

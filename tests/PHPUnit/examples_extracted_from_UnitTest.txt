@@ -1,6 +1,6 @@
 
 
-following examples are automatically extracted from the UnitTest source. For implementation please look into the UnitTest( https://github.com/sl5net/SL5_preg_contentFinder/tree/master/tests/PHPUnit ).
+following examples are automatically extracted from the UnitTest source. For implementation please look into the UnitTest( https://github.com/sl5net/PregContentFinder/tree/master/tests/PHPUnit ).
 
 
 
@@ -241,7 +241,7 @@ ______________________
 Example source conversion '123_abc_v5':
 
 
-class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+class DontTouchThis_searchMode_Test extends \PHPUnit\Framework\TestCase {
 15-06-19_15-32
 
 ==>
@@ -385,7 +385,7 @@ ______________________
 
 
 
-Example source conversion 'simple_a_A_â__o_O_ô':
+Example source conversion 'simple_a_A_ï¿½__o_O_ï¿½':
 
 :a{1}a b{2}b
 

@@ -1,7 +1,8 @@
 <?php
-//@include_once("../SL5_preg_contentFinder.php");
+use SL5\PregContentFinder\PregContentFinder;
+//@include_once("../PregContentFinder.php");
 //
-$f = 'SL5_preg_contentFinder.php';
+$f = 'PregContentFinder.php';
 while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
@@ -16,14 +17,14 @@ while(!file_exists($f)) {
  */
 
 include_once $f;
-class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+class DontTouchThis_searchMode_Test extends \PHPUnit\Framework\TestCase {
 
     function test_Grabbing_HTML_Tag() {
         return false;
 //        $source1 = file_get_contents(__FILE__);
         $expected = 'hiHo';
         $source1 = '<P>hiHo</P>';
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $rB = '<([A-Z][A-Z0-9]*)\b[^>]*>';
         $rE = '<\/{1}>';
         $cf->setSearchMode('use_BackReference_IfExists_()$1${1}');
@@ -36,7 +37,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
 
     function test_123_g() {
         $source1 = '123#g';
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $actual_getContent = @$cf->getContent(
           $begin = '\d+',
           $end = '\w+',
@@ -44,7 +45,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
           $t = null,
           $searchMode = 'dontTouchThis'
         );
-        $cf2 = new SL5_preg_contentFinder($source1);
+        $cf2 = new PregContentFinder($source1);
         $cf2->setSearchMode('dontTouchThis');
         $cf2->setBeginEnd_RegEx('\d+', '\w+');
         $actual_getContent_user_func_recursive = $cf2->getContent_user_func_recursive(
@@ -60,7 +61,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     function test_123_z() {
         $source1 = '123#z';
         $expected = '#';
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx('\d+', '\w+');
         $sourceCF = $cf->getContent();
@@ -71,7 +72,7 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
         hiHo
         }';
         $expected = 'hiHo';
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx('^\s*{\s*$\s*', '\s*^\s*}\s*$');
         $sourceCF = $cf->getContent();
@@ -79,10 +80,10 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     }
     function test_123_abc_v4() {
         $source1 = '
-class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+class DontTouchThis_searchMode_Test extends \PHPUnit\Framework\TestCase {
 15-06-19_15-32';
         $expected = '15-06-19_15-32';
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*');
         $sourceCF = $cf->getContent();
@@ -92,10 +93,10 @@ class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
     }
     function test_123_abc_v5() {
         $source1 = '
-class DontTouchThis_searchMode_Test extends PHPUnit_Framework_TestCase {
+class DontTouchThis_searchMode_Test extends \PHPUnit\Framework\TestCase {
 15-06-19_15-32';
         $expected = '15-06-19_15-32';
-        $cf = new SL5_preg_contentFinder($source1);
+        $cf = new PregContentFinder($source1);
         $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx('\w\s*\{\s*', '^\s*\}\s*$');
         $sourceCF = $cf->getContent();
