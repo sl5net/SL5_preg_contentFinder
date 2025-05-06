@@ -1,0 +1,76 @@
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit Cache (falls generiert)
+.phpunit.result.cache
+
+# Log-Dateien und temporäre Dateien
+*.log
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE-spezifische Dateien und Verzeichnisse
+# Visual Studio Code
+.vscode/
+# PhpStorm / IntelliJ
+.idea/
+# NetBeans
+/nbproject/private/
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+# Eclipse
+.project
+.buildpath
+.settings/
+# Atom
+.atom/
+
+# Betriebssystem-spezifische Dateien
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+# Linux
+*~
+.*.swp
+
+# Lokale Konfigurationsdateien (sollten nie eingecheckt werden)
+# Erstellen Sie eine .env.example oder config.php.dist für Vorlagen
+.env
+config.local.php
+*.local
+
+# Build-Artefakte oder kompilierte Dateien (falls zutreffend)
+/build/
+/dist/
+
+# Eigene temporäre Dateien oder Verzeichnisse
+/temp_*.txt
+/temp_output/
+
+# Docker-spezifisch (falls Sie lokale Docker-Dateien nicht versionieren wollen,
+# obwohl das Dockerfile selbst natürlich versioniert wird)
+# .dockerignore (wird von Docker genutzt, nicht von Git, aber zur Info)
+
+# PHP Debug Bar (falls verwendet)
+/debugbar/
+
+# Spezifisch für Ihr Projekt (falls noch alte Dateien herumliegen, die nicht versioniert werden sollen)
+# SL5_preg_contentFinder.class.php # Wenn die alte Datei definitiv nicht mehr gebraucht wird
+# *.phar # Falls Sie PHAR-Dateien lokal bauen und nicht versionieren wollen
+
+# Cache-Verzeichnisse von Frameworks (falls Sie später eines verwenden)
+# /cache/
+# /storage/framework/
+# /var/cache/
