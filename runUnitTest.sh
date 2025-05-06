@@ -13,7 +13,7 @@ do
   echo "--- TESTING: $testfile_relative ---"
 
   # Verwende das PHP 7.4 Image und den vendor/bin/phpunit Pfad
-  output=$(docker run --rm -v "$(pwd):/app" -w /app sl5-preg-contentfinder-php74-dev php vendor/bin/phpunit "$testfile_relative" 2>&1)
+  output=$(docker run --rm -v "$(pwd):/app" -w /app sl5-preg-contentfinder-php81-dev php vendor/bin/phpunit "$testfile_relative" 2>&1)
 
   if echo "$output" | grep -E -q "FAILURES!|ERRORS!"; then
     echo "!!! Found Failures/Errors in $testfile_relative !!!"
