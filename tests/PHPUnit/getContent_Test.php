@@ -6,7 +6,7 @@ while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
 }
-include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
+// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
 include_once $f;
 class GetContent_Test extends PHPUnit_Framework_TestCase {
 

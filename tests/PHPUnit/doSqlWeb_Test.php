@@ -8,7 +8,7 @@ while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
 }
-include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
+// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
 include_once $f;
 include_once "_callbackShortExample.php";
 
@@ -24,13 +24,12 @@ class DoSqlWeb_Test extends PHPUnit_Framework_TestCase {
          * http://sourceforge.net/projects/dosqlweb/files/dosqlweb/1.0/DOPE-PHP_Version_070415.zip/download
          * $html = preg_replace("/\[".$selection_alias."\s+(\d+)\]/sx" , "[$selection_alias \\1]" , $html);
  create-cache-file.inc.php  -  200.747 Bytes  -  Fr, 13.04.07 um 22:23  -           */
-        # todo doSqlWeb test not complete written now.
+        # TODO: doSqlWeb test not complete written now (13.04.07).
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":" .
           '[SELECT 5+5 as calculation#alias]mitte[alias calculation]';
-        $expected = $LINE__ . ":"
-          . '';
-        $old = ['[', ']'];
+        $expected = $source1;
+        $old       = ['[', ']'];
         $newQuotes = ['[', ']'];
         $html = $source1;
         $preg_kapsel = "/^(\[[^<#][^#]+?#[^\]]+?\])$/s";

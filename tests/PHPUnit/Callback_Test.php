@@ -8,7 +8,7 @@ while(!file_exists($f)) {
     $f = '../' . $f;
     echo "$f exist.";
 }
-include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
+// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
 include_once $f;
 //include_once "_callbackSh!!ortExample.php";
 //include '../../lib/finediff.php';
@@ -119,7 +119,7 @@ class Callback_Test extends PHPUnit_Framework_TestCase {
 
     function test_AHK_prettify_return_problem_SL5smal_style() {
         # if you have problems with this test it may helps reading this: https://youtrack.jetbrains.com/issue/WI-29216 , https://youtrack.jetbrains.com/issue/WI-11032
-        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        include_once __DIR__ . '/../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php';
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":" .
           'this is ugly example source
@@ -253,7 +253,8 @@ isFileOpendInSciteUnsaved(filename){
     }
 
     function test_prettify_indentStyle_SL5net() {
-        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        // include_once __DIR__ . '/../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php';
+        include_once( __DIR__ . '/examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":" .
           '
@@ -358,7 +359,7 @@ return
 ...Send,{Space}
 ...Suspend,off
 return';
-        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        include_once __DIR__ . '/../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php';
         $actual = reformat_AutoHotKey($source1, $arguments = '');
         # equalize newline style
         $expected = preg_replace('/\r/', "", $expected);
@@ -370,7 +371,7 @@ return';
     }
 
     function test_prettify_autohotkey_Tab_indent() {
-        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        include_once __DIR__ . '/../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php';
         $LINE__ = __LINE__;
         $newline = "\r\n";
         $source1 = $LINE__ . ":" . $newline . 'MyLabel1:
@@ -460,7 +461,7 @@ isFileOpendInSciteUnsaved(filename){
 ...}
 ...return.doSaveFirst
 }';
-        include_once('../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php');
+        include_once __DIR__ . '/../../examples/AutoHotKey/Reformatting_Autohotkey_Source.php';
         $actual = reformat_AutoHotKey($source1, $arguments = '');
         # equalize newline style
         $expected = preg_replace('/\r/', "", $expected);
