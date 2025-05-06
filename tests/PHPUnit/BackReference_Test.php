@@ -1,14 +1,6 @@
 <?php
+namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
-//@include_once("../PregContentFinder.php");
-//
-$f = 'PregContentFinder.php';
-while(!file_exists($f)) {
-    $f = '../' . $f;
-    echo "$f exist.";
-}
-// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
-include_once $f;
 class BackReference_Test extends \PHPUnit\Framework\TestCase {
     /*
      * suggestion: look inside https://github.com/sl5net/PregContentFinder/blob/master/tests/PHPUnit/Callback_Test.php before using this technicals.

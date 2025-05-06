@@ -1,5 +1,5 @@
-
 <?php
+namespace SL5\PregContentFinder;
 /*
   This SL5_ContentFinder class is part of the doSqlWeb project,
   a PHP Template Engine.
@@ -17,8 +17,6 @@
   For GNU General Public License see <http://www.gnu.org/licenses/>.
  */
 
-namespace SL5\PregContentFinder;
-use SL5\PregContentFinder\PregContentFinder;
 
 $bugIt = false;
 // Add appgati.

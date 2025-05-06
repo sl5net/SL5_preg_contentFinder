@@ -1,4 +1,5 @@
 <?php
+namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
 //@include_once("../PregContentFinder.php");
 //

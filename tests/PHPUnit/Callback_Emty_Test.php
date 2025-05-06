@@ -1,18 +1,10 @@
 <?php
+namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
-//@include_once("../PregContentFinder.php");
-//
-//require("../PregContentFinder.php");
-$f = 'PregContentFinder.php';
-while(!file_exists($f)) {
-    $f = '../' . $f;
-    echo "$f exist.";
-}
-// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
-include_once $f;
+
 //include_once "_callbackSh!!ortExample.php";
 //include '../../lib/finediff.php';
-class Callback_Test extends \PHPUnit\Framework\TestCase {
+class Callback_Emty_Test extends \PHPUnit\Framework\TestCase {
     function test_empty_0_DANGER() {
         if(class_exists('PHPUnit_Framework_TestCase')) {
             $this->assertEquals(true, emptyLenNot0('0'));
@@ -38,7 +30,7 @@ class Callback_Test extends \PHPUnit\Framework\TestCase {
         $old = ['{', '}'];
         $newQuotes = ['', ''];
         $cf = new PregContentFinder($source1);
-        $cf->setSearchMode('dontTouchThis');
+            $cf->setSearchMode('dontTouchThis');
         $cf->setBeginEnd_RegEx($old);
         $actual = $cf->getContent_user_func_recursive(
           function ($cut, $deepCount) use ($newQuotes) {

@@ -1,19 +1,9 @@
 <?php
+namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
-//@include_once("../PregContentFinder.php");
-//
-//require("../PregContentFinder.php");
-$f = 'PregContentFinder.php';
-while(!file_exists($f)) {
-    $f = '../' . $f;
-    echo "$f exist.";
-}
-// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
-include_once $f;
-//include_once "_callbackSh!!ortExample.php";
-//include '../../lib/finediff.php';
+
 class Callback_Test extends \PHPUnit\Framework\TestCase {
-    function test_doSqlWeb_def() {
+    public function test_doSqlWeb_def() {
         $LINE__ = __LINE__;
         $source1 = $LINE__ . ":" 
           . ' [select * from table1#mySelect1]'

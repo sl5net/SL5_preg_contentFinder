@@ -1,24 +1,12 @@
 
 <?php
+namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
-//@include_once("../PregContentFinder.php");
-//
-//require("../PregContentFinder.php");
-$f = 'PregContentFinder.php';
-while(!file_exists($f)) {
-    $f = '../' . $f;
-    echo "$f exist.";
-}
-// include_once "../create_1file_withAll_PHPUnit_tests.php"; # ok little overhead. sometimes ;) 15-06-19_12-35
-include_once $f;
-include_once "_callbackShortExample.php";
-
-
-include '../../lib/finediff.php';
-
+include_once __DIR__ . '/_callbackShortExample.php';
+include_once __DIR__ . '../../lib/finediff.php';
 
 class DoSqlWeb_Test extends \PHPUnit\Framework\TestCase {
-    function test_99_simple() {
+    public function test_99_simple() {
         /*
          * Example from:
          * http://dosqlweb.de/dope.php?f=/dope/online-manual2/MindTree/frameset.htm?url=99+a+8+999+default-tree-titles-viewonly.tmpl+2+dope_mindtree_dope_stoffsammlung_light+0

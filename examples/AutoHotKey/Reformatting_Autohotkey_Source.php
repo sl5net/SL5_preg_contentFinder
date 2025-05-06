@@ -67,7 +67,6 @@ if( !file_exists( $pathDir . "/../../PregContentFinder.php")) {
     die("\n".__LINE__ . $pathDir . ':( NOT EXIST: ../../PregContentFinder.php\n\n' . PHP_EOL );
 }
 if($bugIt)echo __LINE__.':  :-) ';
-include_once($pathDir . "/../../PregContentFinder.php");
 $bugIt=true;
 if($bugIt)echo __LINE__.':  :-) ';
 
