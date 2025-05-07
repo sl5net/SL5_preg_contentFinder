@@ -1,35 +1,41 @@
 # PregContentFinder
 
-**A powerful PHP library for finding, extracting, and transforming content within text نيكى based on regular expression (PCRE) delimiters, with advanced support for nested structures and custom callback processing.**
-
-Originally developed as part of the doSqlWeb PHP Template Engine, `PregContentFinder` has evolved into a versatile tool for complex text manipulation tasks where simple string functions or basic regex replacements fall short.
+**A powerful and robust PHP library for finding, extracting, and transforming content within text based on regular expression (PCRE) delimiters, featuring advanced support for nested structures, custom callback processing, and intelligent delimiter handling.**
 
 [![Latest Stable Version](https://poser.pugx.org/sl5net/preg-contentfinder/v/stable)](https://packagist.org/packages/sl5net/preg-contentfinder)
 [![Total Downloads](https://poser.pugx.org/sl5net/preg-contentfinder/downloads)](https://packagist.org/packages/sl5net/preg-contentfinder)
 [![License](https://poser.pugx.org/sl5net/preg-contentfinder/license)](https://packagist.org/packages/sl5net/preg-contentfinder)
 
+Originally developed around 2002 (likely for PHP 4) and serving reliably for years after updates to PHP 5.6, `PregContentFinder` (formerly `SL5_preg_contentFinder`) has now been fully modernized for PHP 8.1+ and Composer.
+
+It excels where simple string functions or basic regex fall short, particularly with nested structures and context-dependent transformations.
+
+
 ## Key Features
 
-*   **Delimiter-Based Searching:** Define start and end delimiters using strings or full PCRE regular expressions.
-*   **Nested Structure Handling:** Intelligently finds content within correctly balanced and nested delimiter pairs.
-*   **Recursive Processing:** Apply transformations recursively to nested structures.
-*   **Custom Callback Functions:** Pass your own PHP callables to dynamically process and transform the content found between delimiters, including information about nesting depth and match positions.
+*   **Delimiter-Based Searching:** Use strings or full PCRE regular expressions for start and end delimiters.
+*   **Intelligent Nested Structure Handling:** Reliably finds content within correctly balanced and nested delimiter pairs, even when the content itself contains delimiter characters. **You often don't need to worry about manually escaping delimiter characters within your content.**
+*   **Recursive Processing:** Apply transformations recursively through nested structures using `getContent_user_func_recursive`.
+*   **Custom Callback Functions:** Pass PHP callables to dynamically process and transform the content found between delimiters, receiving context like nesting depth and match details.
 *   **Flexible Search Modes:**
-    *   `lazyWhiteSpace`: Treats delimiters as literal strings, automatically quoting them and making whitespace flexible.
-    *   `dontTouchThis`: Treats delimiters as raw PCRE patterns.
-    *   `use_BackReference_IfExists_()$1${1}`: Allows the end delimiter's regex to use backreferences from the start delimiter's match (e.g., for matching `<div>...</div>` but not `<div>...</p>`).
-*   **Content Access:** Easily retrieve content found *between*, *before*, or *after* the matched delimiters.
-*   **Caching:** Internal caching of found positions for improved performance on repeated searches with the same parameters.
+    *   `lazyWhiteSpace`: Treats delimiters as literal strings, quoting them and making whitespace flexible.
+    *   `dontTouchThis`: Treats delimiters as raw PCRE patterns provided by the user.
+    *   `use_BackReference_IfExists_()$1${1}`: Allows the end delimiter's regex to use backreferences from the start delimiter's match (e.g., for matching `<div>...</div>`).
+*   **Content Access:** Easily retrieve content *between*, *before*, or *after* matched delimiters for the current match.
+*   **Modernized:** PHP 8.1+ compatible, PSR-4 compliant, available via Composer.
+*   **Well-Tested:** Backed by ~100 unit tests ensuring core functionality and robustness.
 
 ## Why PregContentFinder?
 
-While PHP offers powerful string and regex functions, `PregContentFinder` excels when dealing with:
+Use this library when you need to:
 
-*   **Deeply nested or recursively defined structures** in text that are hard to parse reliably with a single complex regex.
-*   **Contextual transformations** where the modification of a found segment depends on its content, its nesting level, or surrounding data, best handled by custom callback logic.
-*   **Scenarios requiring robust parsing of paired delimiters** where the closing delimiter might depend on the opening one.
+*   Parse and transform custom template languages or markup (like BBCode).
+*   Reliably extract data from semi-structured text files with potentially nested blocks, even if those blocks contain delimiter characters.
+*   Perform context-aware text transformations using callbacks based on nesting or content.
+*   Analyze or refactor code structures based on block delimiters.
+*   Implement interpreters for simple, domain-specific languages.
 
-To our knowledge, there are few PHP libraries offering this specific, powerful combination of regex-based recursive searching with extensive callback-driven transformation capabilities for nested text structures.
+Its unique combination of features, especially the robust handling of nested structures and internal management of delimiter conflicts, makes it a powerful tool for complex text processing tasks.
 
 ## Installation
 
@@ -39,34 +45,41 @@ The recommended way to install PregContentFinder is via [Composer](https://getco
 composer require sl5net/preg-contentfinder
 ```
 
-## Basic Usage
+Basic Usage
 
-```php
+```php     
 <?php
-require 'vendor/autoload.php'; // If using Composer
+require 'vendor/autoload.php';
 
 use SL5\PregContentFinder\PregContentFinder;
 
-$sourceText = "Here is some [important data] and [another piece].";
-$finder = new PregContentFinder($sourceText);
+// Example 1: Simple Extraction
+$sourceText = "Some text [สำคัญ data1] and [other {data2}] stuff.";
+$finder = new PregContentFinder($sourceText, '[', ']');
 
-// Simple string delimiters
-$finder->setBeginEnd_RegEx('[', ']');
+$content1 = $finder->getContent(); // Finds first match
+// $content1 = "สำคัญ data1"
 
-$content1 = $finder->getContent(); // Finds the first match
-// $content1 will be "important data"
+$content2 = $finder->getContent(); // Finds next match (if state is managed correctly)
+// This depends on how getContent updates the internal position.
+// Often used in a loop with setPosOfNextSearch or getBorders.
 
-// To get all matches, you typically loop or use recursive callbacks
-// For example, to replace content:
+// Example 2: Transformation with Callback
+$source = "Process {A{B}C} and {D}.";
+$finder = new PregContentFinder($source, '{', '}');
+
 $result = $finder->getContent_user_func_recursive(
-    function ($cut, $deepCount, $callsCount, $posList0, $originalSegmentContent) {
-        $cut['middle'] = strtoupper($cut['middle']); // Transform the content
-        return $cut; // Return the modified segment parts
+    function ($cut, $deepCount) {
+        // $cut['middle'] contains content between {} for the current level
+        // $deepCount indicates nesting level (0 for outermost)
+        $cut['middle'] = "[$deepCount:" . strtoupper($cut['middle']) . "]";
+        return $cut; // Return modified segment parts
     }
 );
-// $result would be "Here is some IMPORTANT DATA and ANOTHER PIECE."
-// (Actual assembly depends on how the callback result is used by the class)
 
+// Expected $result might be something like:
+// Process [0:A[1:B]C] and [0:D].
+// (Exact output depends on internal recursive assembly logic)
 echo $result;
 ?>
 ```
