@@ -55,12 +55,15 @@ if(basename($_SERVER["PHP_SELF"]) == basename(__FILE__)) {
 }
 class PregContentFinder {
     private static $selfTest_defaults = array(); # please fill that first time
+
+
     private static $selfTest_called_from_init_defaults = false;
     private static $selfTest_collection_finished = false;
     public $isUniqueSignUsed = false;
     private $content = null;
     private $regEx_begin = null;
     private $regEx_end = null;
+    
 
     private $stopIf_EndBorder_NotExistInContent = false;
     private $stopIf_BothBorders_NotExistInContent = true;
@@ -83,7 +86,7 @@ class PregContentFinder {
     public
     static $lastObject = null;
 
-    private $foundPos_list;
+    private array $foundPos_list = [];
     private $uniqueSignExtreme = null;
 
     /**
