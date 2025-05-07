@@ -6,10 +6,9 @@
 [![Total Downloads](https://poser.pugx.org/sl5net/preg-contentfinder/downloads)](https://packagist.org/packages/sl5net/preg-contentfinder)
 [![License](https://poser.pugx.org/sl5net/preg-contentfinder/license)](https://packagist.org/packages/sl5net/preg-contentfinder)
 
-Originally developed around 2002 (likely for PHP 4) and serving reliably for years after updates to PHP 5.6, `PregContentFinder` (formerly `SL5_preg_contentFinder`) has now been fully modernized for PHP 8.1+ and Composer.
+**A Legacy of Stability:** The fundamental recursive parsing logic and the intelligent handling of delimiter conflicts have been stable and functional **since its early years (around 2002-2003, likely PHP 4)**. Subsequent updates primarily focused on adapting to new PHP versions (like PHP 5.6). This latest modernization brings the proven core engine to **PHP 8.1+**, integrating it with Composer and modern PHP standards.
 
 It excels where simple string functions or basic regex fall short, particularly with nested structures and context-dependent transformations.
-
 
 ## Key Features
 
