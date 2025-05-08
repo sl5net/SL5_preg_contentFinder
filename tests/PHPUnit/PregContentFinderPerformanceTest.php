@@ -104,7 +104,7 @@ class PregContentFinderPerformanceTest extends \PHPUnit\Framework\TestCase
      */
     public function testLargeStringManyBlocksPerformance(): void
     {
-        $this->markTestSkipped('Performance tests are environment-dependent and should be run manually or with dedicated benchmarking tools.');
+        // $this->markTestSkipped('Performance tests are environment-dependent and should be run manually or with dedicated benchmarking tools.');
         // Re-enable by removing the line above if you want to run it.
 
         $numBlocks = 5000; // Number of {block} occurrences
