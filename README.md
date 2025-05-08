@@ -237,6 +237,34 @@ $indented = $finder->getContent_user_func_recursive(
 *   Implementing interpreters for simple, domain-specific languages.
 *   Any task requiring robust identification and manipulation of hierarchically structured text.
 
+
+## Development Workflow & Management Script
+
+For a streamlined development workflow, including building Docker images for different PHP versions, running tests, and managing Docker resources, a dedicated helper script is available.
+
+This script automates common tasks and helps in maintaining a clean Docker environment.
+
+**You can find this management script in the `SL5_some_favorite_scripts` repository:**
+
+➡️ **[PCF Management Script](https://github.com/sl5net/SL5_some_favorite_scripts/blob/master/sh/PCF-setEnvironment_1findPHPver_2buildDocker_3runTest_4cleanDocker.sh)** ⬅️
+*(Link directly to the script file)*
+
+Or browse the directory containing other useful shell scripts:
+➡️ **[SL5 Favorite Shell Scripts](https://github.com/sl5net/SL5_some_favorite_scripts/tree/master/sh)**
+*(Link to the sh directory)*
+
+**Key features of the script:**
+*   Automatically detects the target PHP version from the Dockerfile or Git context.
+*   Builds Docker images spezifisch for the detected PHP version.
+*   Runs PHPUnit tests within the Docker environment.
+*   Provides actions to clean up Docker resources (full system prune or just build cache).
+*   Displays Docker disk usage.
+*   Includes a detailed help screen with usage instructions and tips for setting up shell aliases/functions for easier access.
+
+It's recommended to place this script outside the `SL5_preg_contentFinder` project directory and call it using a relative path or a shell alias/function as described in its help output.
+
+
+
 ## License
 
 `PregContentFinder` is licensed under the GNU General Public License v3.0 or later (GPL-3.0-or-later). See the [LICENSE](LICENSE) file for details.
