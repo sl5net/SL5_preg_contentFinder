@@ -1,0 +1,24 @@
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+RE....                                                              6 / 6 (100%)
+
+Time: 00:00.012, Memory: 6.00 MB
+
+There was 1 error:
+
+1) SL5\PregContentFinder\Tests\DontTouchThis_searchMode_Test::test_123_g
+Error: SL5\PregContentFinder\PregContentFinder::getContent(): Argument #1 ($RegEx_begin) could not be passed by reference
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DontTouchThis_searchMode_Test.php:26
+
+--
+
+There was 1 risky test:
+
+1) SL5\PregContentFinder\Tests\DontTouchThis_searchMode_Test::test_Grabbing_HTML_Tag
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DontTouchThis_searchMode_Test.php:6
+
+ERRORS!
+Tests: 6, Assertions: 4, Errors: 1, Risky: 1.

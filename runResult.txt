@@ -1,0 +1,783 @@
+[H[2J[3JRunning ALL PHPUnit tests (PHP, recursive). Displaying only summaries of failures and errors.
+==================================================================================================
+
+--- TESTING: tests/PHPUnit/DontTouchThis_searchMode_Test.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+RE....                                                              6 / 6 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There was 1 error:
+
+1) SL5\PregContentFinder\Tests\DontTouchThis_searchMode_Test::test_123_g
+Error: SL5\PregContentFinder\PregContentFinder::getContent(): Argument #1 ($RegEx_begin) could not be passed by reference
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DontTouchThis_searchMode_Test.php:26
+
+--
+
+There was 1 risky test:
+
+1) SL5\PregContentFinder\Tests\DontTouchThis_searchMode_Test::test_Grabbing_HTML_Tag
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DontTouchThis_searchMode_Test.php:6
+
+ERRORS!
+Tests: 6, Assertions: 4, Errors: 1, Risky: 1.
+
+--- TESTING: tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+FFFFFF                                                              6 / 6 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 6 failures:
+
+1) SL5\PregContentFinder\Tests\SourceCodeFunHouseTransformationsTest::testFormatReadableBottomToTop
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'Line 3\n
++'Line 1\n
+ Line 2\n
+-Line 1'
++Line 3'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php:57
+
+2) SL5\PregContentFinder\Tests\SourceCodeFunHouseTransformationsTest::testFormatReadableBottomToTopWithCode
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'}\n
++'<?php\n
++function hello() {\n
+     echo "World";\n
+-function hello() {\n
+-<?php'
++}'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php:78
+
+3) SL5\PregContentFinder\Tests\SourceCodeFunHouseTransformationsTest::testFormatReadableRightToLeft
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'olleH\n
+-dlroW'
++'Hello\n
++World'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php:93
+
+4) SL5\PregContentFinder\Tests\SourceCodeFunHouseTransformationsTest::testFormatReadableRightToLeftWithCode
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'} ()elpmaxe noitcnuf\n
+-;eurt nruter  \n
++'function example() {\n
++  return true;\n
+ }'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php:113
+
+5) SL5\PregContentFinder\Tests\SourceCodeFunHouseTransformationsTest::testFormatReadableBottomToTopAndRightToLeft
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'3 eniL\n
+-2 eniL\n
+-1 eniL'
++'Line 1\n
++Line 2\n
++Line 3'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php:137
+
+6) SL5\PregContentFinder\Tests\SourceCodeFunHouseTransformationsTest::testFormatReadableBottomToTopAndRightToLeftWithCode
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'}\n
+-;24 nruter    \n
+-tnemmoC //    \n
+-{ ()niam noitcnuf\n
+-php?<'
++'<?php\n
++function main() {\n
++    // Comment\n
++    return 42;\n
++}'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php:174
+
+FAILURES!
+Tests: 6, Assertions: 6, Failures: 6.
+
+--- TESTING: tests/PHPUnit/PregContentFinderPerformanceComparisonTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+.
+--- Deeply Nested Structure (PregContentFinder) ---
+Nesting Depth: 15, String Length: 207 bytes
+Callback Iterations: 31
+Duration: 0.000475 seconds
+Memory Used (approx.): 2.27 KB
+
+--- Deeply Nested Structure (Simplified Vanilla PHP for comparison) ---
+Nesting Depth: 15, String Length: 207 bytes
+Function Calls: 16
+Duration: 0.000150 seconds
+Memory Used (approx.): 0.28 KB
+.                                                                  2 / 2 (100%)
+--- Large String Many Blocks (PregContentFinder) ---
+Number of Blocks: 5000, String Length: 448900 bytes
+Found Blocks (Iterations): 5000
+Duration: 0.143129 seconds
+Memory Used (approx.): 5,507.29 KB
+
+--- Large String Many Blocks (Vanilla PHP) ---
+Number of Blocks: 5000, String Length: 448900 bytes
+Found Blocks (Iterations): 5000
+Duration: 0.000934 seconds
+Memory Used (approx.): 522.71 KB
+
+
+Time: 00:00.150, Memory: 12.00 MB
+
+OK (2 tests, 6 assertions)
+
+--- TESTING: tests/PHPUnit/ContentIDTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+EE                                                                  2 / 2 (100%)
+
+Time: 00:00.003, Memory: 6.00 MB
+
+There were 2 errors:
+
+1) SL5\PregContentFinder\Tests\ContentIDTest::testSetAndGetContentByID
+Trying to access array offset on null
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:664
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:1426
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/ContentIDTest.php:15
+
+2) SL5\PregContentFinder\Tests\ContentIDTest::test_getContent_setID
+Trying to access array offset on null
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:664
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:1426
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/ContentIDTest.php:30
+
+ERRORS!
+Tests: 2, Assertions: 0, Errors: 2.
+
+--- TESTING: tests/PHPUnit/Callback_Test.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+EEEE27:  :-) 
+43:  :-) $isIncluded=
+45:  :-) $pathinfo_Script_Name=
+array(3) {
+  ["dirname"]=>
+  string(10) "vendor/bin"
+  ["basename"]=>
+  string(7) "phpunit"
+  ["filename"]=>
+  string(7) "phpunit"
+}
+EERERREERRRRRRRRRRRRRE                                        26 / 26 (100%)
+
+Time: 00:00.006, Memory: 6.00 MB
+
+There were 10 errors:
+
+1) SL5\PregContentFinder\Tests\Callback_Test::test_doSqlWeb_def
+Trying to access array offset on false
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:19
+
+2) SL5\PregContentFinder\Tests\Callback_Test::test_doSqlWeb_def_prototyp_1
+Trying to access array offset on false
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:59
+
+3) SL5\PregContentFinder\Tests\Callback_Test::test_tag_attribute
+Trying to access array offset on false
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:363
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:96
+
+4) SL5\PregContentFinder\Tests\Callback_Test::test_AHK_prettify_return_problem_SL5smal_style
+Undefined variable $SCRIPT_NAMEpath
+
+/home/seeh/projects/php/SL5_preg_contentFinder/examples/AutoHotKey/Reformatting_Autohotkey_Source.php:52
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:112
+
+5) SL5\PregContentFinder\Tests\Callback_Test::test_prettify_indentStyle_SL5net
+include_once(/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/examples/AutoHotKey/Reformatting_Autohotkey_Source.php): Failed to open stream: No such file or directory
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:247
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:247
+
+6) SL5\PregContentFinder\Tests\Callback_Test::test_prettify_autohotkey_Label
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/examples/AutoHotKey/Reformatting_Autohotkey_Source.php:215
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:353
+
+7) SL5\PregContentFinder\Tests\Callback_Test::test_prettify_autohotkey5
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/examples/AutoHotKey/Reformatting_Autohotkey_Source.php:215
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:455
+
+8) SL5\PregContentFinder\Tests\Callback_Test::test_wrongSource_NIXNIX_callback
+Trying to access array offset on null
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:664
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:466
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:346
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:595
+
+9) SL5\PregContentFinder\Tests\Callback_Test::test_wrongSource_NIX_empty_quote
+Trying to access array offset on null
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:664
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:466
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:346
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:663
+
+10) SL5\PregContentFinder\Tests\Callback_Test::test_reformatCode_recursion_add
+Error: SL5\PregContentFinder\PregContentFinder::getContent(): Argument #1 ($RegEx_begin) could not be passed by reference
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1645
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1629
+
+--
+
+There were 16 risky tests:
+
+1) SL5\PregContentFinder\Tests\Callback_Test::test_prettify_autohotkey_Tab_indent
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:363
+
+2) SL5\PregContentFinder\Tests\Callback_Test::test_wrongSource_No_endQuote_expected
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:464
+
+3) SL5\PregContentFinder\Tests\Callback_Test::test_wrongSource_NoX_callback
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:522
+
+4) SL5\PregContentFinder\Tests\Callback_Test::test_only_text
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:711
+
+5) SL5\PregContentFinder\Tests\Callback_Test::test_wrongSource_NIXopen_plus_callback
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:768
+
+6) SL5\PregContentFinder\Tests\Callback_Test::test_a_b_B_callback
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:832
+
+7) SL5\PregContentFinder\Tests\Callback_Test::test_recursive_02
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:895
+
+8) SL5\PregContentFinder\Tests\Callback_Test::test_simple3
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:964
+
+9) SL5\PregContentFinder\Tests\Callback_Test::test_simple
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1039
+
+10) SL5\PregContentFinder\Tests\Callback_Test::test_15_
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1122
+
+11) SL5\PregContentFinder\Tests\Callback_Test::test_shortest_new_close_recursive
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1205
+
+12) SL5\PregContentFinder\Tests\Callback_Test::test_reformat_compressed_AutoHotKey
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1272
+
+13) SL5\PregContentFinder\Tests\Callback_Test::test_shortest_lette_in_middle_recursive
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1342
+
+14) SL5\PregContentFinder\Tests\Callback_Test::test_recursive_01
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1407
+
+15) SL5\PregContentFinder\Tests\Callback_Test::test_shortest_new_open_recursive
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1469
+
+16) SL5\PregContentFinder\Tests\Callback_Test::test_callback_with_closures
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Test.php:1552
+
+ERRORS!
+Tests: 26, Assertions: 0, Errors: 10, Risky: 16.
+
+--- TESTING: tests/PHPUnit/DoSqlWeb_Test.php ---
+
+--- TESTING: tests/PHPUnit/LabyrinthSolverTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+FFF.F                                                               5 / 5 (100%)
+
+Time: 00:00.006, Memory: 6.00 MB
+
+There were 4 failures:
+
+1) SL5\PregContentFinder\Tests\LabyrinthSolverTest::testSimplePathMarking
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+ 'S # E\n
+   #  \n
+-...#  \n
++PATH{   }#  \n
+ #####'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/LabyrinthSolverTest.php:53
+
+2) SL5\PregContentFinder\Tests\LabyrinthSolverTest::testPathMarkingWithWallsInsidePathBlock
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'S .#. E\n
++'S PATH{ # } E\n
+ ###########'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/LabyrinthSolverTest.php:67
+
+3) SL5\PregContentFinder\Tests\LabyrinthSolverTest::testNestedPathMarking
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'Outer.space.Inner.space.between'
++'PATH{Outer space PATH{Inner space} between}'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/LabyrinthSolverTest.php:118
+
+4) SL5\PregContentFinder\Tests\LabyrinthSolverTest::testMultiplePathSegments
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'S .###\n
+-###..#\n
+-E  #...'
++'S PATH{ }###\n
++###PATH{  }#\n
++E  #PATH{   }'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/LabyrinthSolverTest.php:148
+
+FAILURES!
+Tests: 5, Assertions: 5, Failures: 4.
+
+--- TESTING: tests/PHPUnit/Callback_Emty_Test.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+RRRRR                                                               5 / 5 (100%)
+
+Time: 00:00.003, Memory: 6.00 MB
+
+There were 5 risky tests:
+
+1) SL5\PregContentFinder\Tests\Callback_Emty_Test::test_empty_0_DANGER
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Emty_Test.php:8
+
+2) SL5\PregContentFinder\Tests\Callback_Emty_Test::test_emptyREAL_0_DANGER
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Emty_Test.php:15
+
+3) SL5\PregContentFinder\Tests\Callback_Emty_Test::test_empty_1
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Emty_Test.php:21
+
+4) SL5\PregContentFinder\Tests\Callback_Emty_Test::test_behind_with_a_0
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Emty_Test.php:26
+
+5) SL5\PregContentFinder\Tests\Callback_Emty_Test::test_behind_BBB
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/Callback_Emty_Test.php:49
+
+OK, but incomplete, skipped, or risky tests!
+Tests: 5, Assertions: 0, Risky: 5.
+
+--- TESTING: tests/PHPUnit/WormCipherTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+EEEEEEEEEE                                                        10 / 10 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 10 errors:
+
+1) SL5\PregContentFinder\Tests\WormCipherTest::testSimpleReverse
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:89
+
+2) SL5\PregContentFinder\Tests\WormCipherTest::testSimpleUpper
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:96
+
+3) SL5\PregContentFinder\Tests\WormCipherTest::testSimpleCaesar
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:103
+
+4) SL5\PregContentFinder\Tests\WormCipherTest::testNestedWorms
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:112
+
+5) SL5\PregContentFinder\Tests\WormCipherTest::testMultipleNestedWorms
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:122
+
+6) SL5\PregContentFinder\Tests\WormCipherTest::testAdjacentWorms
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:129
+
+7) SL5\PregContentFinder\Tests\WormCipherTest::testNoWorms
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:136
+
+8) SL5\PregContentFinder\Tests\WormCipherTest::testWormWithNoContent
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:143
+
+9) SL5\PregContentFinder\Tests\WormCipherTest::testUnclosedWorm
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:160
+
+10) SL5\PregContentFinder\Tests\WormCipherTest::testWormWithSpecialCharsInContent
+TypeError: Cannot access offset of type string on string
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:388
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:308
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:19
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/WormCipherTest.php:167
+
+ERRORS!
+Tests: 10, Assertions: 0, Errors: 10.
+
+--- TESTING: tests/PHPUnit/PregContentFinderPerformanceTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+.
+--- Deeply Nested Structure Performance ---
+Nesting Depth: 15
+String Length: 207 bytes
+Callback Iterations: 31
+Duration: 0.0005 seconds
+Memory Used by Operation (approx.): 2.27 KB
+.                                                                  2 / 2 (100%)
+--- Large String Many Blocks Performance ---
+Number of Blocks: 5000
+String Length: 448900 bytes
+Found Blocks (Iterations): 5000
+Duration: 0.1405 seconds
+Memory Used by Operation (approx.): 5,507.29 KB
+
+
+Time: 00:00.146, Memory: 12.00 MB
+
+OK (2 tests, 4 assertions)
+
+--- TESTING: tests/PHPUnit/ZellulaererAutomat1DTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+F.FF                                                                4 / 4 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 3 failures:
+
+1) SL5\PregContentFinder\Tests\ZellulaererAutomat1DTest::testEinfacheEntwicklungRegel30Aehnlich
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'.XX.XXX'
++'..X.X..'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/ZellulaererAutomat1DTest.php:90
+
+2) SL5\PregContentFinder\Tests\ZellulaererAutomat1DTest::testSoliderBlockStirbtAus
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'X...XX.'
++'XX...XX'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/ZellulaererAutomat1DTest.php:110
+
+3) SL5\PregContentFinder\Tests\ZellulaererAutomat1DTest::testOszillator
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'X...X'
++'.X.X.'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/ZellulaererAutomat1DTest.php:123
+
+FAILURES!
+Tests: 4, Assertions: 6, Failures: 3.
+
+--- TESTING: tests/PHPUnit/DelimiterKonfliktBehandlungTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 3 failures:
+
+1) SL5\PregContentFinder\Tests\DelimiterKonfliktBehandlungTest::testInhaltMitDelimitergleichenZeichenWirdKorrektBehandelt
+Callback hat nicht den korrekten Mittelteil empfangen.
+Failed asserting that false matches expected 'Das ist {innerer Inhalt} mit Klammern'.
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DelimiterKonfliktBehandlungTest.php:27
+
+2) SL5\PregContentFinder\Tests\DelimiterKonfliktBehandlungTest::testVerschachtelterInhaltMitGleichenDelimiternWirdDurchInterneMaskierungBehandelt
+Zwei Callback-Aufrufe für die verschachtelte Struktur erwartet.
+Failed asserting that actual size 5 matches expected size 2.
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DelimiterKonfliktBehandlungTest.php:50
+
+3) SL5\PregContentFinder\Tests\DelimiterKonfliktBehandlungTest::testSubstringDelimiterWirdKorrektBehandelt
+Failed asserting that false matches expected '{inhalt_mit_maskierter_klammer}'.
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/DelimiterKonfliktBehandlungTest.php:76
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.
+
+--- TESTING: tests/PHPUnit/BackReference_Test.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+.R.EE...                                                            8 / 8 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 2 errors:
+
+1) SL5\PregContentFinder\Tests\BackReference_Test::test_A1_B2B_A
+Trying to access array offset on null
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:664
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/BackReference_Test.php:90
+
+2) SL5\PregContentFinder\Tests\BackReference_Test::test_ABBA
+Trying to access array offset on null
+
+/home/seeh/projects/php/SL5_preg_contentFinder/src/PregContentFinder.php:664
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/BackReference_Test.php:109
+
+--
+
+There was 1 risky test:
+
+1) SL5\PregContentFinder\Tests\BackReference_Test::test_AA_xo_A
+This test did not perform any assertions
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/BackReference_Test.php:31
+
+ERRORS!
+Tests: 8, Assertions: 5, Errors: 2, Risky: 1.
+
+--- TESTING: tests/PHPUnit/CellularAutomaton1DTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+F.FF                                                                4 / 4 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 3 failures:
+
+1) SL5\PregContentFinder\Tests\CellularAutomaton1DTest::testSimpleEvolutionRule30LikePattern
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'.XX.XXX'
++'..X.X..'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/CellularAutomaton1DTest.php:179
+
+2) SL5\PregContentFinder\Tests\CellularAutomaton1DTest::testSolidBlockDiesOut
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'X...XX.'
++'XX...XX'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/CellularAutomaton1DTest.php:219
+
+3) SL5\PregContentFinder\Tests\CellularAutomaton1DTest::testOscillator
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'X...X'
++'.X.X.'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/CellularAutomaton1DTest.php:252
+
+FAILURES!
+Tests: 4, Assertions: 6, Failures: 3.
+
+--- TESTING: tests/PHPUnit/QuellcodeSpassTransformationenTest.php ---
+PHPUnit 9.6.23 by Sebastian Bergmann and contributors.
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.004, Memory: 6.00 MB
+
+There were 3 failures:
+
+1) SL5\PregContentFinder\Tests\QuellcodeSpassTransformationenTest::testFormatierungLesbarVonUntenNachOben
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'Zeile 3\n
++'Zeile 1\n
+ Zeile 2\n
+-Zeile 1'
++Zeile 3'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/QuellcodeSpassTransformationenTest.php:60
+
+2) SL5\PregContentFinder\Tests\QuellcodeSpassTransformationenTest::testFormatierungLesbarVonRechtsNachLinks
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'ollaH\n
+-tleW'
++'Hallo\n
++Welt'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/QuellcodeSpassTransformationenTest.php:75
+
+3) SL5\PregContentFinder\Tests\QuellcodeSpassTransformationenTest::testFormatierungUntenObenUndRechtsLinks
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'3 elieZ\n
+-2 elieZ\n
+-1 elieZ'
++'Zeile 1\n
++Zeile 2\n
++Zeile 3'
+
+/home/seeh/projects/php/SL5_preg_contentFinder/tests/PHPUnit/QuellcodeSpassTransformationenTest.php:91
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.
+==================================================================================================
+All tests finished.
