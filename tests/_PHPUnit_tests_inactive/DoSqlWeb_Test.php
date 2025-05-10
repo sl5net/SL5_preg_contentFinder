@@ -1,9 +1,6 @@
-
 <?php
 namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
-include_once __DIR__ . '/_callbackShortExample.php';
-include_once __DIR__ . '../../lib/finediff.php';
 
 class DoSqlWeb_Test extends \PHPUnit\Framework\TestCase {
     public function test_99_simple() {
@@ -41,7 +38,7 @@ class DoSqlWeb_Test extends \PHPUnit\Framework\TestCase {
 
               return $cut;
           });
-        if(class_exists('PHPUnit_Framework_TestCase')) $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 }
 ?>

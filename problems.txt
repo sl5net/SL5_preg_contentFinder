@@ -1,0 +1,5 @@
+
+2025-0510-0151 Saturday, 10 May 2025 01:51:22 CEST
+
+Problem: Ähnlich wie oben. Der an den Callback übergebene $cut['middle'] enthält mehr als nur den Inhalt zwischen den Delimitern. Das deutet darauf hin, dass die vorgelagerte Logik (die findNextSegmentRegex sein wird) den Block nicht korrekt isoliert.
+
