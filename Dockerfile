@@ -30,10 +30,36 @@ RUN docker-php-ext-install zip
 
 # Gruppe und Benutzer erstellen, BEVOR sie für Berechtigungen benötigt werden
 # Verwende die ENV-Variablen, die die Defaults oder die ARGs enthalten
-RUN addgroup --gid "$APP_GID" "$APP_GROUP_NAME" || true
+# RUN addgroup --gid "$APP_GID" "$APP_GROUP_NAME" || true
 # || true, falls Gruppe mit dieser GID/Namen schon existiert
+
+RUN if ! getent group $APP_GROUP_NAME > /dev/null; then \
+        addgroup --gid $APP_GID $APP_GROUP_NAME; \
+    else \
+        echo "Group $APP_GROUP_NAME already exists"; \
+    fi
+
+
 RUN adduser --uid "$APP_UID" --gid "$APP_GID" --disabled-password --gecos "" "$APP_USER_NAME" || true
 # || true, falls User mit dieser UID/Namen schon existiert
+
+# Gruppe erstellen, falls sie nicht existiert (mit der dynamischen GID)
+RUN if ! getent group $APP_GROUP_NAME > /dev/null; then \
+        addgroup --gid $APP_GID $APP_GROUP_NAME; \
+    else \
+        # Wenn Gruppe existiert, aber mit anderer GID, könnte man sie hier anpassen (komplexer)
+        # Fürs Erste: Gruppe existiert, wir nehmen an, es passt oder der User wird ihr später hinzugefügt
+        echo "Group $APP_GROUP_NAME already exists"; \
+    fi
+
+# Benutzer erstellen, falls er nicht existiert (mit der dynamischen UID und GID)
+RUN if ! id -u $APP_USER_NAME > /dev/null 2>&1; then \
+        adduser -u $APP_UID -G $APP_GROUP_NAME -s /bin/sh -D $APP_USER_NAME; \
+    else \
+        echo "User $APP_USER_NAME already exists"; \
+    fi
+
+
 
 # Composer installieren
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

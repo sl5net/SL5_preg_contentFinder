@@ -83,40 +83,19 @@ class PregContentFinder
         $channelName = (new \ReflectionClass($this))->getShortName();
         $this->logger = new Logger($channelName);
 
-        $logDir = __DIR__ . '/../../logs'; // Relativ zum src-Ordner -> projekt_root/logs
+        $logDir = '/app/logs'; 
         $shortFileName = str_replace('.php','',__FILE__);
         $logFileName = $shortFileName.'.log';
         $this->logFilePath = $logDir . '/' . $logFileName;
-       if (!is_dir($logDir)) {
-        if (!mkdir($logDir, 0775, true) && !is_dir($logDir)) {
-            $this->logger->pushHandler(new StreamHandler('php://stderr', Level::Warning));
-            $this->logger->error("Log directory '{$logDir}' could not be created. Logging to stderr as fallback.");
-            return; // Logger ist jetzt mit StderrHandler, keine weiteren Handler hinzufügen
-        }
-         // chmod($logDir, 0775); // Stellen Sie sicher, dass der Webserver/PHP-Prozess schreiben darf
-       }
         // Handler für die Log-Datei
-        try {
-            $fileHandler = new StreamHandler($this->logFilePath, Level::Info); // Logge alles ab DEBUG
-
-            // Formatter für die Log-Ausgabe
-            // Format: Filename:Line[FunctionName()]LEVEL: Message Context Extra
-            // %extra.file% und %extra.line% kommen vom IntrospectionProcessor
-            $outputFormat = $shortFileName . ":%extra.line%[%extra.function%()]%level_name%: %message% %context% %extra%\n";
-            $formatter = new LineFormatter($outputFormat, null, true, true); // allowInlineLineBreaks, ignoreEmptyContextAndExtra
-            $fileHandler->setFormatter($formatter);
-            $this->logger->pushHandler($fileHandler);
-        } catch (\Exception $e) {
-            // Fallback, falls StreamHandler nicht erstellt werden kann (z.B. keine Schreibrechte)
-            // Hier könnten Sie z.B. zu einem ErrorLogHandler oder NullLogger wechseln
-            error_log("Failed to initialize file logger for PregContentFinder: " . $e->getMessage());
-            // Um sicherzustellen, dass $this->logger eine gültige Instanz ist, auch im Fehlerfall:
-            if (!($this->logger instanceof Logger) || count($this->logger->getHandlers()) === 0) {
-                $this->logger = new Logger($channelName); // Neu erstellen
-                $this->logger->pushHandler(new StreamHandler('php://stderr', Level::Warning)); // Fallback zu stderr
-                $this->logger->error("Fallback logger to stderr due to setup error: " . $e->getMessage());
-            }
-        }
+        $fileHandler = new StreamHandler($this->logFilePath, Level::Info); 
+        // Formatter für die Log-Ausgabe
+        // Format: Filename:Line[FunctionName()]LEVEL: Message Context Extra
+        // %extra.file% und %extra.line% kommen vom IntrospectionProcessor
+        $outputFormat = $shortFileName . ":%extra.line%[%extra.function%()]%level_name%: %message% %context% %extra%\n";
+        $formatter = new LineFormatter($outputFormat, null, true, true); // allowInlineLineBreaks, ignoreEmptyContextAndExtra
+        $fileHandler->setFormatter($formatter);
+        $this->logger->pushHandler($fileHandler);
     }
 
 

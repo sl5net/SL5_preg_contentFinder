@@ -41,18 +41,10 @@ abstract class YourBaseTestClass extends \PHPUnit\Framework\TestCase // PHPUnit'
         // $outputFormat = "%extra.filename_only%:%extra.line% [%extra.function%]%level_name%: %message% %context%\n";
         $formatter = new LineFormatter($outputFormat, null, true, true); // allowInlineLineBreaks, ignoreEmptyContextAndExtra
 
-        $logDir = '/app/logs';
-        if (!is_dir($logDir)) {
-            if (!@mkdir($logDir, 0777, true) && !is_dir($logDir)) { // 0777 für Testzwecke, später ggf. anpassen
-                error_log("YourBaseTestClass: Failed to create log directory: " . $logDir);
-                $this->logger = new NullLogger(); // Fallback
-                // return; // Frühzeitiger Abbruch, wenn Logging essentiell ist
-            }
-        }
-
         $this->shortFileName = $shortFileName;
         $logFileName = $shortFileName . '.log';
 
+        $logDir = '/app/logs'; // Relativ zum src-Ordner -> projekt_root/logs
         $this->logFilePath = $logDir . '/' . $logFileName; // $this->logFilePath wird hier gesetzt!
 
 

@@ -40,10 +40,13 @@ mit Pos1 dann mehrmals Ctrol+rigt lässt sich
 Datname(Datname != DatnamePfad !!!!!!!!!1) und LineNummer leicht kopieren
 in die Zwischenablage koppieren und dann in der verwenden um dort die Datei zu öffnen.
 
-Wenn ich in der Zeile 50 der Datei  DontTouchThisSearchModeSimplifiedTest.php in der Funcion Func schreibe
+Wenn ich in der Zeile 50 der Datei  DontTouchThisSearchModeSimplifiedTest.php in der Funcion MyFunc schreibe
 $this->logger->info('HelloWorld');
 dann muss
 in /logger/DontTouchThisSearchModeSimplifiedTest.log
-folgende stehen:
+folgendes stehen:
 
-DontTouchThisSearchModeSimplifiedTest:50 [Func] Info: HelloWorld
+DontTouchThisSearchModeSimplifiedTest:50 [MyFunc()] Info: HelloWorld
+
+Alles andere !! Ist falsch!!! Und Die Logig muss komplett in der YourBaseTestClass.php sein.
+
