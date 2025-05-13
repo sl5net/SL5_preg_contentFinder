@@ -9,8 +9,11 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "calebporzio.better-phpunit",
-        "ms-vscode.remote-explorer"
+        "ms-vscode.remote-explorer",
+        "recca0120.vscode-phpunit",
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "muath-ye.composer-Intelephense"
       ]
     }
   }

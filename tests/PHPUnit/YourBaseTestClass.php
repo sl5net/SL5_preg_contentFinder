@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace SL5\PregContentFinder\Tests\PHPUnit; 
 
+
 use SL5\PregContentFinder\Tests\PHPUnit\FilenameProcessor;
 use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Logger;
@@ -23,8 +24,13 @@ abstract class YourBaseTestClass extends \PHPUnit\Framework\TestCase
     {
             parent::setUp();
 
-            // --- Initial Logger Setup (wie vorher) ---
-            $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $this->getName(false);
+            // OLD (causes runtime error in PHPUnit 10+ AND Intelephense P1013 error)
+            // $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $this->getName(false);
+
+            // NEW (correct for PHPUnit 10+)
+            $currentTestMethodName = $this->name ?? 'UnknownTestMethod'; // $this->name should exist
+            $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $currentTestMethodName;
+
             $this->logger = new Logger($channelName);
             $this->logger->pushProcessor(new IntrospectionProcessor(Level::Info, ['YourBaseTestClass', 'PHPUnit\\Framework\\TestCase']));
             $this->logger->pushProcessor(new FilenameProcessor()); // Dein Prozessor
