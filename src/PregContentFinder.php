@@ -6,7 +6,7 @@ namespace SL5\PregContentFinder;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-use SL5\PregContentFinder\Tests\FilenameProcessor;
+use SL5\PregContentFinder\Tests\PHPUnit\FilenameProcessor;
 use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;

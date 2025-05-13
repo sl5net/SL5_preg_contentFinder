@@ -44,7 +44,7 @@ class PregContentFinderPerformanceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @group performance
+     * group performance
      * This test is more of a benchmark and its timing can vary greatly.
      * It's intended to stress the recursive capabilities.
      */
@@ -99,7 +99,7 @@ class PregContentFinderPerformanceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @group performance
+     * group performance
      * Tests performance with a large string and many non-nested blocks.
      */
     public function testLargeStringManyBlocksPerformance(): void

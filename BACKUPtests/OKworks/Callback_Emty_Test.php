@@ -2,12 +2,19 @@
 namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
 
-//include_once "_callbackSh!!ortExample.php";
-//include '../../lib/finediff.php';
 class Callback_Emty_Test extends \PHPUnit\Framework\TestCase {
+    function test_alwaysTrueTest(){
+        $this->assertTrue(true, "This assertion should always pass.");
+    }
+    /**
+     * @test
+     */
+    function alwaysFalseTest() {
+        $this->assertEquals(0, 9);
+    }
+
     function test_emptyREAL_0_DANGER() {
         $this->assertEquals(true, empty('0'));
-            # Gibt FALSE zurück, wenn var existiert und einen nicht-leeren, von 0 verschiedenen Wert hat. !!!!!
     }
     function test_empty_1() {
             $this->assertEquals(false, empty('1'));

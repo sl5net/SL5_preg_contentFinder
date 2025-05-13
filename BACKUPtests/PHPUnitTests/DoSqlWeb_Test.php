@@ -3,7 +3,24 @@ namespace SL5\PregContentFinder\Tests;
 use SL5\PregContentFinder\PregContentFinder;
 
 class DoSqlWeb_Test extends \PHPUnit\Framework\TestCase {
-    public function test_99_simple() {
+
+  /**
+   * always true
+   */
+  public function alwaysTrueTest(): void
+  {
+    $this->logger->info('hiho');
+    $this->assertTrue(true, "This assertion should always pass.");
+  }
+  /**
+   * always wrong
+   */
+  public function alwaysFalseTest(): void
+  {
+    $this->assertTrue(false, "This assertion should always be FALSE.");
+  }
+
+  public function test_99_simple() {
         /*
          * Example from:
          * http://dosqlweb.de/dope.php?f=/dope/online-manual2/MindTree/frameset.htm?url=99+a+8+999+default-tree-titles-viewonly.tmpl+2+dope_mindtree_dope_stoffsammlung_light+0

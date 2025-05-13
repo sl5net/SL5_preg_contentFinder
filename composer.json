@@ -15,7 +15,7 @@
         "monolog/monolog": "^3.9"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "@dev"
     },
     "autoload": {
         "psr-4": {
@@ -24,7 +24,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SL5\\PregContentFinder\\Tests\\": "tests/PHPUnit/"
+            "SL5\\PregContentFinder\\Tests\\PHPUnit\\": "tests/PHPUnit/"
         }
     }
 }

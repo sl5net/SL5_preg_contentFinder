@@ -2,8 +2,16 @@
   "name": "PCF PHP Dev (Dynamic)",
   "image": "sl5-preg-contentfinder-php83-dev:latest",
   "workspaceFolder": "/app",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached",
   "remoteUser": "appuser",
   "postCreateCommand": "mkdir -p /app/logs && if [ ! -d 'vendor' ]; then composer install --no-interaction --optimize-autoloader; fi && composer dump-autoload -o",
-  "postStartCommand": "git config --global --add safe.directory /app"
+  "postStartCommand": "git config --global --add safe.directory /app",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind,consistency=delegated",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "calebporzio.better-phpunit",
+        "ms-vscode.remote-explorer"
+      ]
+    }
+  }
 }

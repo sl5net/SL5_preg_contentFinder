@@ -1,6 +1,5 @@
 <?php
 namespace SL5\PregContentFinder\Tests;
-
 use SL5\PregContentFinder\PregContentFinder;
 
 class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\TestCase
@@ -103,7 +102,7 @@ class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\Test
     // --- Performance Tests with Comparison ---
 
     /**
-     * @group performance
+     * group performance
      */
     public function testDeeplyNestedStructureComparison(): void
     {
@@ -212,7 +211,7 @@ class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\Test
 
 
     /**
-     * @group performance
+     * group performance
      */
     public function testLargeStringManyBlocksComparison(): void
     {

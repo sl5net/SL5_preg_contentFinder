@@ -3,48 +3,19 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
-        cacheResult="false"
+         cacheResult="false"
          >
     <testsuites>
-            <testsuite name="SL5 PregContentFinder Test Suite">
-                    <directory suffix="Test.php">./tests/PHPUnit</directory>
-            </testsuite>
+        <testsuite name="F1">
+            <directory suffix="Test.php">./tests/PHPUnit/F1</directory>
+        </testsuite>
+        <testsuite name="F2">
+            <directory suffix="Test.php">./tests/PHPUnit/F2</directory>
+        </testsuite>
+
     </testsuites>
 
-    <testsuites>
-            <testsuite name="PregContentFinder All Tests Ordered">
-                <!-- Phase 1 & Simple String -->
-                <file>./tests/PHPUnit/PregContentFinderPhase1Test.php</file>
-                <!-- <file>./tests/PHPUnit/SimpleStringModeTest.php</file> --> <!-- Wenn vorhanden -->
-
-                <!-- Core GetContent & Basic Modes -->
-                <file>./tests/PHPUnit/GetContent_Test.php</file>
-                <file>./tests/PHPUnit/DontTouchThisSearchModeSimplifiedTest.php</file>
-                <!-- oder DontTouchThis_searchMode_Test.php -->
-
-                <!-- Advanced Delimiter Logic -->
-                <file>./tests/PHPUnit/BackReference_Test.php</file>
-                <file>./tests/PHPUnit/DelimiterKonfliktBehandlungTest.php</file>
-
-                <!-- Callbacks & Application Specific -->
-                <file>./tests/PHPUnit/Callback_Emty_Test.php</file>
-                <file>./tests/PHPUnit/Callback_Test.php</file>
-                <file>./tests/PHPUnit/DoSqlWeb_Test.php</file>
-
-                <!-- Performance & Creative/Stress Tests -->
-                <file>./tests/PHPUnit/PregContentFinderPerformanceComparisonTest.php</file>
-                <file>./tests/PHPUnit/SourceCodeFunHouseTransformationsTest.php</file>
-                <file>./tests/PHPUnit/WormCipherTest.php</file>
-                <file>./tests/PHPUnit/LabyrinthSolverTest.php</file>
-                <!-- Fügen Sie hier ZellulaererAutomat1DTest.php ein, falls aktiv -->
-            </testsuite>
-    </testsuites>
-
-
-
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-    </coverage>
 </phpunit>
+
+
+

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace SL5\PregContentFinder\Tests;
 
-use SL5\PregContentFinder\Tests\FilenameProcessor;
+use SL5\PregContentFinder\Tests\PHPUnit\FilenameProcessor;
 use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -20,6 +20,7 @@ abstract class YourBaseTestClass extends \PHPUnit\Framework\TestCase // PHPUnit'
     protected function setUp(): void
     {
         parent::setUp();
+        
         $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $this->getName(false);
         $this->logger = new Logger($channelName);
 
@@ -41,7 +42,9 @@ abstract class YourBaseTestClass extends \PHPUnit\Framework\TestCase // PHPUnit'
         // $outputFormat = "%extra.filename_only%:%extra.line% [%extra.function%]%level_name%: %message% %context%\n";
         $formatter = new LineFormatter($outputFormat, null, true, true); // allowInlineLineBreaks, ignoreEmptyContextAndExtra
 
-        $logDir = '/app/logs';
+        //$logDir = '/app/logs';
+        $logDir = __DIR__ . '/../logs';
+
         if (!is_dir($logDir)) {
             if (!@mkdir($logDir, 0777, true) && !is_dir($logDir)) { // 0777 für Testzwecke, später ggf. anpassen
                 error_log("YourBaseTestClass: Failed to create log directory: " . $logDir);
