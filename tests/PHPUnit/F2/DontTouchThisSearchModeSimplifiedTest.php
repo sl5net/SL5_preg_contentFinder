@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 namespace SL5\PregContentFinder\Tests\PHPUnit\F2;
 use SL5\PregContentFinder\Tests\PHPUnit\FilenameProcessor;
 use SL5\PregContentFinder\Tests\PHPUnit\YourBaseTestClass;

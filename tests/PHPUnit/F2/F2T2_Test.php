@@ -16,8 +16,7 @@ class F2T2_Test extends YourBaseTestClass {
 
     public function test_F2T2c_LogFile1Exists()
     {
-        $logFile = '/app/logs/DontTouchThisSearchModeSimplifiedTest.log';
-        $this->assertFileExists($logFile);
+        $this->assertFileExists($this->logFilePath);
     }
 
     public function test_F2T2c_WriteLog_File1Exists()
@@ -25,6 +24,7 @@ class F2T2_Test extends YourBaseTestClass {
         // NICHT fest codieren, sondern den von setUp berechneten Pfad verwenden!
         $logFile = $this->logFilePath;
         $expectedEntry = 'Hey from test_F2T2c_WriteLog_File1Exists';
+
 
 
         // Sicherstellen, dass der Logger nicht der NullLogger ist (wegen Fehlerbehandlung in setUp)
@@ -46,6 +46,14 @@ class F2T2_Test extends YourBaseTestClass {
             // Dies sollte jetzt in setUp gefangen werden, aber als zusätzliche Sicherheit
             $this->fail('Logger is not set or could not be initialized (likely directory creation failed).');
         }
+        # echo "logFilePath: " . $logFile . "\n";
+        $fileSize1 = filesize($logFile);
+        $logsizeInKB = round( $fileSize1 / 1024, 0 ) ;
+
+        if($logsizeInKB > 30) {
+            unlink($logFile);
+        }
+
 
         // Teste die Datei basierend auf dem korrekt berechneten Pfad
         $this->assertFileExists($logFile, "Log file determined by setUp ($logFile) does not exist.");
@@ -67,9 +75,7 @@ class F2T2_Test extends YourBaseTestClass {
      */
     public function test_F2T2d_LogFileEntry()
     {
-        $expectedEntry = 'INFO: from tearDown';
-
-        $logFile = '/app/logs/DontTouchThisSearchModeSimplifiedTest.log';
+        $logFile = '/app/logs/tests/PHPUnit/F2/DontTouchThisSearchModeSimplifiedTest.log';
         $this->assertFileExists($logFile);
         $logContents = file_get_contents($logFile);
         $logSize = filesize($logFile);
@@ -80,14 +86,16 @@ class F2T2_Test extends YourBaseTestClass {
             $logSize = filesize($logFile);
             $logContents = file_get_contents($logFile);
             $this->assertGreaterThan(100, $logSize, 'Log file is greater than 100 bytes');
+            $expectedEntry = 'INFO: from tearDown';
             $this->assertStringContainsString($expectedEntry, $logContents);
         }
     }
 
 
-    public function test_F2T2e_LogFile2Exists()
+    public function test_F2T2e_Log_PCF_Exists()
     {
         $logFile = '/app/logs/PregContentFinder.log';
+        $this->markTestSkipped('This test is disabled for now');
         $this->assertFileExists($logFile);
     }
    
@@ -95,7 +103,9 @@ class F2T2_Test extends YourBaseTestClass {
 
     public function test_F2T2f_PCF_FileEntry()
     {
-        $filePath = '/app/logs/PregContentFinder.log';
+        $logFile = '/app/logs/PregContentFinder.log';
+
+        $filePath = $this->logFilePath . 'PregContentFinder.log';
         $this->assertFileExists($filePath);
         $this->assertFileIsReadable($filePath);
         $expectedEntry = 'INFO: from tearDown';

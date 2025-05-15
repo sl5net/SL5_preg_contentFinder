@@ -15,80 +15,59 @@ use Psr\Log\NullLogger;
 abstract class YourBaseTestClass extends \PHPUnit\Framework\TestCase
 {
     protected ?LoggerInterface $logger = null;
-    protected ?string $logFilePath = '';
+    protected string $logFilePath = '';
 
-    protected ?string $logFileFullPath = '';
-    protected ?string $shortFileName = '';
-
+    protected string $logFullPath = '';
+    protected string $shortFileName = '';
+    protected string $logDir = '';
+    protected string $logBaseDir = '';
     protected function setUp(): void
     {
             parent::setUp();
-
-            // OLD (causes runtime error in PHPUnit 10+ AND Intelephense P1013 error)
-            // $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $this->getName(false);
-
-            // NEW (correct for PHPUnit 10+)
-            $currentTestMethodName = $this->name ?? 'UnknownTestMethod'; // $this->name should exist
-            $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $currentTestMethodName;
-
+            $currentPHPMethodName = $this->name ?? 'UnknownTestMethod'; // $this->name should exist
+            $channelName = (new \ReflectionClass($this))->getShortName() . '::' . $currentPHPMethodName;
             $this->logger = new Logger($channelName);
             $this->logger->pushProcessor(new IntrospectionProcessor(Level::Info, ['YourBaseTestClass', 'PHPUnit\\Framework\\TestCase']));
             $this->logger->pushProcessor(new FilenameProcessor()); // Dein Prozessor
 
-
-            // --- Korrigierte Pfadberechnung ---
-            $testFilePath = (new \ReflectionClass($this))->getFileName(); // Voller Pfad der Testdatei (z.B. /app/tests/PHPUnit/F1/F1T1_Test.php)
             $appBaseDir = '/app/'; // Basisverzeichnis im Container
+            $PHPfileFullPath = (new \ReflectionClass($this))->getFileName(); // Voller Pfad der Testdatei (z.B. /app/tests/PHPUnit/F1/F1T1_Test.php)
+            $this->logBaseDir = $appBaseDir . 'logs/';
 
-            // Den Teil des Pfades extrahieren, der nach /app/ kommt (z.B. tests/PHPUnit/F1/F1T1_Test.php)
-            // Sicherstellen, dass der Pfad mit /app/ beginnt
-            if (strpos($testFilePath, $appBaseDir) === 0) {
-                $relativePathFromApp = substr($testFilePath, strlen($appBaseDir)); // z.B. tests/PHPUnit/F1/F1T1_Test.php
+            $PHPfilePathMinusBaseDir = '';
+            if (strpos($PHPfileFullPath, $appBaseDir) === 0) {
+                $PHPfilePathMinusBaseDir = ltrim($PHPfileFullPath, $appBaseDir); // z.B. tests/PHPUnit/F2/F1T1_Test.php
             } else {
-                // Fehlerbehandlung, falls die Testdatei nicht unter /app liegt (sollte in Docker nicht passieren)
-                error_log("Test file not located under $appBaseDir: " . $testFilePath);
+                error_log("YourBaseTestClass: Test file '{$PHPfileFullPath}' not located under appBaseDir '{$appBaseDir}'. Logging disabled.");
                 $this->logger = new NullLogger();
-                return; // Wichtig: Hier abbrechen, wenn der Pfad nicht passt
+                return;
             }
+            $PHPdirMinusBaseDir = dirname($PHPfilePathMinusBaseDir); // z.B. tests/PHPUnit/F2
 
+            $this->logDir = $this->logBaseDir . $PHPdirMinusBaseDir . '/'; // z.B. /app/logs/tests/PHPUnit/F1/
 
-            // Das Basis-Log-Verzeichnis definieren
-            $logBaseDir = '/app/logs/';
-
-            // Den Verzeichnis-Teil des relativen Pfades extrahieren (z.B. tests/PHPUnit/F1/)
-            $logDirStructure = dirname($relativePathFromApp) . '/'; // z.B. tests/PHPUnit/F1/
-
-            // Den vollständigen Ziel-Log-Ordnerpfad zusammensetzen
-            $logTargetDir = $logBaseDir . $logDirStructure; // z.B. /app/logs/tests/PHPUnit/F1/
-
-            // Sicherstellen, dass dieser Ordner existiert (inklusive Unterordner)
-            if (!is_dir($logTargetDir)) {
-                // Redundante Prüfung, aber sicher: Falls an dieser Stelle ein FILE existiert, löschen
-                if (file_exists($logTargetDir)) {
-                    @unlink($logTargetDir);
+            if (!is_dir($this->logDir)) {
+                if (file_exists($this->logDir)) {
+                    @unlink($this->logDir);
                 }
-                // Ordner erstellen, rekursiv
-                if (!@mkdir($logTargetDir, 0777, true) && !is_dir($logTargetDir)) {
-                    error_log("YourBaseTestClass: Failed to create log directory: " . $logTargetDir);
-                    $this->logger = new NullLogger(); // Fallback
+                if (!@mkdir($this->logDir, 0777, true)
+                 && !is_dir($this->logDir)) {
+                    error_log("YourBaseTestClass: Failed to create log directory: " . $this->logDir);
+                    // $this->logger = new NullLogger(); // Fallback
                     return; // Wichtig: Hier abbrechen, wenn der Ordner nicht erstellt werden kann
                 }
             }
 
             // Den Dateinamen für die Logdatei bestimmen (z.B. F1T1_Test.log)
-            $shortFileName = (new \ReflectionClass($this))->getShortName(); // F1T1_Test
-            $logFileName = $shortFileName . '.log';
+            $PHPfileWithoutExt = (new \ReflectionClass($this))->getShortName(); // F1T1_Test
+            $logFileName = $PHPfileWithoutExt . '.log';
 
-            // Den vollständigen Log-Datei-Pfad zusammensetzen
-            $this->logFilePath = $logTargetDir . $logFileName; // z.B. /app/logs/tests/PHPUnit/F1/F1T1_Test.log
-
-            echo "Calculated log file path: " . $this->logFilePath . "\n"; // Debugging Echo
-
+            $this->logFilePath = $this->logDir . $logFileName; // z.B. /app/logs/tests/PHPUnit/F1/F1T1_Test.log
 
             // --- Configure Formatter and Handler (wie vorher, aber mit dem neuen Pfad) ---
             // $outputFormat = "%extra.filename_only%:%extra.line% [%extra.function%()] %level_name%: %message% %context%\n"; // Beispiel Format
             // Wenn du den ClassName am Anfang des Formats willst (wie in deinem Beispiel)
-            $outputFormat = $shortFileName . ":%extra.line%[%extra.function%()]%level_name%: %message%\n";
+            $outputFormat = $PHPfileWithoutExt . ":%extra.line%[%extra.function%()]%level_name%: %message%\n";
 
 
             $formatter = new LineFormatter($outputFormat, null, true, true);
@@ -97,7 +76,7 @@ abstract class YourBaseTestClass extends \PHPUnit\Framework\TestCase
             // Use the calculated $this->logFilePath!
             $handler = new StreamHandler($this->logFilePath, Level::Debug);
             $handler->setFormatter($formatter);
-
+ 
             // --- Attach Handler (Clear previous if any) ---
             if ($this->logger instanceof Logger) {
                 // Remove any handlers potentially added by parent::setUp or previous runs

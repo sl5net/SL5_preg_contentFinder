@@ -13,7 +13,6 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Formatter\LineFormatter;
 
-
 enum SearchMode: string
 {
     case LAZY_WHITESPACE = 'lazyWhiteSpace';
