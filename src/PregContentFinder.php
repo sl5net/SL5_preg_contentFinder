@@ -97,6 +97,10 @@ class PregContentFinder
         $this->logger->pushHandler($fileHandler);
     }
 
+    public function helloWorld(): string
+    {
+        return 'Hello World!';
+    }
 
 
     /**

@@ -75,7 +75,8 @@ class F2T2_Test extends YourBaseTestClass {
      */
     public function test_F2T2d_LogFileEntry()
     {
-        $logFile = '/app/logs/tests/PHPUnit/F2/DontTouchThisSearchModeSimplifiedTest.log';
+        // $logFile = '/app/logs/tests/PHPUnit/F2/DontTouchThisSearchModeSimplifiedTest.log';
+        $logFile = $this->logBaseDir . 'app/src/PregContentFinder.log';
         $this->assertFileExists($logFile);
         $logContents = file_get_contents($logFile);
         $logSize = filesize($logFile);
@@ -86,29 +87,39 @@ class F2T2_Test extends YourBaseTestClass {
             $logSize = filesize($logFile);
             $logContents = file_get_contents($logFile);
             $this->assertGreaterThan(100, $logSize, 'Log file is greater than 100 bytes');
-            $expectedEntry = 'INFO: from tearDown';
+            $expectedEntry = '/app/src/PregContentFinder:[()]INFO:';
             $this->assertStringContainsString($expectedEntry, $logContents);
         }
+    }
+
+        public function test_hello() {
+        $p = new PregContentFinder('bob');
+        $this->assertInstanceOf(PregContentFinder::class, $p);
+        $this->assertStringContainsString('Hello World', $p->helloWorld());
+
     }
 
 
     public function test_F2T2e_Log_PCF_Exists()
     {
-        $logFile = '/app/logs/PregContentFinder.log';
-        $this->markTestSkipped('This test is disabled for now');
-        $this->assertFileExists($logFile);
-    }
-   
-
+        $filePath = $this->logBaseDir . 'app/src/PregContentFinder.log'; // deprecated folder place, should be src only!!!! but dont change it!!! not important actually!!! 2025-0517-1743
+        $this->assertFileExists($filePath);
+    } 
 
     public function test_F2T2f_PCF_FileEntry()
     {
-        $logFile = '/app/logs/PregContentFinder.log';
+        $p = new PregContentFinder('bob');
+        // at this moment was created:         // logs/app/src/
 
-        $filePath = $this->logFilePath . 'PregContentFinder.log';
+        $this->assertDirectoryExists($this->logBaseDir);
+
+        $this->assertDirectoryExists($this->logBaseDir . 'app/src/'); // deprecated folder place, should be src only!!!! but dont change it!!! not important actually!!! 2025-0517-1743
+        $filePath = $this->logBaseDir . 'app/src/PregContentFinder.log';
+ 
         $this->assertFileExists($filePath);
         $this->assertFileIsReadable($filePath);
-        $expectedEntry = 'INFO: from tearDown';
+        $expectedEntry = '/app/src/PregContentFinder:[()]INFO: greetings from PregContentFinder :)';
+        
         $fileSize = filesize($filePath);
         $fileSizeInKB = $fileSize / 1024;
         if($fileSizeInKB > 30) {

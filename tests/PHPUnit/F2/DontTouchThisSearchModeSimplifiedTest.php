@@ -23,10 +23,9 @@ class DontTouchThisSearchModeSimplifiedTest extends YourBaseTestClass
     }
     public function testGetContentWithRegexDelimitersAndDontTouchThisMode(): void
     {
-        $this->markTestSkipped('This test is disabled for now');
+        // $this->markTestSkipped('This test is disabled for now');
 
-     
-        $source = 'BEFORE_123#content_GHI_AFTER';
+            $source = 'BEFORE_123#content_GHI_AFTER';
         $expectedContent = '#content_'; // Content between "123" and "GHI"
 
         $this->logger->info('Hey from function testGetContentWithRegex....() out of DontTouchThisSearchModeSimplifiedTest.php near Line 35');

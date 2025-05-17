@@ -15,6 +15,17 @@ class F1T1_Test extends YourBaseTestClass {
         $this->assertEquals(9, 9);
     }
 
+    function test_logFolders() {
+        $this->assertDirectoryExists($this->logBaseDir);
+        $this->assertDirectoryExists($this->logBaseDir . 'tests/');
+        $this->assertDirectoryExists($this->logBaseDir . 'tests/PHPUnit/');
+        $this->assertDirectoryExists($this->logBaseDir . 'tests/PHPUnit/F1/');
+    }
+
+    function test_PCF_logFolders() {
+        $this->assertDirectoryExists($this->logBaseDir);
+        $this->assertDirectoryExists($this->logBaseDir . 'app/src/'); // deprecated folder place, should be src only!!!! but dont change it!!! not important actually!!! 2025-0517-1743 
+    }
 }
 
 ?>

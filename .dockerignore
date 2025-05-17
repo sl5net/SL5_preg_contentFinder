@@ -1,0 +1,20 @@
+# Exclude specific file extensions
+*.sh
+*.txt
+*.md
+
+
+# It's also common to exclude the vendor directory if you run `composer install` INSIDE the container
+# vendor/
+
+# Other common exclusions (add as needed)
+.git/
+.gitignore
+Dockerfile
+.dockerignore
+# node_modules/
+# logs/  (unless you explicitly want to copy pre-existing logs)
+# tempResult.txt (if this is truly temporary)
+# BACKUPtests/ (if these are just backups and not needed in the image)
+# tests/ (if you don't run tests inside this specific final image)
+# examples/
