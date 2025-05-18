@@ -24,16 +24,15 @@ class DontTouchThisSearchModeSimplifiedTest extends YourBaseTestClass
     public function testGetContentWithRegexDelimitersAndDontTouchThisMode(): void
     {
         // $this->markTestSkipped('This test is disabled for now');
-
-            $source = 'BEFORE_123#content_GHI_AFTER';
+        $source = 'BEFORE_123#content_GHI_AFTER';
         $expectedContent = '#content_'; // Content between "123" and "GHI"
 
         $this->logger->info('Hey from function testGetContentWithRegex....() out of DontTouchThisSearchModeSimplifiedTest.php near Line 35');
-
-
+ 
         // Instanz erstellen (Standard-Delimiter des Konstruktors sind hier irrelevant)
-        $finder = new PregContentFinder($source);
-
+ 
+         $finder = new PregContentFinder($source);
+    
         // Parameter direkt an getContent übergeben
         // Annahme: getContent-Signatur ist ähnlich: (?string $begin, ?string $end, ?int $pos, SearchMode|string|null $mode)
         $actualContent = $finder->getContent(
@@ -42,7 +41,10 @@ class DontTouchThisSearchModeSimplifiedTest extends YourBaseTestClass
             startPosition: null,          // Startet von Anfang an oder von $finder->nextSearchPosition
             searchMode: SearchMode::DONT_TOUCH_THIS // Oder 'dontTouchThis' als String
         );
-
+           
+        $this->assertSame('\d+', $finder->userProvidedBeginDelimiter);
+        $this->assertSame('\d+', $finder->effectiveBeginDelimiter); 
+                   
         $this->assertSame($expectedContent, $actualContent);
     }
 
@@ -52,8 +54,8 @@ class DontTouchThisSearchModeSimplifiedTest extends YourBaseTestClass
     public function testGetContentWithRegexDelimitersAndDontTouchThisModeNoEnd(): void
     {
         $this->markTestSkipped('This test is disabled for now');
-
-
+ 
+ 
         $this->markTestSkipped('This test is disabled for now');
 
         $this->logger->info('Hey from function testGetContentWithRegexDelimitersAndDontTouchThisModeNoEnd() out of DontTouchThisSearchModeSimplifiedTest.php near Line 55');

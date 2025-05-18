@@ -25,18 +25,23 @@ class PregContentFinder
 {
     public readonly string $content;
 
-    private string $userProvidedBeginDelimiter;
-    private string $userProvidedEndDelimiter;
+    public ?string $userProvidedBeginDelimiter;
+    public ?string $userProvidedEndDelimiter;
 
-    private string $effectiveBeginDelimiter;
-    private string $effectiveEndDelimiter;
+    private string|array|null $beginRegexOrArray; 
+    private ?string $endRegex; 
 
-    private SearchMode $currentSearchMode;
+    public ?string $effectiveBeginDelimiter;
+    public string $effectiveEndDelimiter;
+
+    public SearchMode $currentSearchMode;
     private int $nextSearchPosition = 0;
 
     private bool $stopOnMissingEndBorder = false;
     private bool $stopOnMissingBothBorders = true;
     private bool $updateInstanceSearchPositionOnMatch = true;
+
+    
 
     private array $borderMatchCache = [];
     private array $foundSegmentsList = [];
@@ -47,8 +52,8 @@ class PregContentFinder
 
     public function __construct(
         string $content,
-        string|array $beginRegexOrArray = "[",
-        ?string $endRegex = "]",
+        string|array|null $beginRegexOrArray = '' ,
+        ?string $endRegex = '',
         SearchMode|string $initialSearchMode = SearchMode::LAZY_WHITESPACE
     ) {
 
@@ -112,17 +117,17 @@ class PregContentFinder
      * @param string|null $end
      * @return void
      */
-    public function setBeginEnd_RegEx(string|array|null $begin = null, ?string $end = null): void
+    public function setBeginEnd_RegEx(string|array|null $begin = '', ?string $end = ''): void
     {
         $this->logger->warning(__METHOD__ . ' is deprecated. Use setBeginEndDelimiters() instead.');
-        $this->setBeginEndDelimiters($begin, $end);
+        $this->setBeginEndDelimiters( $begin, $end);
         // Die alte Methode gab true zurück, aber void ist für Setter besser.
         // Um die alte API exakt nachzubilden (falls Tests das prüfen): return true;
         // Aber da die neue `void` ist, ist Konsistenz vielleicht besser.
         // Da Ihre alte Methode laut PHPDoc `bool always returns true - no meaning` war, ist `void` hier okay.
     }
 
-    public function setBeginEndDelimiters(string|array $begin, ?string $end = null): void
+    public function setBeginEndDelimiters(string|array|null $begin = '', ?string $end = ''): void
     {
         $this->logger->debug("setBeginEndDelimiters called.", ['begin' => $begin, 'end' => $end]);
         if (is_array($begin)) {
@@ -207,8 +212,11 @@ class PregContentFinder
 
         switch ($this->currentSearchMode) {
             case SearchMode::LAZY_WHITESPACE:
-                $this->effectiveBeginDelimiter = $this->escapeRegexForDelimiter($this->userProvidedBeginDelimiter, true);
-                $this->effectiveEndDelimiter = $this->escapeRegexForDelimiter($this->userProvidedEndDelimiter, true);
+
+            $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->userProvidedBeginDelimiter, true) : '';
+
+            $this->effectiveEndDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->effectiveEndDelimiter, true) : '';
+
                 break;
             case SearchMode::SIMPLE_STRING_NO_NESTING:
                 $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
@@ -227,7 +235,7 @@ class PregContentFinder
         ]);
     }
 
-    private function escapeRegexForDelimiter(string $string, bool $makeWhitespaceFlexible = false, string $delimiterChar = '~'): string
+    private function escapeRegexForDelimiter(string|null $string = '', bool $makeWhitespaceFlexible = false, string $delimiterChar = '~'): string
     {
         $escaped = preg_quote($string, $delimiterChar);
         if ($makeWhitespaceFlexible) {
@@ -401,6 +409,10 @@ class PregContentFinder
                     $this->logger->debug("REGEX_PATH: Captured groups from begin_match.", ['groups' => $matchesReturn['begin_begin']]);
                 }
 
+
+                // For DONT_TOUCH_THIS and LAZY_WHITESPACE, it's already the final effective end regex.
+
+
                 if ($this->currentSearchMode === SearchMode::USE_BACKREFERENCE && !empty($matchesReturn['begin_begin'])) {
                     $groupValues = array_map(fn($g) => $g[0], $matchesReturn['begin_begin']);
                     // Use $this->userProvidedEndDelimiter as template because $this->effectiveEndDelimiter might be quoted
@@ -480,8 +492,8 @@ class PregContentFinder
 
 
     public function getBorders(
-        ?string $beginRegexParam = null,
-        ?string $endRegexParam = null,
+        ?string $beginRegexParam = '',
+        ?string $endRegexParam = '',
         ?int $startPositionParam = null,
         SearchMode|string|null $searchModeParam = null
     ): ?array {
@@ -571,10 +583,30 @@ class PregContentFinder
 
     // --- `getContent` and `getContent_user_func_recursive` still need full implementation ---
     public function getContent(
-        ?string $beginRegex = null, ?string $endRegex = null,
+        ?string $beginRegex = '', ?string $endRegex = '',
         ?int $startPosition = null, SearchMode|string|null $searchMode = null
     ): string|false {
         $this->logger->debug("getContent called.", ['begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode]);
+
+        if($beginRegex){
+            $this->userProvidedBeginDelimiter = $beginRegex;
+        }
+        if($endRegex){
+            $this->userProvidedEndDelimiter = $endRegex;
+        }
+        if($beginRegex || $endRegex){
+            $this->prepareEffectiveDelimiters();
+        }
+
+
+        if($startPosition){
+            $this->nextSearchPosition = $startPosition;
+        }
+        if($searchMode){
+            $this->setSearchMode($searchMode);
+        }
+
+
         $segmentData = $this->getBorders($beginRegex, $endRegex, $startPosition, $searchMode);
 
         if ($segmentData === null || !isset($segmentData['begin_end']) || !isset($segmentData['end_begin'])) {
