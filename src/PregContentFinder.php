@@ -100,6 +100,8 @@ class PregContentFinder
         $formatter = new LineFormatter($outputFormat, null, true, true); // allowInlineLineBreaks, ignoreEmptyContextAndExtra
         $fileHandler->setFormatter($formatter);
         $this->logger->pushHandler($fileHandler);
+        $this->logger->pushProcessor(new IntrospectionProcessor(Level::Info));
+
     }
 
     public function helloWorld(): string
