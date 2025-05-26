@@ -14,6 +14,7 @@ class DontTouchThisSearchModeSimplifiedTest extends YourBaseTestClass
         $expectedContent = '#content_'; // Content between "123" and "GHI"
 
         $this->logger->info('Hey from function testGetContentWithRegex....() out of DontTouchThisSearchModeSimplifiedTest.php near Line 35');
+        $this->logger->info('F11: Please use autoKey-Script jumpFromLog with Hotkey F11 to jump from Log to the respondig source');
  
         // Instanz erstellen (Standard-Delimiter des Konstruktors sind hier irrelevant)
  
@@ -31,7 +32,7 @@ class DontTouchThisSearchModeSimplifiedTest extends YourBaseTestClass
         $this->assertSame('\d+', $finder->userProvidedBeginDelimiter);
         // $this->assertSame('\d+', $finder->effectiveBeginDelimiter); 
                    
-        // $this->assertSame($expectedContent, $actualContent);
+        $this->assertSame($expectedContent, $actualContent);
     }
 
 }

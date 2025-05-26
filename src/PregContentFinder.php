@@ -88,8 +88,12 @@ class PregContentFinder
         $this->logger = new Logger($channelName);
 
         $logDir = '/app/logs'; 
-        $shortFileName = str_replace('.php','',__FILE__);
-        $logFileName = $shortFileName.'.log';
+        /* $shortFileName = str_replace('.php','', __FILE__); */
+        $shortFileName = basename(__FILE__, '.php');
+        $fileDir = dirname(__FILE__);
+
+
+        $logFileName = $fileDir . '/' . $shortFileName.'.log';
         $this->logFilePath = $logDir . '/' . $logFileName;
         // Handler für die Log-Datei
         $fileHandler = new StreamHandler($this->logFilePath, Level::Info); 
@@ -103,6 +107,7 @@ class PregContentFinder
         $this->logger->pushProcessor(new IntrospectionProcessor(Level::Info));
 
     }
+
 
     public function helloWorld(): string
     {
@@ -209,6 +214,7 @@ class PregContentFinder
             // If they are null, an error will occur later anyway.
             $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter ?? ''; // Fallback to avoid error, but it's a problem
             $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter ?? '';
+            $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
             return;
         }
 
@@ -223,11 +229,13 @@ class PregContentFinder
             case SearchMode::SIMPLE_STRING_NO_NESTING:
                 $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
                 $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter;
+                $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
                 break;
             case SearchMode::DONT_TOUCH_THIS:
             case SearchMode::USE_BACKREFERENCE:
                 $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
                 $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter;
+                $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
                 break;
         }
         $this->logger->debug("Effective delimiters prepared.", [
@@ -235,6 +243,7 @@ class PregContentFinder
             'effective_begin' => $this->effectiveBeginDelimiter,
             'effective_end' => $this->effectiveEndDelimiter
         ]);
+
     }
 
     private function escapeRegexForDelimiter(string|null $string = '', bool $makeWhitespaceFlexible = false, string $delimiterChar = '~'): string
@@ -295,6 +304,7 @@ class PregContentFinder
 
         $beginEndPos = $beginPos + strlen($beginRegex);
         $endPos = strpos($this->content, $endRegex, $beginEndPos);
+        $this->logger->info("Content: $this->content, EndRegex: $endRegex, BeginEndPos: $beginEndPos");
 
         if ($endPos === false) {
             $this->logger->debug("Simple search: End delimiter not found after begin.", ['end_delim' => $endRegex, 'searched_from' => $beginEndPos]);
@@ -366,7 +376,7 @@ class PregContentFinder
         $strLenTxt = strlen($txt);
 
         if ($searchOffset >= $strLenTxt) {
-            $this->logger->debug("REGEX_PATH: Offset beyond content length.");
+            $this->logger->debug("Offset beyond content length.");
             return null;
         }
 
@@ -422,7 +432,8 @@ class PregContentFinder
                     $this->logger->info("REGEX_PATH: End regex updated with backreferences.", ['new_end_regex' => $activeEndRegexForLoop]);
                 }
                 // After the first begin is found (and end regex potentially updated), build the main loop pattern
-                $mainLoopPattern = '~(' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . ')(.*)~sm';
+                // $mainLoopPattern = '~(' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . ')(.*)~sm';
+                $mainLoopPattern = '~' . $activeBeginRegexForLoop . '(.*)' . $activeEndRegexForLoop . '~sm';
                 $this->logger->debug("REGEX_PATH: Main loop pattern constructed.", ['pattern' => $mainLoopPattern]);
             } // End of if ($count_begin === 0)
 
@@ -433,6 +444,10 @@ class PregContentFinder
 
             $this->logger->debug("REGEX_PATH: Iter #{$emergency_Stop} - Loop search.", ['pattern' => $mainLoopPattern, 'pos' => $currentSearchPositionInLoop]);
             if (preg_match($mainLoopPattern, $txt, $matches_loop, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
+                $this->logger->info("$mainLoopPattern found in $txt");
+
+                
+
                 $matchedDelimiterFull = $matches_loop[1][0];
                 $matchedDelimiterOffset = $matches_loop[1][1];
                 $this->logger->debug("REGEX_PATH: Loop: Matched delimiter.", ['string' => $matchedDelimiterFull, 'offset' => $matchedDelimiterOffset]);
@@ -487,8 +502,12 @@ class PregContentFinder
             return null; // Or handle as unclosed if begin_begin is not null
         }
 
+                // $source = 'BEFORE_123#content_GHI_AFTER';
+
+// /app/src/PregContentFinder.php:490[findNextSegmentRegex()]INFO: REGEX_PATH: Regex segment search successful. {"found":{"begin_begin":7,"begin_end":10,"end_begin":28,"end_end":28,"matches":{"begin_begin":null,"end_begin":null}}} {"file":"/app/src/PregContentFinder.php","class":"SL5\\PregContentFinder\\PregContentFinder","callType":"->"}
+
         $findPos['matches'] = $matchesReturn; // Contains 'begin_begin' captures
-        $this->logger->info("REGEX_PATH: Regex segment search successful.", ['found' => $findPos]);
+        $this->logger->info("segment successful.", ['found' => $findPos]);
         return $findPos;
     }
 
@@ -499,6 +518,9 @@ class PregContentFinder
         ?int $startPositionParam = null,
         SearchMode|string|null $searchModeParam = null
     ): ?array {
+
+        $this->logger->debug("hiho"); 
+        $this->logger->debug("$beginRegexParam:" . $beginRegexParam); 
 
 
 
@@ -536,6 +558,7 @@ class PregContentFinder
                 $this->setBeginEndDelimiters($originalInstanceUserBeginRegex, $originalInstanceUserEndRegex);
                 $this->setSearchMode($originalInstanceSearchMode);
             }
+            $this->logger->debug("return cachedResult");    
             return $cachedResult;
         }
         $this->logger->debug("Cache miss for getBorders.", ['key' => $cacheKey]);
@@ -545,7 +568,10 @@ class PregContentFinder
         if ($this->currentSearchMode === SearchMode::SIMPLE_STRING_NO_NESTING) {
             $foundMatchArray = $this->findFirstSimpleStringMatch($effectiveSearchPos);
         } else {
+            $this->logger->debug("findNextSegmentRegex called.");
             $foundMatchArray = $this->findNextSegmentRegex($effectiveSearchPos);
+            $this->logger->debug(var_export($foundMatchArray, true));
+
         }
 
         // --- Process result ---
@@ -588,7 +614,7 @@ class PregContentFinder
         ?string $beginRegex = '', ?string $endRegex = '',
         ?int $startPosition = null, SearchMode|string|null $searchMode = null
     ): string|false {
-        $this->logger->debug("getContent called.", ['begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode]);
+        // $this->logger->debug(['begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode]);
 
         if($beginRegex){
             $this->userProvidedBeginDelimiter = $beginRegex;
@@ -599,17 +625,31 @@ class PregContentFinder
         if($beginRegex || $endRegex){
             $this->prepareEffectiveDelimiters();
         }
-
+        // $this->logger->info("BeginRegex: $beginRegex, EndRegex: $endRegex");
 
         if($startPosition){
             $this->nextSearchPosition = $startPosition;
+        }else{
+            $startPosition = 0;
+            $this->nextSearchPosition = $startPosition;
         }
+        $this->logger->info("StartPosition: $startPosition");
+
         if($searchMode){
             $this->setSearchMode($searchMode);
         }
 
+        if(!$beginRegex){
+            $this->logger->info('strange. begin is empty');
+        }
+        if(!is_string($beginRegex)){
+            $this->logger->info('strange. begin not string');
+        }
 
+        $this->logger->info("BeginRegex: $beginRegex, EndRegex: $endRegex, StartPosition: $startPosition, SearchMode: " . $searchMode->name);
+        
         $segmentData = $this->getBorders($beginRegex, $endRegex, $startPosition, $searchMode);
+
 
         if ($segmentData === null || !isset($segmentData['begin_end']) || !isset($segmentData['end_begin'])) {
             $this->logger->info("getContent: getBorders returned no valid segment.");
@@ -619,8 +659,10 @@ class PregContentFinder
             $this->logger->warning("getContent: end_begin is before begin_end.", ['segment' => $segmentData]);
             return "";
         }
+        $this->logger->info('begin_end:' . $segmentData['begin_end'] . ', end_begin:' . $segmentData['end_begin']);
         $content = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']);
-        $this->logger->info("getContent extracted.", ['content_length' => strlen($content)]);
+        $this->logger->info('content_length:' . strlen($content));
+        $this->logger->info($content);
         return $content;
     }
 
