@@ -1,0 +1,53 @@
+
+keyboard.send_keys("<ctrl>+e")
+keyboard.send_keys("<down>")
+
+##########################################################################################
+
+
+# recomandet hotkey ctrl+v
+# recomandet Window Filter:  code.Code|konsole.konsole
+# may read also https://github.com/sl5net/0ad-autokey-scripts/
+import time
+time.sleep(.01)
+
+# get fileName and FileNumer
+# expected formats:
+# Test.php:16
+# Test:16
+
+keyboard.send_keys("<home>")
+
+winC = window.get_active_class()
+if winC == 'kate.kate':
+    keyboard.send_keys("<ctrl>+f:")
+    keyboard.send_keys("<escape>")
+    # time.sleep(.2)
+    keyboard.send_keys("<ctrl>+<right>")
+    #exit(0)
+
+else:
+    keyboard.send_keys("<ctrl>+<right>")
+    keyboard.send_keys("<ctrl>+<right>")
+
+keyboard.send_keys("<ctrl><shift>+<home>")
+keyboard.send_keys("<ctrl>+c")
+
+if winC != 'code.Code':
+    window.wait_for_exist('Code')
+    window.activate('Code')
+    window.wait_for_focus('Code')
+    time.sleep(.2)
+
+
+keyboard.send_keys("<ctrl>+p")
+keyboard.send_keys("<ctrl>+v")
+time.sleep(.1)
+keyboard.send_keys("<enter>")
+
+time.sleep(1.5)
+
+
+
+
+

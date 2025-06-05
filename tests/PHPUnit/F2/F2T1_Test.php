@@ -33,9 +33,6 @@ class F2T1_Test extends YourBaseTestClass {
     public function testGetContentWithRegexDelimitersAndDontTouchThisModeNoEnd(): void
     {
         $this->markTestSkipped('This test is disabled for now');
- 
- 
-        $this->markTestSkipped('This test is disabled for now');
 
         $this->logger->info('Hey from function testGetContentWithRegexDelimitersAndDontTouchThisModeNoEnd() out of DontTouchThisSearchModeSimplifiedTest.php near Line 55');
 

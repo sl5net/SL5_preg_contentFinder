@@ -2,6 +2,20 @@
 # Try:
 use RemoteExplorer and "Open Foder in Container" now test should works
 
+then try
+
+# To regenerate autoloader, which Intelephense might use
+# Or composer update if you want to update packages
+ 
+composer dump-autoload -o 
+composer install
+
+## Rebuild IntelliSense
+Ctrl + Shift + P, then Type 
+Rebuild IntelliSense
+Wait (seconds) for the IntelliSense database to rebuild.
+
+
 # Explain:
 
 **Here's why "Open Folder in Container" with the RemoteExplorer - Containers extension fixed (or bypassed) both issues:**

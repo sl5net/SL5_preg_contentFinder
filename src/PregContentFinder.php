@@ -48,7 +48,7 @@ class PregContentFinder
     private ?int $currentSegmentId = null;
     protected string $logFilePath = ''; 
     protected Logger $logger; 
-
+    protected ?StreamHandler $logFileHandler = null; // Property to store the handler
 
     public function __construct(
         string $content,
@@ -60,7 +60,7 @@ class PregContentFinder
         $this->loggerSetUp();
         $this->logger->info("Logger setup complete. Logging to: {$this->logFilePath}");
 
-        $this->logger->info('greetings from PregContentFinder :) ');
+        // $this->logger->info('greetings from PregContentFinder :) ');
 
         $this->content = $content;
 
@@ -96,15 +96,32 @@ class PregContentFinder
         $logFileName = $fileDir . '/' . $shortFileName.'.log';
         $this->logFilePath = $logDir . '/' . $logFileName;
         // Handler für die Log-Datei
-        $fileHandler = new StreamHandler($this->logFilePath, Level::Info); 
+        // $fileHandler = new StreamHandler($this->logFilePath, Level::Info); 
+        // Create the handler and store it in the property
+
+        $this->logFileHandler = new StreamHandler($this->logFilePath, Level::Info);
+
+        // $fileHandler->setLevel(Level::Info);
+        // $fileHandler->setLevel(Level::Debug);
+        // $fileHandler->setLevel(Level::Error);
+
         // Formatter für die Log-Ausgabe
         // Format: Filename:Line[FunctionName()]LEVEL: Message Context Extra
         // %extra.file% und %extra.line% kommen vom IntrospectionProcessor
         $outputFormat = $shortFileName . ":%extra.line%[%extra.function%()]%level_name%: %message% %context% %extra%\n";
         $formatter = new LineFormatter($outputFormat, null, true, true); // allowInlineLineBreaks, ignoreEmptyContextAndExtra
-        $fileHandler->setFormatter($formatter);
-        $this->logger->pushHandler($fileHandler);
+
+        $this->logFileHandler->setFormatter($formatter); 
+        $this->logFileHandler->setLevel(Level::Info); // Level vor dem pushHandler setzen ist gute Praxis
+
+        // Übergeben Sie die Klassen-Eigenschaft an den Logger
+        $this->logger->pushHandler($this->logFileHandler); 
         $this->logger->pushProcessor(new IntrospectionProcessor(Level::Info));
+
+        $this->logger->info("---------------");
+        // Die Zeile $this->logFileHandler->setLevel(Level::Info); wurde nach oben verschoben, kann aber auch hier bleiben.
+        $this->logger->info("================ ");
+
 
     }
 
@@ -136,7 +153,7 @@ class PregContentFinder
 
     public function setBeginEndDelimiters(string|array|null $begin = '', ?string $end = ''): void
     {
-        $this->logger->debug("setBeginEndDelimiters called.", ['begin' => $begin, 'end' => $end]);
+        $this->logger->info("setBeginEndDelimiters called.", ['begin' => $begin, 'end' => $end]);
         if (is_array($begin)) {
             if (count($begin) !== 2 || !is_string($begin[0]) || !is_string($begin[1])) {
                 $this->logger->error("Invalid array structure for delimiters.", ['array_delimiters' => $begin]);
@@ -168,6 +185,9 @@ class PregContentFinder
     // In setSearchMode, der $oldModeValue Check muss angepasst werden, da currentSearchMode im Konstruktor gesetzt wird:
     public function setSearchMode(SearchMode|string $mode): void
     {
+        // $fileHandler->setLevel(Level::Error);
+        
+        
         $oldModeValue = null;
         if (isset($this->currentSearchMode)) { // Prüfen, ob es schon initialisiert wurde
             $oldModeValue = $this->currentSearchMode->value;
@@ -269,7 +289,7 @@ class PregContentFinder
         $this->borderMatchCache = [];
         $this->foundSegmentsList = [];
         $this->currentSegmentId = null;
-        $this->logger->debug("Cache and results list cleared.");
+        $this->logger->info("Cache and results list cleared.");
     }
 
     public function getEffectiveBeginDelimiter(): string { return $this->effectiveBeginDelimiter; }
@@ -615,6 +635,9 @@ class PregContentFinder
         ?int $startPosition = null, SearchMode|string|null $searchMode = null
     ): string|false {
         // $this->logger->debug(['begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode]);
+
+        // $fileHandler->setLevel(Level::Info);
+
 
         if($beginRegex){
             $this->userProvidedBeginDelimiter = $beginRegex;
