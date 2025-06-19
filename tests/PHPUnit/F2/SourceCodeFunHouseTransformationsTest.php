@@ -3,6 +3,8 @@ namespace SL5\PregContentFinder\Tests;
 
 use SL5\PregContentFinder\PregContentFinder;
 
+use SL5\PregContentFinder\SearchMode;    
+
 /*
 a) Lesbar von unten nach oben (Zeilen umkehren):
 
@@ -31,7 +33,9 @@ class SourceCodeFunHouseTransformationsTest extends \PHPUnit\Framework\TestCase
     {
         // For these transformations, we'll treat the entire content as one block
         $cf = new PregContentFinder($content);
-        $cf->setBeginEnd_RegEx('/^/', '/$/s'); // Match the whole string, 's' for dotall if needed
+        // $cf->setBeginEnd_RegEx('/^/', '/$/s'); 
+        $cf->setBeginEndDelimiters('\A', '\z');
+        $cf->setSearchMode(SearchMode::DONT_TOUCH_THIS); // Diese Zeile hinzufügen
 
         $transformedContent = $cf->getContent_user_func_recursive(
             function ($cut, $deepCount, $callsCount, $posList0, $originalSegmentContent) use ($transformerCallback) {
@@ -99,8 +103,10 @@ class SourceCodeFunHouseTransformationsTest extends \PHPUnit\Framework\TestCase
             "function example() {\n" .
             "  return true;\n" .
             "}";
+
         $expected =
-            "} ()elpmaxe noitcnuf\n" .
+            
+            "{ )(elpmaxe noitcnuf\n" .
             ";eurt nruter  \n" .
             "}";
 
@@ -157,11 +163,14 @@ class SourceCodeFunHouseTransformationsTest extends \PHPUnit\Framework\TestCase
         // tnemmoC //
         // { ()niam noitcnuf
         // php?<
+
+        
+
         $expected =
             "}\n" .
             ";24 nruter    \n" .
             "tnemmoC //    \n" .
-            "{ ()niam noitcnuf\n" .
+            "{ )(niam noitcnuf\n" .
             "php?<";
 
         $transformer = function (string $text): string {
