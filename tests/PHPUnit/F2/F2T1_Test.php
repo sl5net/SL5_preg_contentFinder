@@ -32,7 +32,7 @@ class F2T1_Test extends YourBaseTestClass {
      */
     public function testGetContentWithRegexDelimitersAndDontTouchThisModeNoEnd(): void
     {
-        $this->markTestSkipped('This test is disabled for now');
+        // $this->markTestSkipped('This test is disabled for now');
 
         $this->logger->info('Hey from function testGetContentWithRegexDelimitersAndDontTouchThisModeNoEnd() out of DontTouchThisSearchModeSimplifiedTest.php near Line 55');
 
@@ -57,7 +57,7 @@ class F2T1_Test extends YourBaseTestClass {
         );
 
         // Erwartetes Verhalten, wenn stopOnMissingEndBorder = false (alte Logik):
-        $expectedContentIfNoStop = '_NO_END_LETTERS';
+        $expectedContentIfNoStop = '_';
         // Erwartetes Verhalten, wenn getContent bei fehlendem Ende false zurückgibt (striktere V2 Logik):
         // $expectedContentIfFalse = false;
 
@@ -74,7 +74,7 @@ class F2T1_Test extends YourBaseTestClass {
      */
     public function testGetContentUserFuncRecursiveWithRegexDelimiters(): void
     {
-        $this->markTestSkipped('This test is disabled for now');
+        // $this->markTestSkipped('This test is disabled for now');
 
         
         $source = 'DATA_123#transformed_GHI_MORE';

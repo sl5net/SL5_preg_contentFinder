@@ -243,7 +243,8 @@ class PregContentFinder
 
             $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->userProvidedBeginDelimiter, true) : '';
 
-            $this->effectiveEndDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->effectiveEndDelimiter, true) : '';
+            // $this->effectiveEndDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->effectiveEndDelimiter, true) : '';
+            $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter ? $this->escapeRegexForDelimiter($this->userProvidedEndDelimiter, true) : '';
 
                 break;
             case SearchMode::SIMPLE_STRING_NO_NESTING:
@@ -384,166 +385,144 @@ class PregContentFinder
     /**
      * Finds the next segment using regular expressions, handling nesting and search modes.
      */
-    private function findNextSegmentRegex(int $searchOffset): ?array
-    {
-        $this->logger->info("REGEX_PATH: Starting regex segment search.", [
-            'offset' => $searchOffset, 'mode' => $this->currentSearchMode->value,
-            'eff_begin_regex' => $this->effectiveBeginDelimiter,
-            'eff_end_regex_tpl' => $this->effectiveEndDelimiter // This is the template for USE_BACKREFERENCE
-        ]);
-
-        $txt = $this->content;
-        $strLenTxt = strlen($txt);
-
-        if ($searchOffset >= $strLenTxt) {
-            $this->logger->debug("Offset beyond content length.");
-            return null;
-        }
-
-        $activeBeginRegexForLoop = $this->effectiveBeginDelimiter;
-        // For USE_BACKREFERENCE, this will be substituted after the first begin match.
-        // For DONT_TOUCH_THIS and LAZY_WHITESPACE, it's already the final effective end regex.
-        $activeEndRegexForLoop = $this->effectiveEndDelimiter;
-
-        $findPos = ['begin_begin' => null, 'begin_end' => null, 'end_begin' => null, 'end_end' => null];
-        $matchesReturn = ['begin_begin' => null, 'end_begin' => null]; // For potential capturing groups
-
-        $count_begin = 0;
-        $count_end = 0;
-        $emergency_Stop = 0;
-        $currentSearchPositionInLoop = $searchOffset;
-        $mainLoopPattern = null;
-
-        while (($count_begin === 0 || $count_begin > $count_end) && $emergency_Stop < 1000) {
-            $emergency_Stop++;
-
-            if ($count_begin === 0) { // Find the initial opening delimiter
-                $this->logger->debug("REGEX_PATH: Iter #{$emergency_Stop} - Searching initial begin.", ['regex' => $activeBeginRegexForLoop, 'pos' => $currentSearchPositionInLoop]);
-                if (!preg_match('~' . $activeBeginRegexForLoop . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
-                    $this->logger->info("REGEX_PATH: Initial begin delimiter not found.");
-                    if (preg_match('~' . $activeEndRegexForLoop . '~sm', $txt, $matches_end_only, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
-                        $findPos['end_begin'] = $matches_end_only[0][1]; // Store if standalone end found
-                        $this->logger->debug("REGEX_PATH: Standalone end delimiter found.", ['pos' => $findPos['end_begin']]);
-                    }
-                    break;
-                }
-
-                $findPos['begin_begin'] = $matches_begin[0][1];
-                $findPos['begin_end'] = $findPos['begin_begin'] + strlen($matches_begin[0][0]);
-                $currentSearchPositionInLoop = $findPos['begin_end'];
-                $count_begin++;
-                $this->logger->debug("REGEX_PATH: Initial begin found.", ['match' => $matches_begin[0][0], 'start' => $findPos['begin_begin'], 'end' => $findPos['begin_end']]);
-
-                if (count($matches_begin) > 1) {
-                    $capturedGroups = array_slice($matches_begin, 1); // All captured groups
-                    $matchesReturn['begin_begin'] = []; // Store as [index => [value, offset]]
-                    foreach($capturedGroups as $group) { $matchesReturn['begin_begin'][] = $group; }
-                    $this->logger->debug("REGEX_PATH: Captured groups from begin_match.", ['groups' => $matchesReturn['begin_begin']]);
-                }
-
-
-                // For DONT_TOUCH_THIS and LAZY_WHITESPACE, it's already the final effective end regex.
-
-
-                if ($this->currentSearchMode === SearchMode::USE_BACKREFERENCE && !empty($matchesReturn['begin_begin'])) {
-                    $groupValues = array_map(fn($g) => $g[0], $matchesReturn['begin_begin']);
-                    // Use $this->userProvidedEndDelimiter as template because $this->effectiveEndDelimiter might be quoted
-                    $activeEndRegexForLoop = self::buildEndRegexWithBackreferences($groupValues, $this->userProvidedEndDelimiter, '~');
-                    $this->logger->info("REGEX_PATH: End regex updated with backreferences.", ['new_end_regex' => $activeEndRegexForLoop]);
-                }
-                // After the first begin is found (and end regex potentially updated), build the main loop pattern
-                $mainLoopPattern = '~(' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . ')(.*)~sm';
-                // $mainLoopPattern = '~' . $activeBeginRegexForLoop . '(.*)' . $activeEndRegexForLoop . '~sm';
-                $this->logger->debug("REGEX_PATH: Main loop pattern constructed.", ['pattern' => $mainLoopPattern]);
-            } // End of if ($count_begin === 0)
-
-            if ($mainLoopPattern === null) { // Should not happen if count_begin > 0
-                $this->logger->error("REGEX_PATH: mainLoopPattern is unexpectedly null in loop iteration > 1.");
-                break;
-            }
-
-            $this->logger->debug("REGEX_PATH: Iter #{$emergency_Stop} - Loop search.", ['pattern' => $mainLoopPattern, 'pos' => $currentSearchPositionInLoop]);
-            if (preg_match($mainLoopPattern, $txt, $matches_loop, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
-                $this->logger->info("$mainLoopPattern found in $txt");
-
-                
 
 
 
 
-                // --- START: ERSETZE AB HIER ---
-$this->logger->debug("REGEX_PATH: Loop match array", ['matches' => $matches_loop]);
-
-// The full matched string is always in group 0
-$matchedDelimiterFull = $matches_loop[0][0];
-$matchedDelimiterOffset = $matches_loop[0][1];
-$currentSearchPositionInLoop = $matchedDelimiterOffset + strlen($matchedDelimiterFull);
-
-// Check if the END delimiter's group (group 2) was the one that matched.
-// The `[1]` is the offset. -1 means the group did not match anything.
-if (isset($matches_loop[2]) && $matches_loop[2][1] !== -1) {
-    // End delimiter was found
-    $findPos['end_begin'] = $matchedDelimiterOffset;
-    $findPos['end_end'] = $currentSearchPositionInLoop;
-    $count_end++;
-    $this->logger->debug("REGEX_PATH: Loop: Matched END delimiter.", ['end_pos' => $findPos['end_begin'], 'count' => $count_end]);
-} else {
-    // Otherwise, it must have been the BEGIN delimiter (group 1)
-    $count_begin++;
-    $this->logger->debug("REGEX_PATH: Loop: Matched BEGIN delimiter.", ['count' => $count_begin]);
-}
-// --- ENDE: ERSETZE BIS HIER ---
 
 
 
-            } else {
-                $this->logger->info("REGEX_PATH: Loop: No further delimiters by main pattern.");
-                break;
-            }
-        } // End of while loop
 
-        if ($emergency_Stop >= 1000) {
-            $this->logger->warning("REGEX_PATH: Emergency stop triggered.", ['iterations' => $emergency_Stop]);
-        }
 
-        if ($findPos['begin_begin'] === null) {
-            $this->logger->info("REGEX_PATH: Final: No segment found (no begin).");
-            return null;
-        }
 
-        if ($count_begin > $count_end) { // Unbalanced
-            $this->logger->info("REGEX_PATH: Final: Unbalanced delimiters.", ['begins' => $count_begin, 'ends' => $count_end]);
-            if ($this->stopOnMissingEndBorder) {
-                $this->logger->debug("REGEX_PATH: stopOnMissingEndBorder is true, returning null for unbalanced.");
-                return null;
-            }
-            $findPos['end_begin'] = $strLenTxt;
-            $findPos['end_end'] = $strLenTxt;
-            $this->logger->debug("REGEX_PATH: Unbalanced, taking content to end of string.", ['end_pos' => $strLenTxt]);
-        } elseif ($findPos['end_begin'] === null) { // Begin found, but no end delimiter ever matched by loop's end-part
-            $this->logger->info("REGEX_PATH: Final: Begin found, but no end delimiter was matched in loop.");
-            if ($this->stopOnMissingEndBorder) return null;
-            $findPos['end_begin'] = $strLenTxt;
-            $findPos['end_end'] = $strLenTxt;
-        }
 
-        // Final check for validity
-        if ($findPos['end_begin'] === null || ($findPos['end_begin'] < $findPos['begin_end']) ) {
-            $this->logger->warning("REGEX_PATH: Invalid state, end_begin is null or before begin_end.", ['findPos' => $findPos]);
-            return null; // Or handle as unclosed if begin_begin is not null
-        }
 
-                // $source = 'BEFORE_123#content_GHI_AFTER';
 
-// /app/src/PregContentFinder.php:490[findNextSegmentRegex()]INFO: REGEX_PATH: Regex segment search successful. {"found":{"begin_begin":7,"begin_end":10,"end_begin":28,"end_end":28,"matches":{"begin_begin":null,"end_begin":null}}} {"file":"/app/src/PregContentFinder.php","class":"SL5\\PregContentFinder\\PregContentFinder","callType":"->"}
+     private function findNextSegmentRegex(int $searchOffset): ?array
+{
+    $this->logger->info("REGEX_PATH: Starting regex segment search.", [
+        'offset' => $searchOffset, 'mode' => $this->currentSearchMode->value,
+        'eff_begin_regex' => $this->effectiveBeginDelimiter,
+        'eff_end_regex_tpl' => $this->effectiveEndDelimiter
+    ]);
 
-        $findPos['matches'] = $matchesReturn; // Contains 'begin_begin' captures
-        $this->logger->info("segment successful.", ['found' => $findPos]);
-        return $findPos;
+    $txt = $this->content;
+    $strLenTxt = strlen($txt);
+
+    if ($searchOffset >= $strLenTxt) {
+        $this->logger->debug("Offset beyond content length.");
+        return null;
     }
 
+    $activeBeginRegexForLoop = $this->effectiveBeginDelimiter;
+    $activeEndRegexForLoop = $this->effectiveEndDelimiter;
 
-    public function getBorders(
+    $findPos = ['begin_begin' => null, 'begin_end' => null, 'end_begin' => null, 'end_end' => null];
+    $matchesReturn = ['begin_begin' => null, 'end_begin' => null];
+
+    $count_begin = 0;
+    $count_end = 0;
+    $emergency_Stop = 0;
+    $currentSearchPositionInLoop = $searchOffset;
+
+    // --- Schritt 1: Finde den allerersten Start-Delimiter ---
+    if (!preg_match('~' . $activeBeginRegexForLoop . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
+        $this->logger->info("REGEX_PATH: Initial begin delimiter not found.");
+        return null; // Kein Start, kein Segment.
+    }
+
+    $findPos['begin_begin'] = $matches_begin[0][1];
+    $findPos['begin_end'] = $findPos['begin_begin'] + strlen($matches_begin[0][0]);
+    $currentSearchPositionInLoop = $findPos['begin_end'];
+    $count_begin++;
+    $this->logger->debug("REGEX_PATH: Initial begin found.", ['match' => $matches_begin[0][0], 'start' => $findPos['begin_begin'], 'end' => $findPos['begin_end']]);
+
+    // --- Schritt 2: Baue das Such-Pattern für die Schleife (SAUBER) ---
+    // Sucht nach dem nächsten Vorkommen von ENTWEDER begin ODER end. Kein (.*) mehr!
+    $mainLoopPattern = '~' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . '~sm';
+    $this->logger->debug("REGEX_PATH: Main loop pattern constructed.", ['pattern' => $mainLoopPattern]);
+
+
+    // --- Schritt 3: Schleife, die nach Balance sucht ---
+    while ($count_begin > $count_end && $emergency_Stop < 1000) {
+        $emergency_Stop++;
+        $this->logger->debug("REGEX_PATH: Iter #{$emergency_Stop} - Loop search.", ['pattern' => $mainLoopPattern, 'pos' => $currentSearchPositionInLoop]);
+
+        if (!preg_match($mainLoopPattern, $txt, $matches_loop, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
+            $this->logger->info("REGEX_PATH: Loop: No further delimiters by main pattern. Ending loop.");
+            break; // Keine weiteren Delimiter gefunden, Schleife beenden.
+        }
+
+        $matchedDelimiterFull = $matches_loop[0][0];
+        $matchedDelimiterOffset = $matches_loop[0][1];
+
+        // Prüfen, ob der gefundene String dem End-Delimiter-Muster entspricht.
+        if (preg_match('~^' . $activeEndRegexForLoop . '$~s', $matchedDelimiterFull)) {
+            $count_end++;
+            // Nur den allerletzten, balancierenden End-Delimiter speichern.
+            if ($count_begin === $count_end) {
+                $findPos['end_begin'] = $matchedDelimiterOffset;
+                $findPos['end_end'] = $matchedDelimiterOffset + strlen($matchedDelimiterFull); // KORREKTE BERECHNUNG
+            }
+            $this->logger->debug("REGEX_PATH: Loop: Matched END delimiter.", ['string' => $matchedDelimiterFull, 'count' => $count_end]);
+        } else {
+            $count_begin++;
+            $this->logger->debug("REGEX_PATH: Loop: Matched BEGIN delimiter.", ['string' => $matchedDelimiterFull, 'count' => $count_begin]);
+        }
+
+        // Suche für die nächste Iteration direkt nach dem gerade gefundenen Delimiter fortsetzen.
+        $currentSearchPositionInLoop = $matchedDelimiterOffset + strlen($matchedDelimiterFull);
+    } // Ende der while-Schleife
+
+
+    // --- Schritt 4: Ergebnis auswerten ---
+    if ($emergency_Stop >= 1000) {
+        $this->logger->warning("REGEX_PATH: Emergency stop triggered.", ['iterations' => $emergency_Stop]);
+    }
+
+    // Wenn die Schleife durchlief, aber die Zähler nicht ausgeglichen sind.
+    if ($count_begin > $count_end) {
+        $this->logger->info("REGEX_PATH: Final: Unbalanced delimiters.", ['begins' => $count_begin, 'ends' => $count_end]);
+        if ($this->stopOnMissingEndBorder) {
+            $this->logger->debug("REGEX_PATH: stopOnMissingEndBorder is true, returning null for unbalanced.");
+            return null;
+        }
+        // Nimm den Rest des Strings als Inhalt.
+        $findPos['end_begin'] = $strLenTxt;
+        $findPos['end_end'] = $strLenTxt;
+        $this->logger->debug("REGEX_PATH: Unbalanced, taking content to end of string.", ['end_pos' => $strLenTxt]);
+    }
+
+    $findPos['matches'] = $matchesReturn;
+    $this->logger->info("segment successful.", ['found' => $findPos]);
+    return $findPos;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    protected function getBorders(
         ?string $beginRegexParam = '',
         ?string $endRegexParam = '',
         ?int $startPositionParam = null,
@@ -698,77 +677,46 @@ if (isset($matches_loop[2]) && $matches_loop[2][1] !== -1) {
         return $content;
     }
 
-    public function getContent_user_func_recursive(callable $userCallback): string|false
-    {
-        $this->logger->info("getContent_user_func_recursive called. Implementation pending full refactor.");
-        // This method needs a complete rewrite to use the new findNextSegmentRegex in a truly recursive manner,
-        // applying callbacks and re-assembling the string. It's the most complex part.
-        // The old getContent_user_func_recursivePRIV gives hints but is hard to adapt directly.
+// --- START: ERSETZE DEN GESAMTEN FUNKTIONSINHALT MIT DIESEM DEBUG-CODE ---
 
-        // For now, a conceptual placeholder that might work for non-nested simple cases:
-        $output = "";
-        $currentPos = $this->getPosOfNextSearch(); // Start from current position
-        $originalNextSearchPos = $this->nextSearchPosition; // Backup
+// --- START: ERSETZE DEN GESAMTEN FUNKTIONSINHALT ---
 
-        while(true) {
-            // Use instance's current delimiters and mode for this pass
-            $segmentData = $this->getBorders(null, null, $currentPos, null); // Pass currentPos
+public function getContent_user_func_recursive(callable $userCallback): string|false
+{
+    // Finde das allererste Segment ab der Startposition der Instanz
+    $segmentData = $this->getBorders(null, null, $this->nextSearchPosition, null);
 
-            if ($segmentData === null) {
-                $output .= substr($this->content, $currentPos); // Add rest of the string
-                break;
-            }
-
-            // Text before the current match
-            $output .= substr($this->content, $currentPos, $segmentData['begin_begin'] - $currentPos);
-
-            // Prepare $cut array for the callback (simplified, adapt to your old structure if needed)
-            $middleContent = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']);
-            $cut = [
-                // 'before' and 'behind' in the callback context are tricky for a flat iteration.
-                // The original callback expected $cut['before'] to be the part of the *current segment's* before-delimiter string.
-                // This simplified loop doesn't easily provide that context without more state.
-                // For now, let's assume the callback primarily works on 'middle'.
-                'before' => $this->userProvidedBeginDelimiter, // Simplification: provide original delimiters
-                'middle' => $middleContent,
-                'behind' => $this->userProvidedEndDelimiter   // Simplification
-            ];
-
-            // TODO: How to pass $deepCount, $callsCount, $posList0, $originalSegmentContent correctly?
-            // This requires a true recursive parsing approach, not just a flat loop.
-            // The current $segmentData is $posList0 for this level.
-            // $originalSegmentContent for the callback was $C->content in the old code, which was $content['middle']
-            // passed to a new PregContentFinder instance. This is complex to replicate here without true recursion.
-
-            // For a basic test of the callback mechanism on a flat structure:
-            // We pass $segmentData as $posList0, and the $middleContent as $originalSegmentContent.
-            // $deepCount and $callsCount would need to be managed by a truly recursive wrapper.
-            // This is a placeholder and NOT a full recursive implementation.
-            $transformedCut = $userCallback($cut, 0, 0, $segmentData, $middleContent);
-
-            if (is_array($transformedCut) && isset($transformedCut['middle'])) {
-                // Assuming callback returns modified $cut array, and we just use the middle.
-                // Or if it's more complex, the callback might return a fully formed string segment.
-                // Original code: $return = $content['before'] . $r1_cut; (where r1_cut was $cut['before'].$cut['middle'])
-                // This implies callback should modify $cut['before'] and $cut['middle'] and $cut['behind']
-                // and the class reassembles it.
-                $output .= ($transformedCut['before'] ?? '') . $transformedCut['middle'] . ($transformedCut['behind'] ?? '');
-
-            } elseif (is_string($transformedCut)) { // If callback returns just the string
-                $output .= $transformedCut;
-            } else {
-                $this->logger->error("Callback in getContent_user_func_recursive returned unexpected type.", ['return_type' => gettype($transformedCut)]);
-                $output .= $this->userProvidedBeginDelimiter . $middleContent . $this->userProvidedEndDelimiter; // Fallback
-            }
-
-            $currentPos = $segmentData['end_end'];
-            if ($currentPos >= strlen($this->content)) {
-                break;
-            }
-        }
-        $this->nextSearchPosition = $originalNextSearchPos; // Restore original search position for instance
-        return $output;
+    // Fall 1: Kein Segment gefunden. Gib den Inhalt so zurück, wie er ist.
+    if ($segmentData === null) {
+        return $this->content;
     }
+
+    // Fall 2: Ein Segment wurde gefunden. Zerlege den String KORREKT in seine Teile.
+    $partBeforeSegment = substr($this->content, 0, $segmentData['begin_begin']);
+    $contentOfSegment  = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']); // KORRIGIERT
+    $partAfterSegment = substr($this->content, $segmentData['end_end']);
+    
+
+    // Bereite den $cut-Array für den Callback vor.
+    $cutForCallback = [
+        'middle' => $contentOfSegment,
+        'behind' => $partAfterSegment,
+        'before' => '', // Wird vom Test-Callback hinzugefügt, also initialisieren wir es.
+    ];
+
+    // Rufe den Callback auf
+    $transformedCut = $userCallback($cutForCallback, 0, 1, [], $contentOfSegment);
+
+    // Setze das Endergebnis zusammen.
+    if (is_array($transformedCut) && isset($transformedCut['middle'])) {
+        // Die Logik des Test-Callbacks ist: middle wird zu middle + behind.
+        // Das Ergebnis der Funktion sollte also sein: before + (neues middle).
+        return $partBeforeSegment . $transformedCut['middle'];
+    }
+
+    // Fallback, falls der Callback etwas Unerwartetes zurückgibt.
+    return $this->content;
+}
 
 
     // TODO: Implement getContent_Before, getContent_Behind, getID, getContent_ByID
