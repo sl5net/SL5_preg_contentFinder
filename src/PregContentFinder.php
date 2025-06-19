@@ -397,8 +397,7 @@ class PregContentFinder
 
 
 
-
-     private function findNextSegmentRegex(int $searchOffset): ?array
+private function findNextSegmentRegex(int $searchOffset): ?array
 {
     $this->logger->info("REGEX_PATH: Starting regex segment search.", [
         'offset' => $searchOffset, 'mode' => $this->currentSearchMode->value,
@@ -410,7 +409,6 @@ class PregContentFinder
     $strLenTxt = strlen($txt);
 
     if ($searchOffset >= $strLenTxt) {
-        $this->logger->debug("Offset beyond content length.");
         return null;
     }
 
@@ -427,77 +425,59 @@ class PregContentFinder
 
     // --- Schritt 1: Finde den allerersten Start-Delimiter ---
     if (!preg_match('~' . $activeBeginRegexForLoop . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
-        $this->logger->info("REGEX_PATH: Initial begin delimiter not found.");
-        return null; // Kein Start, kein Segment.
+        return null;
     }
 
     $findPos['begin_begin'] = $matches_begin[0][1];
-    $findPos['begin_end'] = $findPos['begin_begin'] + strlen($matches_begin[0][0]);
-    $currentSearchPositionInLoop = $findPos['begin_end'];
+    $matchLength = strlen($matches_begin[0][0]);
+    $findPos['begin_end'] = $findPos['begin_begin'] + $matchLength;
+    // KORREKTUR FÜR ZERO-WIDTH:
+    $currentSearchPositionInLoop = $findPos['begin_begin'] + ($matchLength > 0 ? $matchLength : 1);
     $count_begin++;
-    $this->logger->debug("REGEX_PATH: Initial begin found.", ['match' => $matches_begin[0][0], 'start' => $findPos['begin_begin'], 'end' => $findPos['begin_end']]);
 
-    // --- Schritt 2: Baue das Such-Pattern für die Schleife (SAUBER) ---
-    // Sucht nach dem nächsten Vorkommen von ENTWEDER begin ODER end. Kein (.*) mehr!
+
+    // --- Schritt 2: Baue das Such-Pattern für die Schleife ---
     $mainLoopPattern = '~' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . '~sm';
-    $this->logger->debug("REGEX_PATH: Main loop pattern constructed.", ['pattern' => $mainLoopPattern]);
 
 
     // --- Schritt 3: Schleife, die nach Balance sucht ---
     while ($count_begin > $count_end && $emergency_Stop < 1000) {
         $emergency_Stop++;
-        $this->logger->debug("REGEX_PATH: Iter #{$emergency_Stop} - Loop search.", ['pattern' => $mainLoopPattern, 'pos' => $currentSearchPositionInLoop]);
 
         if (!preg_match($mainLoopPattern, $txt, $matches_loop, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
-            $this->logger->info("REGEX_PATH: Loop: No further delimiters by main pattern. Ending loop.");
-            break; // Keine weiteren Delimiter gefunden, Schleife beenden.
+            break;
         }
 
         $matchedDelimiterFull = $matches_loop[0][0];
         $matchedDelimiterOffset = $matches_loop[0][1];
+        $matchLength = strlen($matchedDelimiterFull);
 
-        // Prüfen, ob der gefundene String dem End-Delimiter-Muster entspricht.
         if (preg_match('~^' . $activeEndRegexForLoop . '$~s', $matchedDelimiterFull)) {
             $count_end++;
-            // Nur den allerletzten, balancierenden End-Delimiter speichern.
             if ($count_begin === $count_end) {
                 $findPos['end_begin'] = $matchedDelimiterOffset;
-                $findPos['end_end'] = $matchedDelimiterOffset + strlen($matchedDelimiterFull); // KORREKTE BERECHNUNG
+                $findPos['end_end'] = $matchedDelimiterOffset + $matchLength;
             }
-            $this->logger->debug("REGEX_PATH: Loop: Matched END delimiter.", ['string' => $matchedDelimiterFull, 'count' => $count_end]);
         } else {
             $count_begin++;
-            $this->logger->debug("REGEX_PATH: Loop: Matched BEGIN delimiter.", ['string' => $matchedDelimiterFull, 'count' => $count_begin]);
         }
 
-        // Suche für die nächste Iteration direkt nach dem gerade gefundenen Delimiter fortsetzen.
-        $currentSearchPositionInLoop = $matchedDelimiterOffset + strlen($matchedDelimiterFull);
-    } // Ende der while-Schleife
+        // KORREKTUR FÜR ZERO-WIDTH:
+        $currentSearchPositionInLoop = $matchedDelimiterOffset + ($matchLength > 0 ? $matchLength : 1);
+    }
 
 
     // --- Schritt 4: Ergebnis auswerten ---
-    if ($emergency_Stop >= 1000) {
-        $this->logger->warning("REGEX_PATH: Emergency stop triggered.", ['iterations' => $emergency_Stop]);
-    }
-
-    // Wenn die Schleife durchlief, aber die Zähler nicht ausgeglichen sind.
-    if ($count_begin > $count_end) {
-        $this->logger->info("REGEX_PATH: Final: Unbalanced delimiters.", ['begins' => $count_begin, 'ends' => $count_end]);
-        if ($this->stopOnMissingEndBorder) {
-            $this->logger->debug("REGEX_PATH: stopOnMissingEndBorder is true, returning null for unbalanced.");
-            return null;
-        }
-        // Nimm den Rest des Strings als Inhalt.
+    if ($count_begin > $count_end && $this->stopOnMissingEndBorder === false) {
         $findPos['end_begin'] = $strLenTxt;
         $findPos['end_end'] = $strLenTxt;
-        $this->logger->debug("REGEX_PATH: Unbalanced, taking content to end of string.", ['end_pos' => $strLenTxt]);
+    } elseif ($count_begin > $count_end) {
+        return null;
     }
 
     $findPos['matches'] = $matchesReturn;
-    $this->logger->info("segment successful.", ['found' => $findPos]);
     return $findPos;
 }
-
 
 
 
