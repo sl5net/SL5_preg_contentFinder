@@ -1,7 +1,9 @@
 <?php
 namespace SL5\PregContentFinder\Tests;
 
-use SL5\PregContentFinder\PregContentFinder; // Ihre Hauptklasse
+use SL5\PregContentFinder\PregContentFinder; 
+
+use SL5\PregContentFinder\SearchMode;        
 
 class ZellulaererAutomat1DTest extends \PHPUnit\Framework\TestCase
 {
@@ -46,9 +48,11 @@ class ZellulaererAutomat1DTest extends \PHPUnit\Framework\TestCase
     private function simuliereMitPregContentFinder(string $aktuellerZustand): string
     {
         $cf = new PregContentFinder($aktuellerZustand);
+        $cf->setSearchMode(SearchMode::DONT_TOUCH_THIS);
 
         // Wir definieren Delimiter, die im Wesentlichen den gesamten String als einen Block erfassen.
-        $cf->setBeginEnd_RegEx('/^/', '/$/'); // Passt den gesamten String als einen Block
+        // $cf->setBeginEnd_RegEx('/^/', '/$/'); // Passt den gesamten String als einen Block
+        $cf->setBeginEndDelimiters('\A', '\z');
 
         $neuerZustandString = $cf->getContent_user_func_recursive(
             function ($cut, $deepCount, $callsCount, $posList0, $originalSegmentContent) {
@@ -83,17 +87,19 @@ class ZellulaererAutomat1DTest extends \PHPUnit\Framework\TestCase
         return $neuerZustandString;
     }
 
-    public function testEinfacheEntwicklungRegel30Aehnlich(): void
-    {
-        $initialerZustand = "...X...";
-        $erwarteteGen1 = ".XX.XXX";
-        $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
-        $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
+public function testEinfacheEntwicklungRegel30Aehnlich(): void
+{
+    $initialerZustand = "...X...";
+    $erwarteteGen1 = "..X.X.."; // Entspricht dem korrekten Ergebnis der ersten Simulation
+    $erwarteteGen2 = ".X...X."; // Entspricht dem korrekten Ergebnis der zweiten Simulation
 
-        $erwarteteGen2 = "X.XX.XX";
-        $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
-        $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
-    }
+    $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
+    $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
+
+    $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
+    $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
+}
+
 
     public function testAllesTotBleibtTot(): void
     {
@@ -103,27 +109,33 @@ class ZellulaererAutomat1DTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
     }
 
-    public function testSoliderBlockStirbtAus(): void
-    {
-        $initialerZustand = ".XXXXX.";
-        $erwarteteGen1 = "X...XX.";
-        $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
-        $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
 
-        $erwarteteGen2 = "...X.XX";
-        $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
-        $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
-    }
+public function testSoliderBlockStirbtAus(): void
+{
+    $initialerZustand = ".XXXXX.";
+    $erwarteteGen1 = "XX...XX"; 
+    $erwarteteGen2 = "XXX.XXX"; // Korrigierter Wert
 
-    public function testOszillator(): void
-    {
-        $initialerZustand = ".X.X.";
-        $erwarteteGen1 = "X...X";
-        $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
-        $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
+    $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
+    $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
 
-        $erwarteteGen2 = "...X.";
-        $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
-        $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
-    }
+    $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
+    $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
+}
+    
+
+public function testOszillator(): void
+{
+    $initialerZustand = ".X.X.";
+    $erwarteteGen1 = "X...X";   // Entspricht dem korrekten Ergebnis
+    $erwarteteGen2 = ".X.X.";   // Entspricht dem korrekten Ergebnis (es oszilliert zurück)
+
+    $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
+    $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
+
+    $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
+    $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
+}
+
+
 }

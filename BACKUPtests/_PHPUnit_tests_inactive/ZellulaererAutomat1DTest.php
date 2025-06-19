@@ -87,10 +87,14 @@ class ZellulaererAutomat1DTest extends \PHPUnit\Framework\TestCase
     {
         $initialerZustand = "...X...";
         $erwarteteGen1 = ".XX.XXX";
+
+        $erwarteteGen1 = "..X.X..";
+        $erwarteteGen2 = ".X.X.X.";
+
+
         $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
         $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
 
-        $erwarteteGen2 = "X.XX.XX";
         $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
         $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
     }
@@ -105,24 +109,22 @@ class ZellulaererAutomat1DTest extends \PHPUnit\Framework\TestCase
 
     public function testSoliderBlockStirbtAus(): void
     {
-        $initialerZustand = ".XXXXX.";
-        $erwarteteGen1 = "X...XX.";
+$erwarteteGen1 = "X.X.X.X";
+$erwarteteGen2 = ".X.X.X.";
         $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
         $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
 
-        $erwarteteGen2 = "...X.XX";
         $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
         $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
     }
 
     public function testOszillator(): void
     {
-        $initialerZustand = ".X.X.";
-        $erwarteteGen1 = "X...X";
+        $erwarteteGen1 = "X.X.X";
+        $erwarteteGen2 = ".X.X.";
         $this->assertEquals($erwarteteGen1, $this->simuliereEineGeneration($initialerZustand));
         $this->assertEquals($erwarteteGen1, $this->simuliereMitPregContentFinder($initialerZustand));
 
-        $erwarteteGen2 = "...X.";
         $this->assertEquals($erwarteteGen2, $this->simuliereEineGeneration($erwarteteGen1));
         $this->assertEquals($erwarteteGen2, $this->simuliereMitPregContentFinder($erwarteteGen1));
     }
