@@ -452,8 +452,8 @@ class PregContentFinder
                     $this->logger->info("REGEX_PATH: End regex updated with backreferences.", ['new_end_regex' => $activeEndRegexForLoop]);
                 }
                 // After the first begin is found (and end regex potentially updated), build the main loop pattern
-                // $mainLoopPattern = '~(' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . ')(.*)~sm';
-                $mainLoopPattern = '~' . $activeBeginRegexForLoop . '(.*)' . $activeEndRegexForLoop . '~sm';
+                $mainLoopPattern = '~(' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . ')(.*)~sm';
+                // $mainLoopPattern = '~' . $activeBeginRegexForLoop . '(.*)' . $activeEndRegexForLoop . '~sm';
                 $this->logger->debug("REGEX_PATH: Main loop pattern constructed.", ['pattern' => $mainLoopPattern]);
             } // End of if ($count_begin === 0)
 
@@ -468,23 +468,34 @@ class PregContentFinder
 
                 
 
-                $matchedDelimiterFull = $matches_loop[1][0];
-                $matchedDelimiterOffset = $matches_loop[1][1];
-                $this->logger->debug("REGEX_PATH: Loop: Matched delimiter.", ['string' => $matchedDelimiterFull, 'offset' => $matchedDelimiterOffset]);
 
-                $currentSearchPositionInLoop = $matchedDelimiterOffset + strlen($matchedDelimiterFull);
 
-                if (preg_match('~^' . preg_quote($activeEndRegexForLoop, '~') . '$~s', $matchedDelimiterFull) ||  // If end regex was simple
-                    ($activeEndRegexForLoop !== $this->effectiveEndDelimiter && preg_match('~^' . $activeEndRegexForLoop . '$~s', $matchedDelimiterFull)) // If end regex was complex (backref)
-                ) {
-                    $findPos['end_begin'] = $matchedDelimiterOffset;
-                    $findPos['end_end'] = $currentSearchPositionInLoop;
-                    $count_end++;
-                    $this->logger->debug("REGEX_PATH: Loop: Matched end delimiter.", ['end_pos' => $findPos['end_begin'], 'count' => $count_end]);
-                } else {
-                    $count_begin++;
-                    $this->logger->debug("REGEX_PATH: Loop: Matched begin (or non-end) delimiter.", ['count' => $count_begin]);
-                }
+
+                // --- START: ERSETZE AB HIER ---
+$this->logger->debug("REGEX_PATH: Loop match array", ['matches' => $matches_loop]);
+
+// The full matched string is always in group 0
+$matchedDelimiterFull = $matches_loop[0][0];
+$matchedDelimiterOffset = $matches_loop[0][1];
+$currentSearchPositionInLoop = $matchedDelimiterOffset + strlen($matchedDelimiterFull);
+
+// Check if the END delimiter's group (group 2) was the one that matched.
+// The `[1]` is the offset. -1 means the group did not match anything.
+if (isset($matches_loop[2]) && $matches_loop[2][1] !== -1) {
+    // End delimiter was found
+    $findPos['end_begin'] = $matchedDelimiterOffset;
+    $findPos['end_end'] = $currentSearchPositionInLoop;
+    $count_end++;
+    $this->logger->debug("REGEX_PATH: Loop: Matched END delimiter.", ['end_pos' => $findPos['end_begin'], 'count' => $count_end]);
+} else {
+    // Otherwise, it must have been the BEGIN delimiter (group 1)
+    $count_begin++;
+    $this->logger->debug("REGEX_PATH: Loop: Matched BEGIN delimiter.", ['count' => $count_begin]);
+}
+// --- ENDE: ERSETZE BIS HIER ---
+
+
+
             } else {
                 $this->logger->info("REGEX_PATH: Loop: No further delimiters by main pattern.");
                 break;
@@ -635,9 +646,7 @@ class PregContentFinder
         ?int $startPosition = null, SearchMode|string|null $searchMode = null
     ): string|false {
         // $this->logger->debug(['begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode]);
-
         // $fileHandler->setLevel(Level::Info);
-
 
         if($beginRegex){
             $this->userProvidedBeginDelimiter = $beginRegex;
