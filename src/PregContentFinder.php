@@ -428,9 +428,30 @@ private function prepareEffectiveDelimiters(): void
         return $modifiedEndRegex;
     }
 
-    /**
-     * Finds the next segment using regular expressions, handling nesting and search modes.
-     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* Finds the next segment using regular expressions, handling nesting and search modes.
+*/
 
 private function findNextSegmentRegex(int $searchOffset): ?array
 {
@@ -520,6 +541,17 @@ private function findNextSegmentRegex(int $searchOffset): ?array
 
     return $findPos;
 }
+
+
+
+
+     
+
+
+
+
+
+
 
 
 

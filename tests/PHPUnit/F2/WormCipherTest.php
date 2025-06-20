@@ -83,7 +83,7 @@ private function applyWormTransformations(string $content): string
 
     public function testNestedWorms(): void
     {
-                $this->markTestSkipped('This test is not critical. Maybe enable it later.');
+                // $this->markTestSkipped('This test is not critical. Maybe enable it later.');
 
         $source = "Outer WORM_UPPER{test WORM_REVERSE{abc} test} End";
         // Inner WORM_REVERSE{abc} -> cba
@@ -94,7 +94,7 @@ private function applyWormTransformations(string $content): string
 
     public function testMultipleNestedWorms(): void
     {
-        $this->markTestSkipped('This test is not critical. Maybe enable it later.');
+        // $this->markTestSkipped('This test is not critical. Maybe enable it later.');
 
         $source = "Start WORM_WRAP_WITH_STARS{WORM_UPPER{Hello WORM_REVERSE{World}}} End";
         // 1. WORM_REVERSE{World} -> dlroW
@@ -151,8 +151,7 @@ private function applyWormTransformations(string $content): string
 
     public function testWormWithSpecialCharsInContent(): void
     {
-        $this->markTestSkipped('This test is not critical. Maybe enable it later.');
-
+        // $this->markTestSkipped('This test is not critical. Maybe enable it later.');
         $source = "Special WORM_REVERSE{Chars !@#$%^&*()_+-=[]{};':\",./<>?} End";
         $expected = "Special }?/<>\",:;'[]{}=-+_)(*&^%$#@! srahC End";
         $this->assertEquals($expected, $this->applyWormTransformations($source));
