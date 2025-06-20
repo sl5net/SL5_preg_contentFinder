@@ -2,6 +2,8 @@
 namespace SL5\PregContentFinder\Tests;
 
 use SL5\PregContentFinder\PregContentFinder;
+use PHPUnit\Framework\TestCase;
+
 
 class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\TestCase
 {
@@ -23,7 +25,25 @@ class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\Test
         return $content;
     }
 
+
+
+// Innerhalb der Klasse PregContentFinderPerformanceComparisonTest
+
+/**
+ * Ruft die geschützte getBorders-Methode auf einem PregContentFinder-Objekt auf.
+ * @throws \ReflectionException
+ */
+private function callProtectedGetBorders(PregContentFinder $finder): ?array
+{
+    $reflection = new \ReflectionClass($finder);
+    $method = $reflection->getMethod('getBorders');
+    return $method->invoke($finder);
+}
+
+
+
     // --- "Vanilla PHP" Implementations for Comparison ---
+
 
     /**
      * Vanilla PHP equivalent for deeply nested structure processing.
@@ -231,16 +251,21 @@ class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\Test
         $startMemoryPCF = memory_get_usage();
         $currentPosPCF = 0;
         $finder->setPosOfNextSearch($currentPosPCF);
-        while (($content = $finder->getContent()) !== false && $content !== "") { // Assuming empty string can be valid content
-            $pcfIterations++;
-            $extractedPCF[] = $content;
-            $borders = $finder->getBorders();
-            if ($borders === null || $borders['end_end'] === null) break;
-            $currentPosPCF = $borders['end_end'];
-            if ($currentPosPCF >= strlen($testString)) break;
-            $finder->setPosOfNextSearch($currentPosPCF);
-             if ($pcfIterations > $numBlocks + 5) break;
-        }
+
+while (($content = $finder->getContent_Next()) !== false) {
+    // getContent_Next() findet den nächsten Block UND gibt seinen Inhalt zurück.
+    // Der interne Pointer wird automatisch aktualisiert.
+    $pcfIterations++;
+    $extractedPCF[] = $content;
+
+    // Wir brauchen keine manuelle Pointer-Verwaltung mehr.
+    // Kein getBorders(), kein setPosOfNextSearch().
+    if ($pcfIterations > $numBlocks + 5) { // Sicherheitsschleife
+        $this->fail("Infinite loop detected in PregContentFinder part.");
+        break;
+    }
+}
+
         $endTimePCF = microtime(true);
         $endMemoryPCF = memory_get_usage();
         $durationPCF = $endTimePCF - $startTimePCF;
@@ -271,4 +296,70 @@ class PregContentFinderPerformanceComparisonTest extends \PHPUnit\Framework\Test
         $this->assertEquals($numBlocks, $vanillaIterations);
         $this->assertEquals($extractedPCF, $extractedVanilla, "Extracted content should be identical.");
     }
+
+
+
+
+// Innerhalb der Klasse PregContentFinderPerformanceComparisonTest
+
+/**
+ * @group performance
+ * @group fast-mode
+ */
+public function testLargeStringManyBlocksWithSimpleStringModeIsFast(): void
+{
+    $numBlocks = 5000;
+    $blockContentLength = 50;
+    $openDelim = "BLOCK{";
+    $closeDelim = "}END_BLOCK";
+    $testString = $this->generateLargeStringWithManyBlocks("StartText_", $openDelim, $closeDelim, $numBlocks, $blockContentLength);
+
+    // --- PregContentFinder im neuen, schnellen Modus ---
+    $finder = new PregContentFinder($testString);
+    $finder->setBeginEndDelimiters($openDelim, $closeDelim);
+    
+    // =========================================================
+    // === HIER WIRD DER NEUE, SCHNELLE MODUS AKTIVIERT ===
+    // =========================================================
+    $finder->setSearchMode(\SL5\PregContentFinder\SearchMode::SIMPLE_STRING_NO_NESTING);
+
+    $pcfIterations = 0;
+    $extractedPCF = [];
+    $startTimePCF = microtime(true);
+    $startMemoryPCF = memory_get_usage();
+
+    while (($content = $finder->getContent_Next()) !== false) {
+        $pcfIterations++;
+        $extractedPCF[] = $content;
+        if ($pcfIterations > $numBlocks + 5) {
+            $this->fail("Infinite loop detected in PregContentFinder (fast mode) part.");
+            break;
+        }
+    }
+    
+    $endTimePCF = microtime(true);
+    $endMemoryPCF = memory_get_usage();
+    $durationPCF = $endTimePCF - $startTimePCF;
+    $memoryPCF = $endMemoryPCF - $startMemoryPCF;
+
+    echo "\n--- Large String Many Blocks (PregContentFinder with SIMPLE_STRING_NO_NESTING) ---\n";
+    echo "Number of Blocks: {$numBlocks}, String Length: " . strlen($testString) . " bytes\n";
+    echo "Found Blocks (Iterations): {$pcfIterations}\n";
+    echo "Duration: " . number_format($durationPCF, 6) . " seconds\n";
+    echo "Memory Used (approx.): " . number_format($memoryPCF / 1024, 2) . " KB\n";
+    
+    $this->assertEquals($numBlocks, $pcfIterations);
+
+    // Vergleiche die Dauer mit einem sehr kleinen Wert, um die Geschwindigkeit zu beweisen.
+    // Der alte Test dauerte ~0.6s, wir erwarten jetzt etwas im Bereich von < 0.01s.
+    $this->assertLessThan(0.1, $durationPCF, "The fast mode should be significantly faster than the regex mode.");
+}
+
+
+
+
+
+
+
+
 }

@@ -49,6 +49,8 @@ class PregContentFinder
     private ?int $currentSegmentId = null;
     protected string $logFilePath = ''; 
     protected Logger $logger; 
+
+
     protected ?StreamHandler $logFileHandler = null; // Property to store the handler
 
     public function __construct(
@@ -269,22 +271,74 @@ class PregContentFinder
         }
 
 
-        if ($oldModeValue !== $this->currentSearchMode->value) {
-            $this->logger->info("Search mode changed.", [
-                'old_mode' => $oldModeValue,
-                'new_mode' => $this->currentSearchMode->value
-            ]);
+    // Nachdem der neue $this->currentSearchMode gesetzt wurde, fügen wir die Log-Steuerung hinzu
+    if ($oldModeValue !== $this->currentSearchMode->value) {
+        $this->logger->info("Search mode changed.", [
+            'old_mode' => $oldModeValue,
+            'new_mode' => $this->currentSearchMode->value
+        ]);
 
-            // *** THE FIX IS HERE ***
-            // If the user has already provided delimiters, we must re-prepare them
-            // now that the search mode has changed.
+
+
+
+
+        // ===    LOG-STEUERUNG 
+        // =======================================================
+        if ($this->currentSearchMode === SearchMode::SIMPLE_STRING_NO_NESTING) {
+            // Im schnellsten Modus, schalte das Logging ab, indem du den Handler entfernst.
+            if ($this->logFileHandler && !empty($this->logger->getHandlers())) {
+                $this->logger->popHandler();
+                // Wir können eine letzte Nachricht ins Log schreiben, BEVOR es abgeschaltet wird
+                $this->logger->warning("PERFORMANCE MODE ACTIVATED: File logging is now disabled.");
+            }
+        } else {
+            // Für alle anderen Modi, stelle sicher, dass das Logging aktiv ist.
+            // Wir prüfen, ob der Logger leer ist, um zu vermeiden, den Handler doppelt hinzuzufügen.
+            if ($this->logFileHandler && empty($this->logger->getHandlers())) {
+                $this->logger->pushHandler($this->logFileHandler);
+                $this->logger->info("Logging re-enabled for standard/debug mode.");
+            }
+        }
+        // =======================================================
+
+
+
             if (isset($this->userProvidedBeginDelimiter)) {
                 $this->prepareEffectiveDelimiters();
             }
 
             $this->clearCacheAndResults();
         }
+     
+        
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 private function prepareEffectiveDelimiters(): void
 {
@@ -309,11 +363,13 @@ private function prepareEffectiveDelimiters(): void
 // in prepareEffectiveDelimiters:
 
         case SearchMode::SIMPLE_STRING_NO_NESTING:
-            // You only set effectiveBeginDelimiter
+            // In diesem Modus verwenden wir die user-provided Delimiter direkt in
+            // der findFirstSimpleStringMatch-Methode. Wir setzen die
+            // "effective" Delimiter hier nur zur Konsistenz, damit sie nicht null sind.
             $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
-            // But you never set effectiveEndDelimiter for this case!
-            $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
-            break; // The break happens before the logger call at the end
+            $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter;
+            $this->logger->debug("Prepared for SIMPLE_STRING_NO_NESTING mode. Delimiters will be used as plain strings.");
+            break;
 
         case SearchMode::DONT_TOUCH_THIS:
         case SearchMode::USE_BACKREFERENCE:
@@ -355,7 +411,7 @@ private function prepareEffectiveDelimiters(): void
         $this->borderMatchCache = [];
         $this->foundSegmentsList = [];
         $this->currentSegmentId = null;
-        $this->logger->info("Cache and results list cleared.");
+        // $this->logger->info("Cache and results list cleared.");
     }
 
     public function getEffectiveBeginDelimiter(): string { return $this->effectiveBeginDelimiter; }
@@ -390,7 +446,7 @@ private function prepareEffectiveDelimiters(): void
 
         $beginEndPos = $beginPos + strlen($beginRegex);
         $endPos = strpos($this->content, $endRegex, $beginEndPos);
-        $this->logger->info("Content: $this->content, EndRegex: $endRegex, BeginEndPos: $beginEndPos");
+        // $t^his->logger->info("Content: $this->content, EndRegex: $endRegex, BeginEndPos: $beginEndPos");
 
         if ($endPos === false) {
             $this->logger->debug("Simple search: End delimiter not found after begin.", ['end_delim' => $endRegex, 'searched_from' => $beginEndPos]);
@@ -652,6 +708,8 @@ protected function getBorders(
     $effectiveSearchPos = $startPositionParam ?? $this->nextSearchPosition;
     
     
+
+    
         // --- Cache Lookup ---
         $cacheKey = hash('sha256', $this->currentSearchMode->value . $this->effectiveBeginDelimiter . $this->effectiveEndDelimiter . $effectiveSearchPos);
         if (isset($this->borderMatchCache[$cacheKey])) {
@@ -671,14 +729,20 @@ protected function getBorders(
 
         // --- Delegate to specific find method ---
         $foundMatchArray = null;
+
+        // $this->logger->critical("ROUTER_CHECK", ['current_mode' => $this->currentSearchMode->value]);
+
+        // =======================================================
         if ($this->currentSearchMode === SearchMode::SIMPLE_STRING_NO_NESTING) {
+            // Benutze die neue, schnelle Vanilla-Methode
+            // $this->logger->info("getBorders: Routing to fast simple string search.");
             $foundMatchArray = $this->findFirstSimpleStringMatch($effectiveSearchPos);
         } else {
-            $this->logger->debug("findNextSegmentRegex called.");
+            // Benutze die mächtige Regex-Engine für alle anderen komplexen Fälle
+            $this->logger->info("getBorders: Routing to advanced regex search engine.");
             $foundMatchArray = $this->findNextSegmentRegex($effectiveSearchPos);
-            $this->logger->debug(var_export($foundMatchArray, true));
-
         }
+        // =======================================================
 
         // --- Process result ---
         $finalResultForReturn = null;
@@ -857,11 +921,6 @@ public function getContent_user_func_recursive(callable $userCallback, int $curr
     // 8. Join all pieces back together.
     return implode('', $resultParts);
 }
-
-
-
-
-
 
 
 
