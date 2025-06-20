@@ -23,6 +23,7 @@ enum SearchMode: string
 
 class PregContentFinder
 {
+    public bool $isUniqueSignUsed = false; 
     public readonly string $content;
 
     public ?string $userProvidedBeginDelimiter;
@@ -132,6 +133,43 @@ class PregContentFinder
     }
 
 
+
+    // Füge diese Methode zur Klasse hinzu
+    public function getUniqueSignExtreme(): ?string
+    {
+        if (!$this->isUniqueSignUsed) {
+            // Funktion ist nicht aktiviert, um keine unnötige Performance zu kosten.
+            $this->logger->warning("getUniqueSignExtreme called but isUniqueSignUsed is false.");
+            return null;
+        }
+
+        // Wir testen eine Reihe unwahrscheinlicher ASCII-Steuerzeichen.
+        // Das erste, das nicht im String vorkommt, wird unser "sicheres" Zeichen.
+        for ($i = 1; $i <= 31; $i++) {
+            $char = chr($i);
+            if (strpos($this->content, $char) === false) {
+                $this->logger->info("Found unique sign for protection.", ['char_code' => $i]);
+                return $char;
+            }
+        }
+        
+        // Fallback, falls der String alle Steuerzeichen enthält (extrem unwahrscheinlich)
+        $this->logger->error("Could not find a unique sign in the content string.");
+        return null; 
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Sets the regular expressions for the beginning and end delimiters.
      *
@@ -211,61 +249,69 @@ class PregContentFinder
             throw new \InvalidArgumentException("Invalid type for search mode. Expected string or SearchMode enum instance.");
         }
 
+
         if ($oldModeValue !== $this->currentSearchMode->value) {
             $this->logger->info("Search mode changed.", [
                 'old_mode' => $oldModeValue,
                 'new_mode' => $this->currentSearchMode->value
             ]);
-            // prepareEffectiveDelimiters wird nur aufgerufen, wenn userProvidedDelimiters schon gesetzt sind
+
+            // *** THE FIX IS HERE ***
+            // If the user has already provided delimiters, we must re-prepare them
+            // now that the search mode has changed.
             if (isset($this->userProvidedBeginDelimiter)) {
                 $this->prepareEffectiveDelimiters();
             }
+
             $this->clearCacheAndResults();
         }
     }
 
-    private function prepareEffectiveDelimiters(): void
-    {
-        if (!isset($this->userProvidedBeginDelimiter) || !isset($this->userProvidedEndDelimiter)) {
-            $this->logger->critical("Cannot prepare effective delimiters: userProvidedDelimiters are not set. This indicates an internal logic error or incorrect initialization order.");
-            // This state should ideally be prevented by constructor logic or setters.
-            // Forcing an error or setting to a known "broken" state might be appropriate.
-            // For now, we'll assume they get set properly before this is critically needed.
-            // If they are null, an error will occur later anyway.
-            $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter ?? ''; // Fallback to avoid error, but it's a problem
-            $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter ?? '';
-            $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
-            return;
-        }
-
-        switch ($this->currentSearchMode) {
-            case SearchMode::LAZY_WHITESPACE:
-
-            $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->userProvidedBeginDelimiter, true) : '';
-
-            // $this->effectiveEndDelimiter = $this->userProvidedBeginDelimiter ? $this->escapeRegexForDelimiter($this->effectiveEndDelimiter, true) : '';
-            $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter ? $this->escapeRegexForDelimiter($this->userProvidedEndDelimiter, true) : '';
-
-                break;
-            case SearchMode::SIMPLE_STRING_NO_NESTING:
-                $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
-                $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter;
-                $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
-                break;
-            case SearchMode::DONT_TOUCH_THIS:
-            case SearchMode::USE_BACKREFERENCE:
-                $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
-                $this->effectiveEndDelimiter = $this->userProvidedEndDelimiter;
-                $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
-                break;
-        }
-        $this->logger->debug("Effective delimiters prepared.", [
-            'mode' => $this->currentSearchMode->value,
-            'effective_begin' => $this->effectiveBeginDelimiter,
-            'effective_end' => $this->effectiveEndDelimiter
-        ]);
-
+private function prepareEffectiveDelimiters(): void
+{
+    if (!isset($this->userProvidedBeginDelimiter) || !isset($this->userProvidedEndDelimiter)) {
+        // This is a critical state, but for now we ensure properties exist to avoid errors.
+        $this->effectiveBeginDelimiter = '';
+        $this->effectiveEndDelimiter = '';
+        $this->logger->critical("Cannot prepare effective delimiters: user-provided delimiters are not set.");
+        return;
     }
+
+    // Use local variables for preparation
+    $begin = $this->userProvidedBeginDelimiter;
+    $end = $this->userProvidedEndDelimiter;
+
+    switch ($this->currentSearchMode) {
+        case SearchMode::LAZY_WHITESPACE:
+            $this->effectiveBeginDelimiter = $this->escapeRegexForDelimiter($begin, true);
+            $this->effectiveEndDelimiter = $this->escapeRegexForDelimiter($end, true);
+            break;
+        
+// in prepareEffectiveDelimiters:
+
+        case SearchMode::SIMPLE_STRING_NO_NESTING:
+            // You only set effectiveBeginDelimiter
+            $this->effectiveBeginDelimiter = $this->userProvidedBeginDelimiter;
+            // But you never set effectiveEndDelimiter for this case!
+            $this->logger->info("effectiveBeginDelimiter: $this->effectiveBeginDelimiter, effectiveEndDelimiter: $this->effectiveEndDelimiter");
+            break; // The break happens before the logger call at the end
+
+        case SearchMode::DONT_TOUCH_THIS:
+        case SearchMode::USE_BACKREFERENCE:
+            // Use the provided regex patterns as-is.
+            $this->effectiveBeginDelimiter = $begin;
+            $this->effectiveEndDelimiter = $end;
+            break;
+    }
+
+    // This log call is now safe because all cases above initialize both properties.
+    $this->logger->debug("Effective delimiters prepared.", [
+        'mode' => $this->currentSearchMode->value,
+        'effective_begin' => $this->effectiveBeginDelimiter,
+        'effective_end' => $this->effectiveEndDelimiter
+    ]);
+}
+
 
     private function escapeRegexForDelimiter(string|null $string = '', bool $makeWhitespaceFlexible = false, string $delimiterChar = '~'): string
     {
@@ -393,90 +439,104 @@ class PregContentFinder
 
 
 
-
-
-
-
 private function findNextSegmentRegex(int $searchOffset): ?array
 {
-    $this->logger->info("REGEX_PATH: Starting regex segment search.", [
-        'offset' => $searchOffset, 'mode' => $this->currentSearchMode->value,
-        'eff_begin_regex' => $this->effectiveBeginDelimiter,
-        'eff_end_regex_tpl' => $this->effectiveEndDelimiter
+    $this->logger->info("FINAL_ROBUST_PATH: Starting manual count segment search.", [
+        'offset' => $searchOffset,
+        'begin_regex' => $this->effectiveBeginDelimiter,
+        'end_regex' => $this->effectiveEndDelimiter
     ]);
 
     $txt = $this->content;
     $strLenTxt = strlen($txt);
 
-    if ($searchOffset >= $strLenTxt) {
+    // Schritt 1: Finde den allerersten Start-Delimiter. Wenn der nicht da ist, sind wir fertig.
+    if (!preg_match('~' . $this->effectiveBeginDelimiter . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $searchOffset)) {
+        $this->logger->info("FINAL_ROBUST_PATH: No initial begin-delimiter found.");
         return null;
     }
 
-    $activeBeginRegexForLoop = $this->effectiveBeginDelimiter;
-    $activeEndRegexForLoop = $this->effectiveEndDelimiter;
+    $findPos = [
+        'begin_begin' => $matches_begin[0][1],
+        'begin_end'   => $matches_begin[0][1] + strlen($matches_begin[0][0]),
+        'end_begin'   => null,
+        'end_end'     => null,
+        'matches'     => ['begin_matches' => $matches_begin]
+    ];
+    
+    $balance = 1; // Wir haben unseren ersten Start-Delimiter gefunden
+    $currentSearchPosition = $findPos['begin_end'];
 
-    $findPos = ['begin_begin' => null, 'begin_end' => null, 'end_begin' => null, 'end_end' => null];
-    $matchesReturn = ['begin_begin' => null, 'end_begin' => null];
+    // Schritt 2: Manuelle Zählschleife. Robust und explizit.
+    while ($balance > 0 && $currentSearchPosition < $strLenTxt) {
+        // Finde die Position des NÄCHSTEN Start- ODER End-Delimiters
+        $foundBegin = preg_match('~' . $this->effectiveBeginDelimiter . '~sm', $txt, $match_b, PREG_OFFSET_CAPTURE, $currentSearchPosition);
+        $posBegin = $foundBegin ? $match_b[0][1] : PHP_INT_MAX;
 
-    $count_begin = 0;
-    $count_end = 0;
-    $emergency_Stop = 0;
-    $currentSearchPositionInLoop = $searchOffset;
+        $foundEnd = preg_match('~' . $this->effectiveEndDelimiter . '~sm', $txt, $match_e, PREG_OFFSET_CAPTURE, $currentSearchPosition);
+        $posEnd = $foundEnd ? $match_e[0][1] : PHP_INT_MAX;
 
-    // --- Schritt 1: Finde den allerersten Start-Delimiter ---
-    if (!preg_match('~' . $activeBeginRegexForLoop . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
-        return null;
-    }
-
-    $findPos['begin_begin'] = $matches_begin[0][1];
-    $matchLength = strlen($matches_begin[0][0]);
-    $findPos['begin_end'] = $findPos['begin_begin'] + $matchLength;
-    // KORREKTUR FÜR ZERO-WIDTH:
-    $currentSearchPositionInLoop = $findPos['begin_begin'] + ($matchLength > 0 ? $matchLength : 1);
-    $count_begin++;
-
-
-    // --- Schritt 2: Baue das Such-Pattern für die Schleife ---
-    $mainLoopPattern = '~' . $activeBeginRegexForLoop . '|' . $activeEndRegexForLoop . '~sm';
-
-
-    // --- Schritt 3: Schleife, die nach Balance sucht ---
-    while ($count_begin > $count_end && $emergency_Stop < 1000) {
-        $emergency_Stop++;
-
-        if (!preg_match($mainLoopPattern, $txt, $matches_loop, PREG_OFFSET_CAPTURE, $currentSearchPositionInLoop)) {
+        // Wenn gar nichts mehr gefunden wird, brechen wir ab.
+        if (!$foundBegin && !$foundEnd) {
             break;
         }
 
-        $matchedDelimiterFull = $matches_loop[0][0];
-        $matchedDelimiterOffset = $matches_loop[0][1];
-        $matchLength = strlen($matchedDelimiterFull);
-
-        if (preg_match('~^' . $activeEndRegexForLoop . '$~s', $matchedDelimiterFull)) {
-            $count_end++;
-            if ($count_begin === $count_end) {
-                $findPos['end_begin'] = $matchedDelimiterOffset;
-                $findPos['end_end'] = $matchedDelimiterOffset + $matchLength;
-            }
+        // Entscheiden, welcher Delimiter als nächstes kommt.
+        if ($posBegin < $posEnd) {
+            // Ein weiterer Start-Delimiter kommt zuerst.
+            $balance++;
+            $currentSearchPosition = $match_b[0][1] + strlen($match_b[0][0]);
         } else {
-            $count_begin++;
+            // Ein End-Delimiter kommt zuerst.
+            $balance--;
+            $currentSearchPosition = $match_e[0][1] + strlen($match_e[0][0]);
+            if ($balance === 0) {
+                // Das ist die passende schließende Klammer! Mission erfüllt.
+                $findPos['end_begin'] = $match_e[0][1];
+                $findPos['end_end'] = $currentSearchPosition;
+            }
+        }
+         // WICHTIG: Korrektur für Zero-Width-Matches, falls der Sucher an derselben Stelle bleibt
+        if ($foundBegin && ($match_b[0][1] + strlen($match_b[0][0])) <= $findPos['end_end'] && strlen($match_b[0][0]) === 0) {
+             $currentSearchPosition = $findPos['end_end'] +1;
         }
 
-        // KORREKTUR FÜR ZERO-WIDTH:
-        $currentSearchPositionInLoop = $matchedDelimiterOffset + ($matchLength > 0 ? $matchLength : 1);
     }
 
-
-    // --- Schritt 4: Ergebnis auswerten ---
-    if ($count_begin > $count_end && $this->stopOnMissingEndBorder === false) {
-        $findPos['end_begin'] = $strLenTxt;
-        $findPos['end_end'] = $strLenTxt;
-    } elseif ($count_begin > $count_end) {
+// Schritt 3: Ergebnis auswerten, falls die Schleife ohne Balance geendet hat.
+if ($balance > 0) { 
+    if ($this->stopOnMissingEndBorder) {
+        $this->logger->info("FINAL_ROBUST_PATH: Unbalanced, stopping as per stopOnMissingEndBorder flag.");
         return null;
     }
 
-    $findPos['matches'] = $matchesReturn;
-    return $findPos;
+    // SPEZIALREGEL FÜR UNBALANCIERTE BLÖCKE (gemäß Test-Anforderung):
+    // Der Inhalt endet vor dem letzten Vorkommen des End-Delimiters im gesamten String.
+    $this->logger->info("FINAL_ROBUST_PATH: Unbalanced, applying special rule for unclosed blocks.");
+    
+    // Wir suchen nach dem LETZTEN Vorkommen des End-Delimiters im gesamten String-Teil
+    $subContent = substr($txt, $findPos['begin_end']);
+    if (preg_match_all('~' . $this->effectiveEndDelimiter . '~sm', $subContent, $all_ends, PREG_OFFSET_CAPTURE)) {
+        
+        $last_end_match = end($all_ends[0]);
+        
+        // Offset ist relativ zum $subContent, wir brauchen den absoluten Offset.
+        $absolute_offset = $findPos['begin_end'] + $last_end_match[1];
+        
+        $findPos['end_begin'] = $absolute_offset;
+        $findPos['end_end']   = $absolute_offset + strlen($last_end_match[0]);
+
+        $this->logger->debug("FINAL_ROBUST_PATH: Found last end-delimiter for unbalanced content.", ['absolute_pos' => $absolute_offset]);
+
+    } else {
+        // Kein einziger End-Delimiter im Rest des Strings gefunden. Inhalt ist alles.
+        $this->logger->debug("FINAL_ROBUST_PATH: No end-delimiters found for unbalanced content.");
+        $findPos['end_begin'] = $strLenTxt;
+        $findPos['end_end'] = $strLenTxt;
+    }
+}
+
+return $findPos;
 }
 
 
@@ -495,46 +555,35 @@ private function findNextSegmentRegex(int $searchOffset): ?array
 
 
 
+protected function getBorders(
+    ?string $beginRegexParam = null,
+    ?string $endRegexParam = null,
+    ?int $startPositionParam = null,
+    SearchMode|string|null $searchModeParam = null
+): ?array {
+    
+    // Temporäre Einstellungen speichern
+    $originalSearchMode = $this->currentSearchMode;
+    $originalBeginDelim = $this->userProvidedBeginDelimiter;
+    $originalEndDelim = $this->userProvidedEndDelimiter;
+    $settingsChanged = false;
 
+    // *** KORREKTE, SAUBERE LOGIK ***
+    // 1. Zuerst den Modus setzen, falls ein neuer übergeben wird.
+    if ($searchModeParam !== null && ($searchModeParam instanceof SearchMode || $this->currentSearchMode->value !== $searchModeParam)) {
+        $this->setSearchMode($searchModeParam);
+        $settingsChanged = true;
+    }
+    
+    // 2. Danach die Delimiter setzen, falls neue übergeben werden.
+    // Das ruft intern prepareEffectiveDelimiters im Kontext des NEUEN Modus auf.
+    if ($beginRegexParam !== null || $endRegexParam !== null) {
+        $this->setBeginEndDelimiters($beginRegexParam, $endRegexParam);
+        $settingsChanged = true;
+    }
 
-
-
-
-
-
-    protected function getBorders(
-        ?string $beginRegexParam = '',
-        ?string $endRegexParam = '',
-        ?int $startPositionParam = null,
-        SearchMode|string|null $searchModeParam = null
-    ): ?array {
-
-        $this->logger->debug("hiho"); 
-        $this->logger->debug("$beginRegexParam:" . $beginRegexParam); 
-
-
-
-        // Store original instance settings to restore them later if params temporarily override them
-        $originalInstanceSearchMode = $this->currentSearchMode;
-        $originalInstanceUserBeginRegex = $this->userProvidedBeginDelimiter;
-        $originalInstanceUserEndRegex = $this->userProvidedEndDelimiter;
-        $wereSettingsTemporarilyChanged = false;
-
-        // Apply temporary settings if parameters are provided
-        if ($searchModeParam !== null) {
-            $this->setSearchMode($searchModeParam); // This also calls prepareEffectiveDelimiters and clearCache
-            $wereSettingsTemporarilyChanged = true;
-        }
-        if ($beginRegexParam !== null || $endRegexParam !== null) {
-            // If only one is provided, use instance default for the other
-            $effectiveBegin = $beginRegexParam ?? $this->userProvidedBeginDelimiter;
-            $effectiveEnd = $endRegexParam ?? $this->userProvidedEndDelimiter;
-            $this->setBeginEndDelimiters($effectiveBegin, $effectiveEnd); // This also calls prepareEffectiveDelimiters and clearCache
-            $wereSettingsTemporarilyChanged = true;
-        }
-
-        $effectiveSearchPos = $startPositionParam ?? $this->nextSearchPosition;
-
+    $effectiveSearchPos = $startPositionParam ?? $this->nextSearchPosition;
+    
     
         // --- Cache Lookup ---
         $cacheKey = hash('sha256', $this->currentSearchMode->value . $this->effectiveBeginDelimiter . $this->effectiveEndDelimiter . $effectiveSearchPos);
@@ -587,6 +636,14 @@ private function findNextSegmentRegex(int $searchOffset): ?array
             $this->setBeginEndDelimiters($originalInstanceUserBeginRegex, $originalInstanceUserEndRegex);
             $this->setSearchMode($originalInstanceSearchMode);
         }
+
+
+        // Am Ende, den Originalzustand wiederherstellen, falls er geändert wurde
+        if ($settingsChanged) {
+            $this->setSearchMode($originalSearchMode);
+            $this->setBeginEndDelimiters($originalBeginDelim, $originalEndDelim);
+        }
+
         return $finalResultForReturn;
     }
 
@@ -599,104 +656,177 @@ private function findNextSegmentRegex(int $searchOffset): ?array
         return $newId;
     }
 
-    // --- `getContent` and `getContent_user_func_recursive` still need full implementation ---
-    public function getContent(
-        ?string $beginRegex = '', ?string $endRegex = '',
-        ?int $startPosition = null, SearchMode|string|null $searchMode = null
-    ): string|false {
-        // $this->logger->debug(['begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode]);
-        // $fileHandler->setLevel(Level::Info);
+public function getContent(
+    ?string $beginRegex = null, 
+    ?string $endRegex = null,
+    ?int $startPosition = null, 
+    SearchMode|string|null $searchMode = null
+): string|false {
 
-        if($beginRegex){
-            $this->userProvidedBeginDelimiter = $beginRegex;
-        }
-        if($endRegex){
-            $this->userProvidedEndDelimiter = $endRegex;
-        }
-        if($beginRegex || $endRegex){
-            $this->prepareEffectiveDelimiters();
-        }
-        // $this->logger->info("BeginRegex: $beginRegex, EndRegex: $endRegex");
-
-        if($startPosition){
-            $this->nextSearchPosition = $startPosition;
-        }else{
-            $startPosition = 0;
-            $this->nextSearchPosition = $startPosition;
-        }
-        $this->logger->info("StartPosition: $startPosition");
-
-        if($searchMode){
-            $this->setSearchMode($searchMode);
-        }
-
-        if(!$beginRegex){
-            $this->logger->info('strange. begin is empty');
-        }
-        if(!is_string($beginRegex)){
-            $this->logger->info('strange. begin not string');
-        }
-
-        $this->logger->info("BeginRegex: $beginRegex, EndRegex: $endRegex, StartPosition: $startPosition, SearchMode: " . $searchMode->name);
-        
-        $segmentData = $this->getBorders($beginRegex, $endRegex, $startPosition, $searchMode);
+    $isTemporarySearch = ($beginRegex !== null || $endRegex !== null || $searchMode !== null);
 
 
-        if ($segmentData === null || !isset($segmentData['begin_end']) || !isset($segmentData['end_begin'])) {
-            $this->logger->info("getContent: getBorders returned no valid segment.");
-            return false;
-        }
-        if ($segmentData['end_begin'] < $segmentData['begin_end']) {
-            $this->logger->warning("getContent: end_begin is before begin_end.", ['segment' => $segmentData]);
-            return "";
-        }
-        $this->logger->info('begin_end:' . $segmentData['begin_end'] . ', end_begin:' . $segmentData['end_begin']);
-        $content = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']);
-        $this->logger->info('content_length:' . strlen($content));
-        $this->logger->info($content);
-        return $content;
-    }
-
-// --- START: ERSETZE DEN GESAMTEN FUNKTIONSINHALT MIT DIESEM DEBUG-CODE ---
-
-// --- START: ERSETZE DEN GESAMTEN FUNKTIONSINHALT ---
-
-public function getContent_user_func_recursive(callable $userCallback): string|false
-{
-    // Finde das allererste Segment ab der Startposition der Instanz
-    $segmentData = $this->getBorders(null, null, $this->nextSearchPosition, null);
-
-    // Fall 1: Kein Segment gefunden. Gib den Inhalt so zurück, wie er ist.
-    if ($segmentData === null) {
-        return $this->content;
-    }
-
-    // Fall 2: Ein Segment wurde gefunden. Zerlege den String KORREKT in seine Teile.
-    $partBeforeSegment = substr($this->content, 0, $segmentData['begin_begin']);
-    $contentOfSegment  = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']); // KORRIGIERT
-    $partAfterSegment = substr($this->content, $segmentData['end_end']);
+    $this->logger->info("getContent called. Delegating to getBorders.", [
+        'begin' => $beginRegex, 'end' => $endRegex, 'pos' => $startPosition, 'mode' => $searchMode
+    ]);
     
-
-    // Bereite den $cut-Array für den Callback vor.
-    $cutForCallback = [
-        'middle' => $contentOfSegment,
-        'behind' => $partAfterSegment,
-        'before' => '', // Wird vom Test-Callback hinzugefügt, also initialisieren wir es.
-    ];
-
-    // Rufe den Callback auf
-    $transformedCut = $userCallback($cutForCallback, 0, 1, [], $contentOfSegment);
-
-    // Setze das Endergebnis zusammen.
-    if (is_array($transformedCut) && isset($transformedCut['middle'])) {
-        // Die Logik des Test-Callbacks ist: middle wird zu middle + behind.
-        // Das Ergebnis der Funktion sollte also sein: before + (neues middle).
-        return $partBeforeSegment . $transformedCut['middle'];
+    if ($isTemporarySearch) {
+        $this->logger->info("getContent: Starting temporary search. Saving instance state.");
+        $originalSearchMode = $this->currentSearchMode;
+        $originalBeginDelim = $this->userProvidedBeginDelimiter;
+        $originalEndDelim = $this->userProvidedEndDelimiter;
+        $originalNextPos = $this->nextSearchPosition;
     }
 
-    // Fallback, falls der Callback etwas Unerwartetes zurückgibt.
-    return $this->content;
+    // KORRIGIERTE LOGIK:
+    // Wenn ein temporärer Modus oder temporäre Delimiter übergeben werden,
+    // müssen wir sicherstellen, dass sie in der richtigen Reihenfolge verarbeitet werden.
+    // getBorders ist dafür ausgelegt, dies zu handhaben. Wir müssen nur die Parameter durchreichen.
+
+
+    // Zuerst den Modus setzen, falls ein temporärer übergeben wurde.
+    if ($searchMode !== null) {
+        $this->setSearchMode($searchMode);
+    }
+    // Danach die Delimiter setzen, die den korrekten Modus nutzen.
+    if ($beginRegex !== null || $endRegex !== null) {
+        $this->setBeginEndDelimiters($beginRegex, $endRegex);
+    }
+
+    
+    $effectiveStartPosition = $startPosition ?? $this->getPosOfNextSearch();
+    if($startPosition !== null) {
+        $this->setPosOfNextSearch($startPosition);
+    }
+    
+    // Wir übergeben die Parameter direkt an getBorders.
+    // getBorders wird zuerst den Modus setzen (falls vorhanden) und dann die Delimiter.
+    // Dadurch wird sichergestellt, dass die Delimiter im Kontext des richtigen Modus vorbereitet werden.
+    $segmentData = $this->getBorders($beginRegex, $endRegex, $effectiveStartPosition, $searchMode);
+
+    if ($segmentData === null) {
+        $this->logger->info("getContent: getBorders returned no segment.");
+        return false;
+    }
+
+    $content = substr(
+        $this->content, 
+        $segmentData['begin_end'], 
+        $segmentData['end_begin'] - $segmentData['begin_end']
+    );
+    
+    $this->logger->info("getContent: Found content.", ['content' => $content]);
+    return $content;
 }
+
+
+public function getContent_user_func_recursive(callable $userCallback): string
+{
+    // This function is called recursively. Each time, it processes one level of content.
+    // A local finder is used for the top-level iteration to avoid state conflicts.
+    $localFinder = new self($this->content);
+    $localFinder->setSearchMode($this->currentSearchMode);
+    $localFinder->setBeginEndDelimiters($this->userProvidedBeginDelimiter, $this->userProvidedEndDelimiter);
+    
+    $resultParts = [];
+    $lastPosition = 0;
+
+    // The loop finds all non-overlapping, top-level segments in the current content.
+    while (($segmentData = $localFinder->getBorders(null, null, $lastPosition, null)) !== null) {
+        
+        // 1. Add the plain text part BEFORE the current segment.
+        $resultParts[] = substr($this->content, $lastPosition, $segmentData['begin_begin'] - $lastPosition);
+
+        // 2. Isolate the raw content of the current segment.
+        $rawSegmentContent = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']);
+
+        // 3. *** THE UNIFIED RECURSION LOGIC ***
+        $recursivelyProcessedContent = '';
+        
+        // THE CIRCUIT BREAKER:
+        // If the inner content is identical to our current content, we have an infinite loop condition.
+        // This is our new, robust base case.
+        if ($rawSegmentContent === $this->content) {
+            $this->logger->debug("Recursive function circuit breaker: inner content is identical to outer. Halting recursion for this branch.");
+            $recursivelyProcessedContent = $rawSegmentContent;
+        } else {
+            // NORMAL RECURSION: It's safe to dive deeper.
+            $this->logger->debug("Recursive function step: processing inner content.");
+            $innerFinderRecursive = new self($rawSegmentContent);
+            $innerFinderRecursive->setSearchMode($this->currentSearchMode);
+            $innerFinderRecursive->setBeginEndDelimiters($this->userProvidedBeginDelimiter, $this->userProvidedEndDelimiter);
+            $recursivelyProcessedContent = $innerFinderRecursive->getContent_user_func_recursive($userCallback);
+        }
+        
+        // 4. Apply the user's callback to the FULLY RESOLVED inner content.
+        $cutForCallback = ['middle' => $recursivelyProcessedContent];
+        $finalTransformedContent = $userCallback($cutForCallback, 0, 0, [], $recursivelyProcessedContent)['middle'];
+
+        // 5. Add the final, transformed part to our result.
+        $resultParts[] = $finalTransformedContent;
+
+        // 6. Update our position to search for the NEXT segment.
+        $lastPosition = $segmentData['end_end'];
+    }
+
+    // 7. Add the final trailing part of the string.
+    $resultParts[] = substr($this->content, $lastPosition);
+
+    // 8. Join all pieces back together.
+    return implode('', $resultParts);
+}
+
+
+
+
+
+
+
+
+
+
+
+// Füge diese Methoden in die PregContentFinder-Klasse ein
+
+public function getContent_Next(): string|false
+{
+    // getBorders nutzt intern $this->nextSearchPosition, wenn kein Startpunkt übergeben wird.
+    // Nach einem erfolgreichen getContent() steht dieser Wert genau hinter dem letzten Treffer.
+    $segmentData = $this->getBorders(); 
+
+    if ($segmentData === null) {
+        return false;
+    }
+
+    return substr(
+        $this->content,
+        $segmentData['begin_end'],
+        $segmentData['end_begin'] - $segmentData['begin_end']
+    );
+}
+
+public function getContent_Prev(): string|false
+{
+    if ($this->currentSegmentId === null || $this->currentSegmentId < 1) {
+        return false; // Es gibt kein vorheriges Segment
+    }
+
+    // Gehe zum vorherigen Segment
+    $this->currentSegmentId--;
+    $segmentData = $this->foundSegmentsList[$this->currentSegmentId];
+
+    // WICHTIG: Setze die globale Suchposition zurück, damit zukünftige
+    // Aufrufe von getContent() oder getContent_Next() wieder von hier starten.
+    $this->setPosOfNextSearch($segmentData['end_end']);
+
+    return substr(
+        $this->content,
+        $segmentData['begin_end'],
+        $segmentData['end_begin'] - $segmentData['begin_end']
+    );
+}
+
+
 
 
     // TODO: Implement getContent_Before, getContent_Behind, getID, getContent_ByID
@@ -730,6 +860,43 @@ public function getContent_user_func_recursive(callable $userCallback): string|f
         $this->logger->debug("getContent_Before returning.", ['text_before' => $textBefore]);
         return $textBefore;
     }
+
+    public function getContent_Behind(): string|false
+    {
+        // Schritt 1: Prüfen, ob bereits ein Segment gefunden wurde.
+        // Wenn nicht, müssen wir die Suche nach dem ersten Segment selbst anstoßen.
+        if ($this->currentSegmentId === null) {
+            $this->logger->debug("getContent_Behind: No current segment set. Searching for the first segment now.");
+            
+            // getBorders() ohne Parameter nutzt die aktuellen Instanz-Einstellungen
+            // und sucht ab der Position $this->nextSearchPosition (die anfangs 0 ist).
+            $segment = $this->getBorders();
+            
+            // Wenn selbst die Suche nichts findet, gibt es auch nichts,
+            // worauf etwas folgen könnte.
+            if ($segment === null) {
+                $this->logger->info("getContent_Behind: No segment found, so no 'behind' content exists.");
+                return false;
+            }
+        }
+        
+        // Schritt 2: Die Koordinaten des aktuellen Segments abrufen.
+        // An dieser Stelle ist garantiert, dass ein Segment gefunden wurde (entweder
+        // durch einen vorherigen Aufruf oder durch uns in Schritt 1).
+        $currentSegment = $this->foundSegmentsList[$this->currentSegmentId];
+        
+        // Die Eigenschaft 'end_end' enthält die Position direkt NACH dem schließenden Delimiter.
+        $startPositionOfBehindContent = $currentSegment['end_end'];
+        
+        // Schritt 3: Den Teilstring ab dieser Position extrahieren.
+        $behindContent = substr($this->content, $startPositionOfBehindContent);
+        
+        $this->logger->info("getContent_Behind: Successfully extracted 'behind' content.", ['content' => $behindContent]);
+        
+        return $behindContent;
+    }
+
+
     // Similarly for getContent_Behind, getID, etc.
 
 }
