@@ -1,16 +1,13 @@
 FROM php:8.3-cli
+ARG USER_ID
+ARG GROUP_ID
+ENV APP_USER_NAME=appuser
+ENV APP_GROUP_NAME=appgroup
+ENV APP_UID=${USER_ID:-1000}
+ENV APP_GID=${GROUP_ID:-1000}
 
-# Setze die Zeitzone (optional, um Warnungen zu vermeiden)
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-# Arbeitsverzeichnis (kann auch später gesetzt werden)
-WORKDIR /app
-
-# Systemabhängigkeiten installieren
-# Wichtig: Prüfen, ob Debian Buster (Basis von php:7.4-cli) noch Anpassungen für apt-Quellen braucht
-# Wahrscheinlich nicht mehr so kritisch wie bei Stretch (PHP 5.6), aber ggf. prüfen.
-# Für den Moment gehen wir davon aus, dass die Standardquellen funktionieren.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     zip \
@@ -18,23 +15,38 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# PHP Extensions installieren (Beispiel für zip, falls benötigt)
 RUN docker-php-ext-install zip
+RUN if ! getent group $APP_GROUP_NAME > /dev/null; then \
+        addgroup --gid $APP_GID $APP_GROUP_NAME; \
+    else \
+        echo "Group $APP_GROUP_NAME already exists"; \
+    fi
+RUN adduser --uid "$APP_UID" --gid "$APP_GID" --disabled-password --gecos "" "$APP_USER_NAME" || true
+RUN if ! getent group $APP_GROUP_NAME > /dev/null; then \
+        addgroup --gid $APP_GID $APP_GROUP_NAME; \
+    else \
+        echo "Group $APP_GROUP_NAME already exists"; \
+    fi
+RUN if ! id -u $APP_USER_NAME > /dev/null 2>&1; then \
+        adduser -u $APP_UID -G $APP_GROUP_NAME -s /bin/sh -D $APP_USER_NAME; \
+    else \
+        echo "User $APP_USER_NAME already exists"; \
+    fi
 
-# Composer installieren
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+RUN mkdir -p /app/logs
 
 COPY composer.json composer.lock* ./
 
-# Abhängigkeiten installieren (inklusive dev-Abhängigkeiten für Tests)
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader -vvv
 
-# Den Rest des Codes kopieren
 COPY . .
 
-# Optional: Berechtigungen setzen, falls nötig
-# RUN chown -R www-data:www-data /app
-
-# Standardbefehl (optional)
+RUN git config --global --add safe.directory /app
+RUN chown -R "$APP_USER_NAME":"$APP_GROUP_NAME" /app
+RUN chmod -R ug+rwx /app/logs
+USER "$APP_USER_NAME"
 CMD ["php", "-v"]

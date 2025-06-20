@@ -1,5 +1,5 @@
 <?php
-namespace SL5\PregContentFinder\Tests; // Ihr Test-Namespace
+namespace SL5\PregContentFinder\Tests;
 
 use SL5\PregContentFinder\PregContentFinder; // Ihre Hauptklasse
 
