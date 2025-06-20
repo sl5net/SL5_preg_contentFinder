@@ -165,6 +165,25 @@ class PregContentFinder
 
 
 
+    /**
+     * Returns the full details of the last segment found by a successful call 
+     * to a search method like getContent(), getContent_Next(), or getBorders().
+     *
+     * @return array|null The complete segment data array, or null if no segment has been found yet.
+     */
+    public function getLastMatchDetails(): ?array
+    {
+        if ($this->currentSegmentId === null || !isset($this->foundSegmentsList[$this->currentSegmentId])) {
+            $this->logger->info("getLastMatchDetails called, but no current segment is set.");
+            return null;
+        }
+        
+        $this->logger->debug("Returning details for segment ID.", ['id' => $this->currentSegmentId]);
+        return $this->foundSegmentsList[$this->currentSegmentId];
+    }
+
+
+
 
 
 
@@ -400,33 +419,40 @@ private function prepareEffectiveDelimiters(): void
     /**
      * Builds the end regex by substituting backreferences with captured values.
      */
-    private static function buildEndRegexWithBackreferences(
-        array $startMatchCapturingGroups, // Values of captured groups from begin regex
-        string $originalEndRegexWithPlaceholders,
-        string $pcreDelimiter = '~'
-    ): string {
-        $modifiedEndRegex = $originalEndRegexWithPlaceholders;
-        foreach ($startMatchCapturingGroups as $index => $capturedValue) {
-            $groupIndex = $index + 1; // Backreferences are 1-indexed
-            $quotedValue = preg_quote((string) $capturedValue, $pcreDelimiter);
+// In PregContentFinder.php
 
-            // Replace all common backreference syntaxes
-            $patternsToReplace = [
-                '\\'. $groupIndex,  // \1
-                '$'. $groupIndex,   // $1 (common but sometimes needs care with \b)
-                '${'. $groupIndex .'}' // ${1}
-            ];
-            // Need to be careful with $1 vs $10. Replace longer ones first or use regex for replacement.
-            // For simplicity, direct str_replace, but preg_replace might be more robust for $1 vs $10.
-            // Example for $1 vs $10 with preg_replace:
-            // $modifiedEndRegex = preg_replace('/(?<![0-9])\$' . $groupIndex . '(?![0-9])/', $quotedValue, $modifiedEndRegex);
-            // $modifiedEndRegex = preg_replace('/(?<![0-9])\$\{' . $groupIndex . '\}(?![0-9])/', $quotedValue, $modifiedEndRegex);
-            // $modifiedEndRegex = preg_replace('/\\\\' . $groupIndex . '(?![0-9])/', $quotedValue, $modifiedEndRegex);
-            // For now, simple str_replace:
-            $modifiedEndRegex = str_replace($patternsToReplace, $quotedValue, $modifiedEndRegex);
-        }
-        return $modifiedEndRegex;
+private static function buildEndRegexWithBackreferences(
+    array $startMatchCapturingGroups,
+    string $originalEndRegexWithPlaceholders,
+    string $pcreDelimiter = '~'
+): string {
+    $modifiedEndRegex = $originalEndRegexWithPlaceholders;
+    
+    // Iteriere rückwärts, um $10 nicht fälschlicherweise durch die Ersetzung von $1 zu zerstören
+    for ($i = count($startMatchCapturingGroups) - 1; $i >= 0; $i--) {
+        $groupIndex = $i + 1; // Backreferences sind 1-indiziert
+        $capturedValue = $startMatchCapturingGroups[$i];
+        
+        // Wir escapen den Wert, der eingefügt wird, damit er als literaler String im Regex dient.
+        $quotedValue = preg_quote((string) $capturedValue, $pcreDelimiter);
+
+        // =========================================================================
+        // === DER KORRIGIERTE TEIL ===
+        // Ersetze die PLAIN-TEXT Platzhalter "\\2" (im Code-String) oder "$2" oder "${2}"
+        // durch den escapeten Wert.
+        // str_replace braucht hier keine komplexen Escapings.
+        // =========================================================================
+        $patternsToReplace = [
+            '\\'.$groupIndex,   // Sucht im String nach dem Text "\2"
+            '${'.$groupIndex.'}', // Sucht im String nach dem Text "${2}"
+            '$'.$groupIndex     // Sucht im String nach dem Text "$2"
+        ];
+        
+        // Da wir rückwärts iterieren, ist ein einfaches str_replace sicher.
+        $modifiedEndRegex = str_replace($patternsToReplace, $quotedValue, $modifiedEndRegex);
     }
+    return $modifiedEndRegex;
+}
 
 
 
@@ -444,33 +470,32 @@ private function prepareEffectiveDelimiters(): void
 
 
 
-
-
-
-
-
-/**
-* Finds the next segment using regular expressions, handling nesting and search modes.
-*/
+// In PregContentFinder.php
 
 private function findNextSegmentRegex(int $searchOffset): ?array
 {
-    // Part 1: The Guard Clause for Empty Delimiters. This is essential hygiene.
+    $this->logger->info("<<<<< findNextSegmentRegex CALLED >>>>>", ['offset' => $searchOffset]);
+
     if (empty($this->effectiveBeginDelimiter) && empty($this->effectiveEndDelimiter)) {
+        $this->logger->warning("Aborting findNextSegmentRegex: Both effective delimiters are empty.");
         return null;
     }
-
-    $this->logger->info("DEFINITIVE_ENGINE: Starting unified search.", [
-        'offset' => $searchOffset, 'begin' => $this->effectiveBeginDelimiter, 'end' => $this->effectiveEndDelimiter
-    ]);
 
     $txt = $this->content;
     $strLenTxt = strlen($txt);
 
-    // Part 2: The Initial Find. This is standard and correct.
-    if (!preg_match('~' . $this->effectiveBeginDelimiter . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $searchOffset)) {
+    // Part 2: The Initial Find
+    $beginPattern = '~' . $this->effectiveBeginDelimiter . '~sm';
+    $this->logger->debug("Searching for initial Begin-Delimiter", ['pattern' => $beginPattern, 'offset' => $searchOffset]);
+    if (!preg_match($beginPattern, $txt, $matches_begin, PREG_OFFSET_CAPTURE, $searchOffset)) {
+        $this->logger->info("No initial Begin-Delimiter found. Search ends.");
         return null;
     }
+    $this->logger->info("Initial Begin-Delimiter FOUND", [
+        'match' => $matches_begin[0][0],
+        'pos' => $matches_begin[0][1],
+        'captures' => array_slice($matches_begin, 1)
+    ]);
 
     $findPos = [
         'begin_begin' => $matches_begin[0][1],
@@ -480,69 +505,102 @@ private function findNextSegmentRegex(int $searchOffset): ?array
         'matches'     => ['begin_matches' => $matches_begin]
     ];
     
+    // Initialisiere $endDelimiterForLoop IMMER
+    $endDelimiterForLoop = $this->effectiveEndDelimiter;
+
+    if ($this->currentSearchMode === SearchMode::USE_BACKREFERENCE) {
+        $captures = array_slice($matches_begin, 1);
+        if (!empty($captures)) {
+            $captureValues = array_map(fn($m) => $m[0], $captures);
+            
+            // Übergebe den Logger an die build-Funktion
+            $specificEndDelimiter = self::buildEndRegexWithBackreferences($captureValues, $this->userProvidedEndDelimiter, '~', $this->logger);
+            
+            $endDelimiterForLoop = $specificEndDelimiter;
+        } else {
+             $this->logger->warning('Backreference mode is active, but the begin-delimiter regex captured no groups.');
+        }
+    }
+    
+    $this->logger->debug("Delimiter for Balancing-Loop finalized", ['end_delimiter_for_loop' => $endDelimiterForLoop]);
+    
     $balance = 1;
     $currentSearchPosition = $findPos['begin_end'];
 
-    // *** Part 3: The Definitive Balancing Loop ***
-    // This loop solves both the greedy matching and infinite loop problems.
+    // Part 3: The Definitive Balancing Loop
+    $this->logger->info("--- Starting Balancing Loop ---", ['start_pos' => $currentSearchPosition]);
+    $loopCount = 0;
     while ($balance > 0 && $currentSearchPosition < $strLenTxt) {
-        // Find the position of the very next available opening delimiter.
-        $foundBegin = preg_match('~' . $this->effectiveBeginDelimiter . '~sm', $txt, $match_b, PREG_OFFSET_CAPTURE, $currentSearchPosition);
-        $posBegin = $foundBegin ? $match_b[0][1] : PHP_INT_MAX;
-
-        // Find the position of the very next available closing delimiter.
-        $foundEnd = preg_match('~' . $this->effectiveEndDelimiter . '~sm', $txt, $match_e, PREG_OFFSET_CAPTURE, $currentSearchPosition);
-        $posEnd = $foundEnd ? $match_e[0][1] : PHP_INT_MAX;
-
-        // If we can't find any more delimiters at all, we're done.
-        if (!$foundBegin && !$foundEnd) {
+        if (++$loopCount > 500) { // Sicherheitsschleife
+            $this->logger->critical("Balancing loop seems to be infinite. Aborting.");
             break;
         }
 
-        // Compare the positions to see which delimiter comes next chronologically.
+        $beginPatternForLoop = '~' . $this->effectiveBeginDelimiter . '~sm';
+        $endPatternForLoop = '~' . $endDelimiterForLoop . '~sm';
+
+        $foundBegin = preg_match($beginPatternForLoop, $txt, $match_b, PREG_OFFSET_CAPTURE, $currentSearchPosition);
+        $posBegin = $foundBegin ? $match_b[0][1] : PHP_INT_MAX;
+
+        $foundEnd = preg_match($endPatternForLoop, $txt, $match_e, PREG_OFFSET_CAPTURE, $currentSearchPosition);
+        $posEnd = $foundEnd ? $match_e[0][1] : PHP_INT_MAX;
+
+        $this->logger->debug("Loop #{$loopCount}", [
+            'current_pos' => $currentSearchPosition, 'balance' => $balance,
+            'found_begin' => $foundBegin ? "Yes at {$posBegin}" : "No",
+            'found_end' => $foundEnd ? "Yes at {$posEnd}" : "No",
+        ]);
+
+        if (!$foundBegin && !$foundEnd) {
+            $this->logger->info("No more delimiters found in string. Exiting loop.");
+            break;
+        }
+
         if ($posBegin < $posEnd) {
-            // The next delimiter is an opening one.
             $balance++;
-            // CRITICAL: Advance the pointer robustly.
             $currentSearchPosition = $match_b[0][1] + max(1, strlen($match_b[0][0]));
+            $this->logger->debug("Found BEGIN, incrementing balance.", ['new_balance' => $balance, 'next_pos' => $currentSearchPosition]);
         } else {
-            // The next delimiter is a closing one.
             $balance--;
-            // CRITICAL: Advance the pointer robustly.
             $currentSearchPosition = $match_e[0][1] + max(1, strlen($match_e[0][0]));
+            $this->logger->debug("Found END, decrementing balance.", ['new_balance' => $balance, 'next_pos' => $currentSearchPosition]);
             if ($balance === 0) {
-                // We found our matching closing delimiter.
+                $this->logger->info("!!! Balance is ZERO. Found matching end-delimiter. !!!");
                 $findPos['end_begin'] = $match_e[0][1];
                 $findPos['end_end'] = $currentSearchPosition;
             }
         }
     }
+    $this->logger->info("--- Balancing Loop FINISHED ---", ['final_balance' => $balance]);
 
-    // Part 4: Handle unclosed blocks using our previously established, correct logic.
+    // Part 4: Handle unclosed blocks
     if ($balance > 0) {
-        if ($this->stopOnMissingEndBorder) return null;
-        
-        $this->logger->info("DEFINITIVE_ENGINE: Unbalanced block detected, applying special rule for NIXNIX case.");
+        $this->logger->warning("Block is unbalanced after loop. Applying NIXNIX-Rule.", ['final_balance' => $balance]);
+        if ($this->stopOnMissingEndBorder) {
+            $this->logger->info("stopOnMissingEndBorder is true. Returning null.");
+            return null;
+        }
         
         $subContent = substr($txt, $findPos['begin_end']);
-        if (preg_match_all('~' . $this->effectiveEndDelimiter . '~sm', $subContent, $all_ends, PREG_OFFSET_CAPTURE)) {
+        $endPatternForFallback = '~' . $endDelimiterForLoop . '~sm';
+        $this->logger->debug("NIXNIX-Rule: Searching for last occurrence.", ['pattern' => $endPatternForFallback]);
+        
+        if (preg_match_all($endPatternForFallback, $subContent, $all_ends, PREG_OFFSET_CAPTURE)) {
             $last_end_match = end($all_ends[0]);
+            $this->logger->info("NIXNIX-Rule: Found last end-delimiter.", ['match' => $last_end_match[0], 'pos' => $last_end_match[1]]);
             $absolute_offset = $findPos['begin_end'] + $last_end_match[1];
-            
-            // This defines the content's end *before* the last found '}'
             $findPos['end_begin'] = $absolute_offset; 
             $findPos['end_end'] = $absolute_offset + strlen($last_end_match[0]);
         } else {
-            // If no closing delimiter is found at all, then the content goes to the end.
+            $this->logger->error("NIXNIX-Rule: Could not find ANY end-delimiter. Setting segment to end of content.");
             $findPos['end_begin'] = $strLenTxt;
             $findPos['end_end'] = $strLenTxt;
         }
     }
 
+    $this->logger->info(">>>>> findNextSegmentRegex RETURNING >>>>>", ['result' => $findPos]);
     return $findPos;
 }
-
-
 
 
      
