@@ -432,27 +432,22 @@ private function prepareEffectiveDelimiters(): void
      * Finds the next segment using regular expressions, handling nesting and search modes.
      */
 
-
-
-
-
-
-
-
 private function findNextSegmentRegex(int $searchOffset): ?array
 {
-    $this->logger->info("FINAL_ROBUST_PATH: Starting manual count segment search.", [
-        'offset' => $searchOffset,
-        'begin_regex' => $this->effectiveBeginDelimiter,
-        'end_regex' => $this->effectiveEndDelimiter
+    // Part 1: The Guard Clause for Empty Delimiters. This is essential hygiene.
+    if (empty($this->effectiveBeginDelimiter) && empty($this->effectiveEndDelimiter)) {
+        return null;
+    }
+
+    $this->logger->info("DEFINITIVE_ENGINE: Starting unified search.", [
+        'offset' => $searchOffset, 'begin' => $this->effectiveBeginDelimiter, 'end' => $this->effectiveEndDelimiter
     ]);
 
     $txt = $this->content;
     $strLenTxt = strlen($txt);
 
-    // Schritt 1: Finde den allerersten Start-Delimiter. Wenn der nicht da ist, sind wir fertig.
+    // Part 2: The Initial Find. This is standard and correct.
     if (!preg_match('~' . $this->effectiveBeginDelimiter . '~sm', $txt, $matches_begin, PREG_OFFSET_CAPTURE, $searchOffset)) {
-        $this->logger->info("FINAL_ROBUST_PATH: No initial begin-delimiter found.");
         return null;
     }
 
@@ -464,85 +459,67 @@ private function findNextSegmentRegex(int $searchOffset): ?array
         'matches'     => ['begin_matches' => $matches_begin]
     ];
     
-    $balance = 1; // Wir haben unseren ersten Start-Delimiter gefunden
+    $balance = 1;
     $currentSearchPosition = $findPos['begin_end'];
 
-    // Schritt 2: Manuelle Zählschleife. Robust und explizit.
+    // *** Part 3: The Definitive Balancing Loop ***
+    // This loop solves both the greedy matching and infinite loop problems.
     while ($balance > 0 && $currentSearchPosition < $strLenTxt) {
-        // Finde die Position des NÄCHSTEN Start- ODER End-Delimiters
+        // Find the position of the very next available opening delimiter.
         $foundBegin = preg_match('~' . $this->effectiveBeginDelimiter . '~sm', $txt, $match_b, PREG_OFFSET_CAPTURE, $currentSearchPosition);
         $posBegin = $foundBegin ? $match_b[0][1] : PHP_INT_MAX;
 
+        // Find the position of the very next available closing delimiter.
         $foundEnd = preg_match('~' . $this->effectiveEndDelimiter . '~sm', $txt, $match_e, PREG_OFFSET_CAPTURE, $currentSearchPosition);
         $posEnd = $foundEnd ? $match_e[0][1] : PHP_INT_MAX;
 
-        // Wenn gar nichts mehr gefunden wird, brechen wir ab.
+        // If we can't find any more delimiters at all, we're done.
         if (!$foundBegin && !$foundEnd) {
             break;
         }
 
-        // Entscheiden, welcher Delimiter als nächstes kommt.
+        // Compare the positions to see which delimiter comes next chronologically.
         if ($posBegin < $posEnd) {
-            // Ein weiterer Start-Delimiter kommt zuerst.
+            // The next delimiter is an opening one.
             $balance++;
-            $currentSearchPosition = $match_b[0][1] + strlen($match_b[0][0]);
+            // CRITICAL: Advance the pointer robustly.
+            $currentSearchPosition = $match_b[0][1] + max(1, strlen($match_b[0][0]));
         } else {
-            // Ein End-Delimiter kommt zuerst.
+            // The next delimiter is a closing one.
             $balance--;
-            $currentSearchPosition = $match_e[0][1] + strlen($match_e[0][0]);
+            // CRITICAL: Advance the pointer robustly.
+            $currentSearchPosition = $match_e[0][1] + max(1, strlen($match_e[0][0]));
             if ($balance === 0) {
-                // Das ist die passende schließende Klammer! Mission erfüllt.
+                // We found our matching closing delimiter.
                 $findPos['end_begin'] = $match_e[0][1];
                 $findPos['end_end'] = $currentSearchPosition;
             }
         }
-         // WICHTIG: Korrektur für Zero-Width-Matches, falls der Sucher an derselben Stelle bleibt
-        if ($foundBegin && ($match_b[0][1] + strlen($match_b[0][0])) <= $findPos['end_end'] && strlen($match_b[0][0]) === 0) {
-             $currentSearchPosition = $findPos['end_end'] +1;
+    }
+
+    // Part 4: Handle unclosed blocks using our previously established, correct logic.
+    if ($balance > 0) {
+        if ($this->stopOnMissingEndBorder) return null;
+        
+        $this->logger->info("DEFINITIVE_ENGINE: Unbalanced block detected, applying special rule for NIXNIX case.");
+        
+        $subContent = substr($txt, $findPos['begin_end']);
+        if (preg_match_all('~' . $this->effectiveEndDelimiter . '~sm', $subContent, $all_ends, PREG_OFFSET_CAPTURE)) {
+            $last_end_match = end($all_ends[0]);
+            $absolute_offset = $findPos['begin_end'] + $last_end_match[1];
+            
+            // This defines the content's end *before* the last found '}'
+            $findPos['end_begin'] = $absolute_offset; 
+            $findPos['end_end'] = $absolute_offset + strlen($last_end_match[0]);
+        } else {
+            // If no closing delimiter is found at all, then the content goes to the end.
+            $findPos['end_begin'] = $strLenTxt;
+            $findPos['end_end'] = $strLenTxt;
         }
-
     }
 
-// Schritt 3: Ergebnis auswerten, falls die Schleife ohne Balance geendet hat.
-if ($balance > 0) { 
-    if ($this->stopOnMissingEndBorder) {
-        $this->logger->info("FINAL_ROBUST_PATH: Unbalanced, stopping as per stopOnMissingEndBorder flag.");
-        return null;
-    }
-
-    // SPEZIALREGEL FÜR UNBALANCIERTE BLÖCKE (gemäß Test-Anforderung):
-    // Der Inhalt endet vor dem letzten Vorkommen des End-Delimiters im gesamten String.
-    $this->logger->info("FINAL_ROBUST_PATH: Unbalanced, applying special rule for unclosed blocks.");
-    
-    // Wir suchen nach dem LETZTEN Vorkommen des End-Delimiters im gesamten String-Teil
-    $subContent = substr($txt, $findPos['begin_end']);
-    if (preg_match_all('~' . $this->effectiveEndDelimiter . '~sm', $subContent, $all_ends, PREG_OFFSET_CAPTURE)) {
-        
-        $last_end_match = end($all_ends[0]);
-        
-        // Offset ist relativ zum $subContent, wir brauchen den absoluten Offset.
-        $absolute_offset = $findPos['begin_end'] + $last_end_match[1];
-        
-        $findPos['end_begin'] = $absolute_offset;
-        $findPos['end_end']   = $absolute_offset + strlen($last_end_match[0]);
-
-        $this->logger->debug("FINAL_ROBUST_PATH: Found last end-delimiter for unbalanced content.", ['absolute_pos' => $absolute_offset]);
-
-    } else {
-        // Kein einziger End-Delimiter im Rest des Strings gefunden. Inhalt ist alles.
-        $this->logger->debug("FINAL_ROBUST_PATH: No end-delimiters found for unbalanced content.");
-        $findPos['end_begin'] = $strLenTxt;
-        $findPos['end_end'] = $strLenTxt;
-    }
+    return $findPos;
 }
-
-return $findPos;
-}
-
-
-
-
-
 
 
 
@@ -720,10 +697,14 @@ public function getContent(
 }
 
 
-public function getContent_user_func_recursive(callable $userCallback): string
+
+
+
+
+
+public function getContent_user_func_recursive(callable $userCallback, int $currentDepth = 0): string
 {
-    // This function is called recursively. Each time, it processes one level of content.
-    // A local finder is used for the top-level iteration to avoid state conflicts.
+    // Use a local finder for the iteration at this depth to prevent state conflicts.
     $localFinder = new self($this->content);
     $localFinder->setSearchMode($this->currentSearchMode);
     $localFinder->setBeginEndDelimiters($this->userProvidedBeginDelimiter, $this->userProvidedEndDelimiter);
@@ -731,7 +712,7 @@ public function getContent_user_func_recursive(callable $userCallback): string
     $resultParts = [];
     $lastPosition = 0;
 
-    // The loop finds all non-overlapping, top-level segments in the current content.
+    // The loop finds all top-level segments in the content for the current depth.
     while (($segmentData = $localFinder->getBorders(null, null, $lastPosition, null)) !== null) {
         
         // 1. Add the plain text part BEFORE the current segment.
@@ -740,28 +721,39 @@ public function getContent_user_func_recursive(callable $userCallback): string
         // 2. Isolate the raw content of the current segment.
         $rawSegmentContent = substr($this->content, $segmentData['begin_end'], $segmentData['end_begin'] - $segmentData['begin_end']);
 
-        // 3. *** THE UNIFIED RECURSION LOGIC ***
+        // 3. *** THE CONTEXT-AWARE RECURSION STEP ***
         $recursivelyProcessedContent = '';
         
-        // THE CIRCUIT BREAKER:
-        // If the inner content is identical to our current content, we have an infinite loop condition.
-        // This is our new, robust base case.
+        // The "circuit breaker" for infinite loops.
         if ($rawSegmentContent === $this->content) {
             $this->logger->debug("Recursive function circuit breaker: inner content is identical to outer. Halting recursion for this branch.");
             $recursivelyProcessedContent = $rawSegmentContent;
         } else {
-            // NORMAL RECURSION: It's safe to dive deeper.
-            $this->logger->debug("Recursive function step: processing inner content.");
+            // It's safe to dive deeper. Create a new instance for the inner content.
             $innerFinderRecursive = new self($rawSegmentContent);
             $innerFinderRecursive->setSearchMode($this->currentSearchMode);
             $innerFinderRecursive->setBeginEndDelimiters($this->userProvidedBeginDelimiter, $this->userProvidedEndDelimiter);
-            $recursivelyProcessedContent = $innerFinderRecursive->getContent_user_func_recursive($userCallback);
+            
+            // Pass the incremented depth to the recursive call.
+            $recursivelyProcessedContent = $innerFinderRecursive->getContent_user_func_recursive($userCallback, $currentDepth + 1);
         }
         
-        // 4. Apply the user's callback to the FULLY RESOLVED inner content.
-        $cutForCallback = ['middle' => $recursivelyProcessedContent];
-        $finalTransformedContent = $userCallback($cutForCallback, 0, 0, [], $recursivelyProcessedContent)['middle'];
 
+        // 4. Apply the user's callback to the fully resolved inner content.
+        $cutForCallback = ['middle' => $recursivelyProcessedContent];
+        $callbackResult = $userCallback($cutForCallback, $currentDepth, 0, $segmentData, $recursivelyProcessedContent);
+
+
+        // FLEXIBLE RETURN TYPE HANDLING 
+        // Check if the callback returned the array or just the string.
+        // Handle flexible return types from the callback.
+        if (is_array($callbackResult) && isset($callbackResult['middle'])) {
+            $finalTransformedContent = $callbackResult['middle'];
+        } else {
+            $finalTransformedContent = $callbackResult;
+        }
+
+        
         // 5. Add the final, transformed part to our result.
         $resultParts[] = $finalTransformedContent;
 
@@ -775,7 +767,6 @@ public function getContent_user_func_recursive(callable $userCallback): string
     // 8. Join all pieces back together.
     return implode('', $resultParts);
 }
-
 
 
 
