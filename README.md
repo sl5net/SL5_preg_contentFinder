@@ -251,7 +251,7 @@ This script automates common tasks and helps in maintaining a clean Docker envir
 
 Or browse the directory containing other useful shell scripts:
 ➡️ **[SL5 Favorite Shell Scripts](https://github.com/sl5net/SL5_some_favorite_scripts/tree/master/sh)**
-*(Link to the sh directory)*
+
 
 **Key features of the script:**
 *   Automatically detects the target PHP version from the Dockerfile or Git context.
@@ -271,4 +271,4 @@ It's recommended to place this script outside the `SL5_preg_contentFinder` proje
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit pull requests or open issues. (Consider adding a `CONTRIBUTING.md` file if you have specific guidelines).
+Contributions are welcome! Please feel free to submit pull requests or open issues. 
